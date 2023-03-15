@@ -61,11 +61,12 @@ const BotMessageContainer = styled.div`
 
 type BotMessageProps = {
     message: ConversationResponse,
+    lastMessage?: boolean,
 };
 
 function BotMessage(props: BotMessageProps) {
     const buttons = props.message.buttons;
-    const attachments = props.message.data.attachment;
+    const attachments = props.message.data?.attachment;
 
     return (
         <MessageContainer>
@@ -73,7 +74,10 @@ function BotMessage(props: BotMessageProps) {
                 <MessageText>
                     {props.message.text}
                 </MessageText>
-                <ReplyAttachments attachments={attachments || []} />
+                <ReplyAttachments
+                    lastMessage={props.lastMessage}
+                    attachments={attachments || []}
+                />
                 <ReplyButtons buttons={buttons || []} />
             </BotMessageContainer>
         </MessageContainer>
@@ -114,20 +118,24 @@ type MessagesProps = {
 export default function Messages(props: MessagesProps) {
     const [convoContext] = useConversationContext();
 
-    const latestElement = useRef<HTMLDivElement>(null);
+    const containerElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
         console.debug('Scrolling to bottom');
-        latestElement.current?.scrollTo({ top: latestElement.current.scrollHeight });
+        containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
     }, [props.messages])
 
     return (
-        <MessagesContainer ref={latestElement}>
+        <MessagesContainer ref={containerElement}>
             {props.messages.map((message, idx) => {
                 console.debug(message);
                 switch (message.actor) {
                     case 'bot':
                         return (
-                            <BotMessage key={idx} message={message} />
+                            <BotMessage
+                                key={idx}
+                                message={message}
+                                lastMessage={(props.messages.length - 1 === idx) /* TODO: make available from context */}
+                            />
                         );
                     case 'user':
                         return (

@@ -34,7 +34,7 @@ export type ConversationResponse = {
     recipient_id: string,
     text: string,
     buttons?: Button[],
-    data: ConversationData,
+    data?: ConversationData,
 };
 
 

@@ -102,9 +102,10 @@ function ReplyButtons({ buttons }: ReplyButtonsProps) {
 
 type ReplyAudioProps = {
     src?: string,
+    autoPlay?: boolean,
 };
 
-function ReplyAudio({ src }: ReplyAudioProps) {
+function ReplyAudio({ src, autoPlay }: ReplyAudioProps) {
     // TODO: Perhaps this should rather use a widget global audio element for the playback, so that we don't get
     //   multiple playing audio attachments at the same time.
     const [ended, setEnded] = useState<boolean>(false);
@@ -113,7 +114,7 @@ function ReplyAudio({ src }: ReplyAudioProps) {
         return null;
 
     return (
-        <audio autoPlay src={src} controls={false} onEnded={() => setEnded(true)} />
+        <audio autoPlay={autoPlay} src={src} controls={false} onEnded={() => setEnded(true)} />
     );
 }
 
@@ -134,9 +135,10 @@ function ReplyImage({ src, alt, title }: ReplyImageProps) {
 
 type ReplyAttachmentsProps = {
     attachments: ConversationAttachment[],
+    lastMessage?: boolean,
 };
 
-function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
+function ReplyAttachments({ attachments, lastMessage }: ReplyAttachmentsProps) {
     return (
         <>
             {attachments.map((attachmentData) => {
@@ -146,6 +148,7 @@ function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
                             <ReplyAudio
                                 key={attachmentData.payload.src}
                                 src={attachmentData.payload.src}
+                                autoPlay={lastMessage || undefined}
                             />
                         );
                     case 'image':

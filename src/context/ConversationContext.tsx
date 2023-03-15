@@ -40,7 +40,7 @@ export type ConversationAction =
     | { type: 'SET_CONVERSATION_ID', conversationId: string }
 ;
 
-const reducer: React.Reducer<ConversationState, ConversationAction> = (state, action) => {
+const reducer: React.Reducer<ConversationState, ConversationAction> = (state: ConversationState, action: ConversationAction) => {
     switch (action.type) {
         case 'ADD_RESPONSE':
             return Object.assign({}, state, {
