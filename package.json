@@ -3,6 +3,7 @@
   "author": "Tiro ehf.",
   "version": "0.1.0",
   "license": "MIT",
+  "homepage": "https://github.com/sdifi/webchat",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
