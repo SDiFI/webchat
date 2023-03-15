@@ -38,10 +38,19 @@ export default function SenderForm(props: SenderFormProps) {
 
     const sendText = () => {
         if (!text) return;
+
+        if (text.startsWith('/debug image')) {
+            const duckUrl = 'https://www.pinclipart.com/picdir/middle/122-1222832_kooz-top-donald-duck-drawing-color-clipart.png';
+            convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: 'Þetta er mynd', data: { attachment: [
+                { type: 'image', payload: { src: duckUrl } },
+            ] } });
+
+            setText('');
+            return;
+        }
+
         convoDispatch({ type: 'ADD_SENT_TEXT', text });
         setText('');
-
-        console.debug(JSON.stringify(convoState))
 
         if (!masdifClient || !convoState.conversationId) {
             // TODO: If these are null, something is wrong... Do something about that
@@ -80,7 +89,7 @@ export default function SenderForm(props: SenderFormProps) {
             </Textarea>
             <SendButton
                 ready={!!text}
-                onClick={() => sendText()}
+                onClick={sendText}
             />
         </Form>
     );

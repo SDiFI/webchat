@@ -12,7 +12,7 @@ export type ConversationSentMessage = {
 
 export type ConversationAttachment =
     | { type: 'audio', payload: { src: string } }
-    | { type: 'image', payload: { title: string, src: string } }
+    | { type: 'image', payload: { title?: string, src: string } }
     | { type: 'audio', payload: { src: string } }
     | { type: 'video', payload: { title: string, src: string } }
 ;
