@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import openLauncherImage from './launcher.svg';
-import closeLauncherImage from './clear-button.svg';
+import openLauncherImage from '../images/launcher.svg';
+import closeLauncherImage from '../images/clear-button.svg';
 
 const slideInAnimation = keyframes`
   from {

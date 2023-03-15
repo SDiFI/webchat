@@ -56,6 +56,8 @@ export type ChatProps = {
     startClosed?: boolean,
 };
 
+// The Chat component expects there to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
+// somewhere higher up in the component tree.
 export default function Chat(props: ChatProps) {
     const [visible, setVisible] = useState<boolean>(!props.startClosed);
     const [convoState, convoDispatch] = useConversationContext();
