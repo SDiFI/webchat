@@ -8,11 +8,12 @@ export type ConnectedChatProps = {
     title?: string,
     subtitle?: string,
     placeholder?: string,
+    disableTTS?: boolean,
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
     return (
-        <MasdifContextProvider serverAddress={props.serverAddress}>
+        <MasdifContextProvider serverAddress={props.serverAddress} disableTTS={props.disableTTS}>
             <ConversationContextProvider>
                 <Chat
                     title={props.title || "SDiFI"}

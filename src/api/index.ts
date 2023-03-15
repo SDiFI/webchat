@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { ConversationSentMessage, ConversationResponse, TMasdifClient } from './types';
+import { ConversationSentMessage, ConversationResponse, TMasdifClient, MasdifClientOptions } from './types';
 
 // Example usage of MasdifClient:
 //
@@ -8,17 +8,22 @@ import { ConversationSentMessage, ConversationResponse, TMasdifClient } from './
 //   await response = client.sendMessage(convoId, {text: 'Hver er bæjarstjóri Andabæjar?'});
 //   console.debug(`The server said: "${response[0].text}"`);
 //
+
 export default class MasdifClient implements TMasdifClient {
     // TODO: Support user settings from local storage, for thing like TTS.
     private http: AxiosInstance;
+    private disableTTS: boolean;
 
-    constructor(baseURL: string) {
+    constructor(baseURL: string, options: MasdifClientOptions | undefined) {
         this.http = axios.create({
             baseURL,
             headers: {
                 'Content-Type': 'application/json',
+                ...(options?.extraHeaders ? options.extraHeaders : {}),
             },
         });
+
+        this.disableTTS = options?.disableTTS || false;
     }
 
     async status() {
@@ -36,7 +41,13 @@ export default class MasdifClient implements TMasdifClient {
     }
 
     async sendMessage(conversationId: string, message: ConversationSentMessage) {
-        const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, message);
+        const payload: ConversationSentMessage = {
+            ...message,
+            metadata: {
+                tts: `${!this.disableTTS}` as 'true' | 'false',
+            },
+        };
+        const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
         if (response.status !== 200) {
             throw new Error("Could not send message to server.");
         }
@@ -44,6 +55,6 @@ export default class MasdifClient implements TMasdifClient {
     }
 
     async conversationHistory() {
-        // TODO: Implement
+        // TODO: Implement once historic replies returned by the server are in JSON
     }
 }
