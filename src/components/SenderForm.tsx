@@ -72,7 +72,6 @@ export default function SenderForm(props: SenderFormProps) {
     return (
         <Form onSubmit={handleSubmit}>
             <Textarea
-                disabled={convoState.loading /* TODO: This might not be smart if we want to interrupt the bot */}
                 placeholder={props.placeholder || "Spurðu mig spjörunum úr"}
                 value={text}
                 onChange={({ target }) => setText(target.value)}

@@ -44,10 +44,12 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (state, ac
     switch (action.type) {
         case 'ADD_RESPONSE':
             return Object.assign({}, state, {
+                loading: false,
                 messages: [...state.messages, { actor: 'bot', ...(action as ConversationResponse) }],
             });
         case 'ADD_SENT_TEXT':
             return Object.assign({}, state, {
+                loading: true,
                 messages: [...state.messages, { actor: 'user', ...(action as ConversationSentMessage) }],
             });
         case 'SET_CONVERSATION_ID':

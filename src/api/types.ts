@@ -18,8 +18,8 @@ export type ConversationAttachment =
 ;
 
 export type Button = { content_type?: 'text', title: string } & (
-    | { type: 'postback', payload: string }
-    | { type: 'web_url', url: string }
+    | { type?: 'postback', payload: string }
+    | { type?: 'web_url', url: string }
 );
 
 // TODO(rkjaran): What data is Masdif actually going to support? Don't add stuff here that will never be
@@ -27,13 +27,13 @@ export type Button = { content_type?: 'text', title: string } & (
 export type ConversationData = {
     elements?: any, // TODO: define
     quick_replies?: Button[],
-    buttons?: Button[],
     attachment?: ConversationAttachment[],
 };
 
 export type ConversationResponse = {
     recipient_id: string,
     text: string,
+    buttons?: Button[],
     data: ConversationData,
 };
 

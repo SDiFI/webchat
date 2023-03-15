@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { ConversationResponse, ConversationSentMessage } from '../api/types';
-import { ConversationState } from '../context/ConversationContext';
+import styled, { css } from 'styled-components';
+import { Button as ButtonData, ConversationResponse, ConversationSentMessage } from '../api/types';
+import { ConversationState, useConversationContext } from '../context/ConversationContext';
+import { useMasdifClient } from '../context/MasdifClientContext';
+import Loading from './Loading';
 
 
 // TODO: Make responsive
@@ -53,6 +55,103 @@ const BotMessageContainer = styled.div`
   max-width: 85%;
 `;
 
+
+const replyStyle = css`
+  background-color: #ccc;
+  margin: 2px;
+  display: inline-block;
+  padding: 6px;
+  text-align: center;
+  border: 2px #eee;
+  border-radius: 4px;
+  font-family: sans-serif;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #eee;
+  }
+`;
+
+const ReplyButton = styled.button`
+  ${replyStyle}
+  &:hover {
+    cursor:  pointer;
+  }
+`;
+
+type ReplyActionProps = {
+    title: string,
+    payload: string,
+};
+
+function ReplyAction(props: ReplyActionProps) {
+    const masdifClient = useMasdifClient();
+    const [convoState, convoDispatch] = useConversationContext();
+
+    const handlePostback = (_: React.MouseEvent) => {
+        // TODO: We should probably move this update logic somewhere else, since SendForm is doing the exact same action
+        masdifClient?.sendMessage(convoState.conversationId!, { text: props.payload })
+                     .then((responses) => {
+                         responses.forEach((response) => {
+                             convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                         });
+                     });
+    };
+
+    return (
+        <ReplyButton onClick={handlePostback}>
+            {props.title}
+        </ReplyButton>
+    );
+}
+
+const ReplyA = styled.a`
+  ${replyStyle}
+  text-decoration: none !important;
+  color: inherit;
+  line-height: normal;
+`;
+
+type ReplyLinkProps = {
+    title: string,
+    href: string,
+};
+
+function ReplyLink(props: ReplyLinkProps) {
+    return <ReplyA href={props.href} target='_blank'>{props.title}</ReplyA>;
+}
+
+type ReplyButtonsProps = {
+    buttons: ButtonData[],
+};
+
+function ReplyButtons({ buttons }: ReplyButtonsProps) {
+    return (
+        <>
+            {buttons.map((buttonData, idx) => {
+                if ('url' in buttonData) {
+                    return (
+                        <ReplyLink
+                            key={idx}
+                            title={buttonData.title}
+                            href={buttonData.url}
+                        />
+                    );
+                }
+
+                return (
+                    <ReplyAction
+                        key={idx}
+                        title={buttonData.title}
+                        payload={buttonData.payload}
+                    />
+                );
+            }
+            )}
+        </>
+    );
+}
+
 type BotMessageProps = {
     message: ConversationResponse,
 };
@@ -60,12 +159,15 @@ type BotMessageProps = {
 function BotMessage(props: BotMessageProps) {
     // TODO: handle data.attachment.{audio, image, etc...}
     // TODO: handle data.buttons
+    const buttons =  props.message.buttons;
+
     return (
         <MessageContainer>
             <BotMessageContainer>
                 <MessageText>
                     {props.message.text}
                 </MessageText>
+                <ReplyButtons buttons={buttons || []} />
             </BotMessageContainer>
         </MessageContainer>
     );
@@ -87,13 +189,25 @@ function UserMessage(props: UserMessageProps) {
     );
 }
 
+function LoadingMessage() {
+    return (
+        <MessageContainer>
+            <BotMessageContainer>
+                <Loading />
+            </BotMessageContainer>
+        </MessageContainer>
+    );
+}
+
+
 type MessagesProps = {
     messages: ConversationState["messages"],
 };
 
 export default function Messages(props: MessagesProps) {
-    const latestElement = useRef<HTMLDivElement>(null);
+    const [convoContext] = useConversationContext();
 
+    const latestElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
         console.debug('Scrolling to bottom');
         latestElement.current?.scrollTo({ top: latestElement.current.scrollHeight });
@@ -102,6 +216,7 @@ export default function Messages(props: MessagesProps) {
     return (
         <MessagesContainer ref={latestElement}>
             {props.messages.map((message, idx) => {
+                console.debug(message);
                 switch (message.actor) {
                     case 'bot':
                         return (
@@ -115,6 +230,7 @@ export default function Messages(props: MessagesProps) {
                         return null;
                 }
             })}
+        {convoContext.loading && <LoadingMessage />}
         </MessagesContainer>
     );
 }
