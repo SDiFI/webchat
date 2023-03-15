@@ -28,7 +28,7 @@ const Textarea = styled.textarea`
 `;
 
 export type SenderFormProps = {
-    placeholder?: string,
+    placeholder: string,
 };
 
 export default function SenderForm(props: SenderFormProps) {
@@ -81,7 +81,7 @@ export default function SenderForm(props: SenderFormProps) {
     return (
         <Form onSubmit={handleSubmit}>
             <Textarea
-                placeholder={props.placeholder || "Spurðu mig spjörunum úr"}
+                placeholder={props.placeholder}
                 value={text}
                 onChange={({ target }) => setText(target.value)}
                 onKeyDown={handleKeyDown}

@@ -83,7 +83,7 @@ export default function Chat(props: ChatProps) {
                         <HeaderSubtitle>{props.subtitle}</HeaderSubtitle>
                     </Header>
                     <Messages messages={convoState.messages} />
-                    <SenderForm />
+                    <SenderForm placeholder={props.placeholder} />
                 </ConversationContainer>
             )}
             <Launcher
