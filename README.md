@@ -53,7 +53,7 @@ root.render(<App />, );
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://cdn.jsdelivr.net/npm/@sdifi/webchat@0.2.0/dist/webchat.umd.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@sdifi/webchat@0.2.1/dist/webchat.umd.production.min.js"></script>
     <script>
     window.onload = () => {
       Webchat.init("root", {
