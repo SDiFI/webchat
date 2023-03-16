@@ -1,9 +1,69 @@
 # SDiFI Webchat
 
-This is the webchat widget for SDiFI. It requires a working instance of a
-[Masdif](https://github.com/sdifi/masdif/) server.
+This is the webchat widget for the SDiFI project. It requires a working instance
+of a [Masdif](https://github.com/sdifi/masdif/) server.
 
-In development.
+In development. Expect breakage.
+
+## Usage
+
+The Webchat widget is published both as a React component and a standalone UMD
+bundle.
+
+### React component
+
+To use the component in your project add it as a dependency:
+
+```
+yarn add @sdifi/webchat
+```
+
+The `react` and `react-dom` packages are peer dependencies, so if you don't
+already have those add them as dependencies in your project:
+
+```
+yarn add react react-dom
+```
+
+Example usage:
+
+```typescript
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import Chat from '@sdifi/webchat';
+
+const App = () => {
+  return (
+    <div>
+      <Chat serverAddress="http://localhost:8080" />
+    </div>
+  );
+};
+
+const root = createRoot(document.getElementById('root')!);
+root.render(<App />, );
+```
+
+### Standalone UMD bundle
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@sdifi/webchat@0.2.0/dist/webchat.umd.production.min.js"></script>
+    <script>
+    window.onload = () => {
+      Webchat.init("root", {
+        serverAddress: "http://localhost:8080"
+      });
+    }
+    </script>
+  </body>
+</html>
+```
 
 ## Development workflow
 
@@ -29,3 +89,6 @@ In development.
 - [ ] Tests
 - [ ] Make themeable (see styled-components ThemeProvider)
 
+## License
+
+See [LICENSE](./LICENSE).

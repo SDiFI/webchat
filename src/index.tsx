@@ -1,6 +1,9 @@
 import ConnectedChat, { ConnectedChatProps } from './views/ConnectedChat';
+import { init } from './index-umd';
+
+export default ConnectedChat;
 
 export {
-  ConnectedChat,
-  ConnectedChatProps,
+    ConnectedChatProps,
+    init,
 };
