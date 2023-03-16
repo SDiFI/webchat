@@ -1,7 +1,7 @@
 {
   "name": "@sdifi/webchat",
   "author": "Tiro ehf.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "homepage": "https://github.com/sdifi/webchat",
   "main": "dist/index.js",
