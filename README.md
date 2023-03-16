@@ -73,6 +73,13 @@ root.render(<App />, );
 4. `cd example && yarn install && yarn start`
 5. Go look at http://localhost:1234 hot reload while editing the code
 
+## Publishing new versions
+
+1. Update the `version` field in [package.json](./package.json). Try to follow semver.
+2. `git add package.json && git commit -m "Update version to X.Y.Z" && git tag -a vX.Y.Z`
+4. `yarn install`
+5. `yarn publish --access public --new-version X.Y.Z`
+
 ## Things todo
 
 - [x] Send and receive text messages
