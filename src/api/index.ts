@@ -27,8 +27,13 @@ export default class MasdifClient implements TMasdifClient {
     }
 
     async status() {
-        const response = await this.http.get('/health');
-        return response.status === 200;
+        try {
+            const response = await this.http.get('/health');
+            return response.status === 200 && response.data.masdif === 'OK';
+        } catch (e) {
+            console.error('Could not contact server');
+            return false;
+        }
     }
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.

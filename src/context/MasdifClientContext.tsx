@@ -29,3 +29,29 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
 }
 
 export const useMasdifClient = () => useContext(MasdifClientContext);
+
+export function useMasdifStatus() {
+    const [status, setStatus] = useState<boolean>(false);
+    const masdifClient = useMasdifClient();
+
+    useEffect(() => {
+        let handler: number | null = null;
+
+        const fetchStatus = async () => {
+            if (masdifClient) {
+                setStatus(await masdifClient?.status());
+                handler = window.setTimeout(fetchStatus, 10000);
+            }
+        }
+
+        fetchStatus();
+
+        return () => {
+            if (handler !== null) {
+                window.clearTimeout(handler);
+            }
+        };
+    }, [masdifClient]);
+
+    return status;
+}

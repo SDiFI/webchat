@@ -4,7 +4,7 @@ import { useConversationContext } from '../context/ConversationContext';
 import SenderForm from './SenderForm';
 import Launcher from './Launcher';
 import Messages from './Messages';
-import { useMasdifClient } from '../context/MasdifClientContext';
+import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
 import { Header, HeaderSubtitle, HeaderTitle } from './Header';
 
 const ChatContainer = styled.div`
@@ -62,21 +62,22 @@ export default function Chat(props: ChatProps) {
     const [visible, setVisible] = useState<boolean>(!props.startClosed);
     const [convoState, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
+    const masdifStatus = useMasdifStatus();
 
     useEffect(() => {
         const fetchId = async () => {
-            if (masdifClient) {
+            if (masdifClient && masdifStatus && !convoState.conversationId) {
                 console.debug("getting convo id");
                 const conversationId = await masdifClient.createConversation();
                 convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
             }
         };
         fetchId();
-    }, [masdifClient]);
+    }, [masdifClient, masdifStatus]);
 
     return (
         <ChatContainer>
-            {visible && (
+            {visible && masdifStatus && (
                 <ConversationContainer>
                     <Header>
                         <HeaderTitle>{props.title}</HeaderTitle>
@@ -86,10 +87,12 @@ export default function Chat(props: ChatProps) {
                     <SenderForm placeholder={props.placeholder} />
                 </ConversationContainer>
             )}
-            <Launcher
-                visible={visible}
-                onClick={() => setVisible(!visible)}
-            />
+            {masdifStatus && (
+                <Launcher
+                    visible={visible}
+                    onClick={() => setVisible(!visible)}
+                />
+            )}
         </ChatContainer>
     );
 }
