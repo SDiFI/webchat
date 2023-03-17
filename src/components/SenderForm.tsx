@@ -49,6 +49,16 @@ export default function SenderForm(props: SenderFormProps) {
             return;
         }
 
+        if (text.startsWith('/debug button')) {
+            convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: 'Þetta eru takkar', buttons: [
+                { title: 'Gerðu þetta', payload: '/request_contact{"subject":"Fjármál"}' },
+                { title: 'Farðu þangað', url: 'https://duckduckgo.com' },
+            ]});
+
+            setText('');
+            return;
+        }
+
         convoDispatch({ type: 'ADD_SENT_TEXT', text });
         setText('');
 
