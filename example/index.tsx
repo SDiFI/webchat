@@ -6,7 +6,7 @@ import ConnectedChat from '../.';
 const App = () => {
   return (
     <div>
-      <ConnectedChat serverAddress="http://localhost:8080" />
+      <ConnectedChat serverAddress="http://localhost:8080" title="Jóakim" />
     </div>
   );
 };

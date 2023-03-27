@@ -35,13 +35,13 @@ import Chat from '@sdifi/webchat';
 const App = () => {
   return (
     <div>
-      <Chat serverAddress="http://localhost:8080" />
+      <Chat serverAddress="http://localhost:8080" title="Jóakim" subtitle="Aðalönd" />
     </div>
   );
 };
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<App />, );
+root.render(<App />);
 ```
 
 ### Standalone UMD bundle
@@ -57,7 +57,9 @@ root.render(<App />, );
     <script>
     window.onload = () => {
       Webchat.init("root", {
-        serverAddress: "http://localhost:8080"
+        serverAddress: "http://localhost:8080",
+        title: "Jóakim",
+        subtitle: "Aðalönd",
       });
     }
     </script>
@@ -72,6 +74,16 @@ root.render(<App />, );
 3. `yarn start &`
 4. `cd example && yarn install && yarn start`
 5. Go look at http://localhost:1234 hot reload while editing the code
+
+To just build minified (and not minified) bundles do:
+
+```
+yarn build
+```
+
+This will create TypeScript typedefs, a CommonJS
+(`dist/webchat.cjs.production.min.js`), ESM (`dist/webchat.esm.js`) and a
+standalone UMD bundle (`dist/webchat.umd.production.min.js`).
 
 ## Publishing new versions
 
@@ -92,7 +104,7 @@ root.render(<App />, );
 - [ ] User settings
 - [ ] Keep track of read/unread status of responses
 - [ ] Tooltip for responses when closed
-- [ ] Disable when Masdif is unhealthy
+- [x] Disable when Masdif is unhealthy
 - [ ] Tests
 - [ ] Make themeable (see styled-components ThemeProvider)
 
