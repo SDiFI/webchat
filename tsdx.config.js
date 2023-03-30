@@ -24,16 +24,16 @@ module.exports = {
                 })
                 : p
             );
-
-            config.plugins = config.plugins.map(p =>
-                p.name === 'replace'
-                ? replace({
-                    'process.env.NODE_ENV': JSON.stringify(options.env),
-                    preventAssignment: true,
-                })
-                : p
-            );
         }
+
+        config.plugins = config.plugins.map(p =>
+            p.name === 'replace'
+            ? replace({
+                'process.env.NODE_ENV': JSON.stringify(options.env),
+                preventAssignment: true,
+            })
+            : p
+        );
 
         config.plugins = [
             images({ include: ['src/**/*.png', 'src/**/*.jpg', 'src/**/*.svg', 'src/**/*.gif'] }),

@@ -7,7 +7,9 @@ export type ConversationState = {
         | ({ actor?: 'bot' } & ConversationResponse)
         | ({ actor: 'user' } & ConversationSentMessage)
     )[],
+    speechHypothesis?: string,
     loading: boolean,
+    userSpeaking: boolean,
     error: string | null,
 };
 
@@ -15,6 +17,7 @@ const initialState: ConversationState = {
     conversationId: null,
     messages: [],
     loading: false,
+    userSpeaking: false,
     error: null,
 };
 
@@ -38,6 +41,9 @@ export type ConversationAction =
     | { type: 'ADD_RESPONSE' } & ConversationResponse
     | { type: 'ADD_SENT_TEXT' } & ConversationSentMessage
     | { type: 'SET_CONVERSATION_ID', conversationId: string }
+    | { type: 'START_USER_SPEECH' }
+    | { type: 'END_USER_SPEECH' }
+    | { type: 'SET_USER_SPEECH_PARTIAL', hypothesis: string }
 ;
 
 const reducer: React.Reducer<ConversationState, ConversationAction> = (state: ConversationState, action: ConversationAction) => {
@@ -54,6 +60,12 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (state: Co
             });
         case 'SET_CONVERSATION_ID':
             return Object.assign({}, state, { conversationId: action.conversationId });
+        case 'START_USER_SPEECH':
+            return Object.assign({}, state, { userSpeaking: true });
+        case 'END_USER_SPEECH':
+            return Object.assign({}, state, { userSpeaking: false, speechHypothesis: undefined });
+        case 'SET_USER_SPEECH_PARTIAL':
+            return Object.assign({}, state, { userSpeaking: true, speechHypothesis: action.hypothesis });
         default:
             throw new Error('Unknown action type');
     }

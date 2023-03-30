@@ -67,6 +67,14 @@ root.render(<App />);
 </html>
 ```
 
+## Speech input
+
+Currently the speech recognition input is provided by a direct client side
+connection to the gRPC-Web service at `speech.tiro.is` and final results are
+POSTed as text messages to the conversation. The server address is not
+configurable, as the plan is to add ASR to
+[Masdif](https://github.com/sdifi/masdif/).
+
 ## Development workflow
 
 1. Have a running [Masdif](https://github.com/sdifi/masdif/) server.
@@ -100,10 +108,11 @@ standalone UMD bundle (`dist/webchat.umd.production.min.js`).
 - [x] Receive buttons
 - [x] Send button/quick_replies actions back
 - [x] Play audio replies
-- [ ] Speech input
+- [x] Speech input
 - [ ] User settings
 - [ ] Keep track of read/unread status of responses
 - [ ] Tooltip for responses when closed
+- [ ] Speech input through Masdif
 - [x] Disable when Masdif is unhealthy
 - [ ] Tests
 - [ ] Make themeable (see styled-components ThemeProvider)
