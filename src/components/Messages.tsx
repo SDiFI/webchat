@@ -85,18 +85,40 @@ function BotMessage(props: BotMessageProps) {
 }
 
 type UserMessageProps = {
-    message: ConversationSentMessage,
+    message?: ConversationSentMessage | string,
+    children?: React.ReactNode,
 };
 
 function UserMessage(props: UserMessageProps) {
     return (
         <MessageContainer>
             <UserMessageContainer>
-                <MessageText>
-                    {props.message.text}
-                </MessageText>
+                {props.message &&
+                 <MessageText>
+                     {typeof props.message === 'string' ? props.message : props.message.text}
+                 </MessageText>}
+                {props.children}
             </UserMessageContainer>
         </MessageContainer>
+    );
+}
+
+
+const SpeechHypothesisText = styled.span`
+  font-style: italic;
+`
+
+type SpeechHypothesisProps = {
+    text: string,
+};
+
+function SpeechHypothesisMessage(props: SpeechHypothesisProps) {
+    return (
+        <UserMessage>
+            <SpeechHypothesisText>
+                {props.text}
+            </SpeechHypothesisText>
+        </UserMessage>
     );
 }
 
@@ -116,13 +138,15 @@ type MessagesProps = {
 };
 
 export default function Messages(props: MessagesProps) {
+    // TODO(rkjaran): This component should probably not be getting messages as a prop, since it's already using
+    // ConversationContext.
     const [convoContext] = useConversationContext();
 
     const containerElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
         console.debug('Scrolling to bottom');
         containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
-    }, [props.messages])
+    }, [props.messages, convoContext.speechHypothesis])
 
     return (
         <MessagesContainer ref={containerElement}>
@@ -145,6 +169,7 @@ export default function Messages(props: MessagesProps) {
                         return null;
                 }
             })}
+            {convoContext.speechHypothesis && <SpeechHypothesisMessage text={convoContext.speechHypothesis} />}
             {convoContext.loading && <LoadingMessage />}
         </MessagesContainer>
     );

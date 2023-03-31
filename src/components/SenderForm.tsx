@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
 import SendButton from './SendButton';
+import SpeechInput from './SpeechInput';
 
 const Form = styled.form`
   align-items: center;
@@ -90,8 +91,10 @@ export default function SenderForm(props: SenderFormProps) {
 
     return (
         <Form onSubmit={handleSubmit}>
+            <SpeechInput />
             <Textarea
-                placeholder={props.placeholder}
+                disabled={convoState.userSpeaking}
+                placeholder={convoState.speechHypothesis || props.placeholder}
                 value={text}
                 onChange={({ target }) => setText(target.value)}
                 onKeyDown={handleKeyDown}
