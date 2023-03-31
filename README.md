@@ -1,5 +1,9 @@
 # SDiFI Webchat
 
+![Widget chat](/docs/sdifi_01.png?raw=true)
+
+![Widget info](/docs/sdifi_02.png?raw=true)
+
 This is the webchat widget for the SDiFI project. It requires a working instance
 of a [Masdif](https://github.com/sdifi/masdif/) server.
 
@@ -33,11 +37,22 @@ import { createRoot } from 'react-dom/client';
 import Chat from '@sdifi/webchat';
 
 const App = () => {
-  return (
-    <div>
-      <Chat serverAddress="http://localhost:8080" title="Jóakim" subtitle="Aðalönd" />
-    </div>
-  );
+    return (
+        <div>
+            <ConnectedChat
+                serverAddress="http://localhost:8080"
+                title="Jóakim"
+                info={{
+                    paragraphs: ['<b>First <button>a</button> paragraph</b>', 'Second', 'and <i>third</i>!'],
+                    buttons: [
+                        {text: 'External URL button', action: 'https://google.com'},
+                        {text: 'Do something button', action: () => alert('HI!')},
+                    ],
+                    footer: 'Custom <i>foo</i><b>ter</b>',
+                }}
+            />
+        </div>
+    );
 };
 
 const root = createRoot(document.getElementById('root')!);
@@ -60,6 +75,14 @@ root.render(<App />);
         serverAddress: "http://localhost:8080",
         title: "Jóakim",
         subtitle: "Aðalönd",
+        info: {
+          paragraphs: ['<b>First <button>a</button> paragraph</b>', 'Second', 'and <i>third</i>!'],
+          buttons: [
+            {text: 'External URL button', action: 'https://google.com'},
+            {text: 'Do something button', action: () => alert('HI!')},
+          ],
+          footer: 'Custom <i>foo</i><b>ter</b>',
+        }
       });
     }
     </script>

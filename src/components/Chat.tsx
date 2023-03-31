@@ -5,7 +5,9 @@ import SenderForm from './SenderForm';
 import Launcher from './Launcher';
 import Messages from './Messages';
 import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
-import { Header, HeaderSubtitle, HeaderTitle } from './Header';
+import { Header, HeaderButton, HeaderButtonGroup, HeaderSubtitle, HeaderTitle } from './Header';
+import infoSvg from '../images/info.svg';
+import Info, { SimpleInfoProps } from './Info';
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -54,15 +56,19 @@ export type ChatProps = {
     subtitle: string,
     placeholder: string,
     startClosed?: boolean,
+    info?: SimpleInfoProps,
 };
 
-// The Chat component expects there to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
+// The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
 // somewhere higher up in the component tree.
 export default function Chat(props: ChatProps) {
     const [visible, setVisible] = useState<boolean>(!props.startClosed);
     const [convoState, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
+    const [showInfo, setShowInfo] = useState<boolean>(false);
+
+    const toggleInfo = () => setShowInfo(!showInfo);
 
     useEffect(() => {
         const fetchId = async () => {
@@ -82,9 +88,26 @@ export default function Chat(props: ChatProps) {
                     <Header>
                         <HeaderTitle>{props.title}</HeaderTitle>
                         <HeaderSubtitle>{props.subtitle}</HeaderSubtitle>
+
+                        <HeaderButtonGroup>
+                            {props.info &&
+                                <HeaderButton onClick={toggleInfo} active={showInfo}>
+                                    <img src={infoSvg} />
+                                </HeaderButton>}
+                        </HeaderButtonGroup>
                     </Header>
-                    <Messages messages={convoState.messages} />
-                    <SenderForm placeholder={props.placeholder} />
+                    {props.info && showInfo ?
+                        <Info
+                            paragraphs={props.info.paragraphs}
+                            buttons={props.info.buttons}
+                            footer={props.info.footer}
+                        />
+                        :
+                        <>
+                            <Messages messages={convoState.messages} />
+                            <SenderForm placeholder={props.placeholder} />
+                        </>
+                    }
                 </ConversationContainer>
             )}
             {masdifStatus && (
