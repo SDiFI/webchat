@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ConversationResponse, ConversationSentMessage } from '../api/types';
-import { ConversationState, useConversationContext } from '../context/ConversationContext';
+import { useConversationContext } from '../context/ConversationContext';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
 
@@ -133,32 +133,28 @@ function LoadingMessage() {
 }
 
 
-type MessagesProps = {
-    messages: ConversationState["messages"],
-};
+type MessagesProps = {};
 
-export default function Messages(props: MessagesProps) {
+export default function Messages(_: MessagesProps) {
     // TODO(rkjaran): This component should probably not be getting messages as a prop, since it's already using
     // ConversationContext.
     const [convoContext] = useConversationContext();
 
     const containerElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        console.debug('Scrolling to bottom');
         containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
-    }, [props.messages, convoContext.speechHypothesis])
+    }, [convoContext.messages.length, convoContext.speechHypothesis])
 
     return (
         <MessagesContainer ref={containerElement}>
-            {props.messages.map((message, idx) => {
-                console.debug(message);
+            {convoContext.messages.map((message, idx) => {
                 switch (message.actor) {
                     case 'bot':
                         return (
                             <BotMessage
                                 key={idx}
                                 message={message}
-                                lastMessage={(props.messages.length - 1 === idx) /* TODO: make available from context */}
+                                lastMessage={(convoContext.messages.length - 1 === idx) /* TODO: make available from context */}
                             />
                         );
                     case 'user':

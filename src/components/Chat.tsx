@@ -104,7 +104,7 @@ export default function Chat(props: ChatProps) {
                         />
                         :
                         <>
-                            <Messages messages={convoState.messages} />
+                            <Messages />
                             <SenderForm placeholder={props.placeholder} />
                         </>
                     }
