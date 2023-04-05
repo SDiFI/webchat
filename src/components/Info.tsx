@@ -1,44 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-
-const defaultTheme = {
-    secondaryBackground: '#135afe',
-    secondaryFontColor: '#fff',
-    secondaryButtonBg: '#aaa',
-    secondaryButtonHoverBg: '#eee',
-    primaryButtonBg: '#ccc',
-    primaryButtonHoverBg: '#eee',
-};
-
-const InfoContainer = styled.div`
-  width: 100%;
-  height: 510px;
-  max-height: 50vh;
-  padding-top: 10px;
-  padding-bottom: 74px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  text-align: center;
-  align-items: center;
-  font-family: sans-serif;
-  position: relative;
-
-  background-color: ${props => props.theme.secondaryBackground};
-  color: ${props => props.theme.secondaryFontColor};
-
-  a {
-    color: inherit;
-    font-weight: bold;
-    text-decoration: underline !important;
-    line-height: normal;
-  }
-`;
-
-InfoContainer.defaultProps = {
-    theme: defaultTheme,
-};
+import { defaultTheme } from '../theme';
+import AltContainer from './AltContainer';
 
 const InfoFooter = styled.div`
   width: 100%;
@@ -122,7 +85,7 @@ export default function Info(props: SimpleInfoProps) {
     // using the standalone bundle.
     const buttons = props.buttons || [];
     return (
-        <InfoContainer>
+        <AltContainer>
             {props.paragraphs.map((text) => <P key={text} dangerouslySetInnerHTML={{ __html: text }} />)}
             <ButtonGroup>
                 {buttons.map((btn) =>
@@ -132,6 +95,6 @@ export default function Info(props: SimpleInfoProps) {
                 )}
             </ButtonGroup>
             <InfoFooter dangerouslySetInnerHTML={{ __html: props.footer }} />
-        </InfoContainer>
+        </AltContainer>
     );
 };
