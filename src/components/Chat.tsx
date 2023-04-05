@@ -7,7 +7,9 @@ import Messages from './Messages';
 import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
 import { Header, HeaderButton, HeaderButtonGroup, HeaderSubtitle, HeaderTitle } from './Header';
 import infoSvg from '../images/info.svg';
+import cogSvg from '../images/cog.svg';
 import Info, { SimpleInfoProps } from './Info';
+import Settings from './Settings';
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -66,9 +68,9 @@ export default function Chat(props: ChatProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
-    const [showInfo, setShowInfo] = useState<boolean>(false);
 
-    const toggleInfo = () => setShowInfo(!showInfo);
+    const [activeView, setActiveView] = useState<'' | 'info' | 'settings'>('');
+    const toggleView = (view: typeof activeView) => setActiveView(activeView === view ? '' : view);
 
     useEffect(() => {
         const fetchId = async () => {
@@ -91,23 +93,37 @@ export default function Chat(props: ChatProps) {
 
                         <HeaderButtonGroup>
                             {props.info &&
-                                <HeaderButton onClick={toggleInfo} active={showInfo}>
+                                <HeaderButton onClick={() => toggleView('info')} active={activeView === 'info'}>
                                     <img src={infoSvg} />
                                 </HeaderButton>}
+                            <HeaderButton onClick={() => toggleView('settings')} active={activeView === 'settings'}>
+                                <img src={cogSvg} />
+                            </HeaderButton>
                         </HeaderButtonGroup>
                     </Header>
-                    {props.info && showInfo ?
-                        <Info
-                            paragraphs={props.info.paragraphs}
-                            buttons={props.info.buttons}
-                            footer={props.info.footer}
-                        />
-                        :
-                        <>
-                            <Messages />
-                            <SenderForm placeholder={props.placeholder} />
-                        </>
-                    }
+                    {(() => {
+                        switch (activeView) {
+                            case 'info':
+                                return (
+                                    <Info
+                                        paragraphs={props.info!.paragraphs}
+                                        buttons={props.info!.buttons}
+                                        footer={props.info!.footer}
+                                    />
+                                );
+                            case 'settings':
+                                return (
+                                    <Settings />
+                                );
+                            default:
+                                return (
+                                    <>
+                                        <Messages />
+                                        <SenderForm placeholder={props.placeholder} />
+                                    </>
+                                );
+                        }
+                    })()}
                 </ConversationContainer>
             )}
             {masdifStatus && (

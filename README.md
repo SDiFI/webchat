@@ -153,7 +153,7 @@ standalone UMD bundle (`dist/webchat.umd.production.min.js`).
 - [x] Send button/quick_replies actions back
 - [x] Play audio replies
 - [x] Speech input
-- [ ] User settings
+- [x] User settings
 - [ ] Keep track of read/unread status of responses
 - [ ] Tooltip for responses when closed
 - [ ] Speech input through Masdif
