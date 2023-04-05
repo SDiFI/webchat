@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
+import { Settings, useSettings } from '../context/SettingsContext';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 
@@ -36,6 +37,7 @@ export default function SenderForm(props: SenderFormProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const [text, setText] = useState('');
     const masdifClient = useMasdifClient();
+    const [settings, setSettings] = useSettings();
 
     const sendText = () => {
         if (!text) return;
@@ -56,6 +58,17 @@ export default function SenderForm(props: SenderFormProps) {
                 { title: 'Farðu þangað', url: 'https://duckduckgo.com' },
             ]});
 
+            setText('');
+            return;
+        }
+
+        if (text.startsWith('/debug settings ')) {
+            const subcommand = text.substring(16);
+            if (subcommand.startsWith('get')) {
+                convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: JSON.stringify(settings)});
+            } else if (subcommand.startsWith('set ')) {
+                setSettings(JSON.parse(subcommand.substring(4)) as Partial<Settings>);
+            }
             setText('');
             return;
         }

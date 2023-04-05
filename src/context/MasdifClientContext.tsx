@@ -1,25 +1,26 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import MasdifClient from '../api';
 import { TMasdifClient } from '../api/types';
+import { useSettings } from './SettingsContext';
 
 const MasdifClientContext = createContext<TMasdifClient | null>(null);
 
 export type MasdifClientContextProviderProps = {
     serverAddress: string,
     extraHttpHeaders?: { [key: string]: string },
-    disableTTS?: boolean,
     children?: React.ReactNode,
 };
 
 export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
     const [masdifClient, setMasdifClient] = useState<MasdifClient | null>(null);
+    const [settings] = useSettings();
 
     useEffect(() => {
         setMasdifClient(new MasdifClient(props.serverAddress, {
             extraHeaders: props.extraHttpHeaders,
-            disableTTS: props.disableTTS,
+            disableTTS: settings.disableTTS,
         }));
-    }, [props.serverAddress])
+    }, [props.serverAddress, settings])
 
     return (
         <MasdifClientContext.Provider value={masdifClient}>
