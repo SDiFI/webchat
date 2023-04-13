@@ -8,8 +8,11 @@ import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext
 import { Header, HeaderButton, HeaderButtonGroup, HeaderSubtitle, HeaderTitle } from './Header';
 import infoSvg from '../images/info.svg';
 import cogSvg from '../images/cog.svg';
+import soundOnSvg from '../images/sound-on.svg';
+import soundOffSvg from '../images/sound-off.svg';
 import Info, { SimpleInfoProps } from './Info';
 import Settings from './Settings';
+import { useSettings } from '../context/SettingsContext';
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -59,6 +62,7 @@ export type ChatProps = {
     placeholder: string,
     startClosed?: boolean,
     hideSettings?: boolean,
+    hideMute?: boolean,
     info?: SimpleInfoProps,
 };
 
@@ -69,6 +73,7 @@ export default function Chat(props: ChatProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
+    const [settings, setSettings] = useSettings();
 
     const [activeView, setActiveView] = useState<'' | 'info' | 'settings'>('');
     const toggleView = (view: typeof activeView) => setActiveView(activeView === view ? '' : view);
@@ -97,6 +102,15 @@ export default function Chat(props: ChatProps) {
                                 <HeaderButton onClick={() => toggleView('info')} active={activeView === 'info'}>
                                     <img src={infoSvg} />
                                 </HeaderButton>}
+
+                            {!props.hideMute &&
+                                <HeaderButton
+                                    title={`${settings.disableTTS ? 'Kveikja' : 'Slökkva'} á talgervingu.`}
+                                    onClick={() => setSettings({ disableTTS: !settings.disableTTS })}
+                                >
+                                    <img src={settings.disableTTS ? soundOffSvg : soundOnSvg} />
+                                </HeaderButton>}
+
                             {!props.hideSettings &&
                                 <HeaderButton onClick={() => toggleView('settings')} active={activeView === 'settings'}>
                                     <img src={cogSvg} />

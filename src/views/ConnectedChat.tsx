@@ -22,6 +22,9 @@ export type ConnectedChatProps = {
     // Don't display client side settings (saved in local storage)
     hideSettings?: boolean,
 
+    // Don't display a button to switch TTS on/off
+    hideMute?: boolean,
+
     // Contents of the info tab in the chat widget. See SimpleInfoProps for more details.
     info?: SimpleInfoProps,
 };
@@ -35,7 +38,8 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                         title={props.title || "SDiFI"}
                         subtitle={props.subtitle || "Botti"}
                         placeholder={props.placeholder || "Spyrðu mig spjörunum úr..."}
-                        hideSettings={props.hideSettings || false}
+                        hideSettings={props.hideSettings}
+                        hideMute={props.hideMute}
                         info={props.info || {
                             paragraphs: [
                                 ('Þetta snjallmenni er hluti af SDiFI, sem er samstarfsþróunarverkefni ' +
