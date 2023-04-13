@@ -18,7 +18,8 @@
     "@types/react-dom": "../node_modules/@types/react-dom"
   },
   "devDependencies": {
-    "parcel": "1.12.3",
+    "buffer": "^5.5.0",
+    "parcel": "^2.0.0",
     "typescript": "^3.4.5"
   }
 }
