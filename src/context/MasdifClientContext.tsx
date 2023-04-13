@@ -41,7 +41,7 @@ export function useMasdifStatus() {
         const fetchStatus = async () => {
             if (masdifClient) {
                 setStatus(await masdifClient?.status());
-                handler = window.setTimeout(fetchStatus, 10000);
+                handler = window.setTimeout(fetchStatus, 30000);
             }
         }
 
