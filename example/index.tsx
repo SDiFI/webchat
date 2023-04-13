@@ -8,6 +8,7 @@ const App = () => {
             <ConnectedChat
                 serverAddress="http://localhost:8080"
                 title="Jóakim"
+                hideSettings={true}
                 info={{
                     paragraphs: ['<b>First <button>a</button> paragraph</b>', 'Second', 'and <i>third</i>!'],
                     buttons: [

@@ -21,6 +21,9 @@ export default class MasdifClient implements TMasdifClient {
                 'Content-Type': 'application/json',
                 ...(options?.extraHeaders ? options.extraHeaders : {}),
             },
+            validateStatus: (status: number) => {
+                return status >= 200 && status < 300 || status === 503;
+            },
         });
 
         this.disableTTS = options?.disableTTS || false;
@@ -29,6 +32,14 @@ export default class MasdifClient implements TMasdifClient {
     async status() {
         try {
             const response = await this.http.get('/health');
+            if (response.status === 503) {
+                console.warn('Server not fully healthy.');
+                return response.data.tts !== 'OK' &&
+                       response.data.database === 'OK' &&
+                       response.data.dialog_system === 'OK' &&
+                       response.data.sidekiq === 'OK';
+            }
+
             return response.status === 200 && response.data.masdif === 'OK';
         } catch (e) {
             console.error('Could not contact server');

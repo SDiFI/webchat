@@ -58,6 +58,7 @@ export type ChatProps = {
     subtitle: string,
     placeholder: string,
     startClosed?: boolean,
+    hideSettings?: boolean,
     info?: SimpleInfoProps,
 };
 
@@ -96,9 +97,10 @@ export default function Chat(props: ChatProps) {
                                 <HeaderButton onClick={() => toggleView('info')} active={activeView === 'info'}>
                                     <img src={infoSvg} />
                                 </HeaderButton>}
-                            <HeaderButton onClick={() => toggleView('settings')} active={activeView === 'settings'}>
-                                <img src={cogSvg} />
-                            </HeaderButton>
+                            {!props.hideSettings &&
+                                <HeaderButton onClick={() => toggleView('settings')} active={activeView === 'settings'}>
+                                    <img src={cogSvg} />
+                                </HeaderButton>}
                         </HeaderButtonGroup>
                     </Header>
                     {(() => {
@@ -112,7 +114,7 @@ export default function Chat(props: ChatProps) {
                                     />
                                 );
                             case 'settings':
-                                return (
+                                return props.hideSettings ? null : (
                                     <Settings />
                                 );
                             default:

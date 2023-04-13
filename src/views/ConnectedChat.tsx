@@ -6,11 +6,23 @@ import { MasdifContextProvider } from '../context/MasdifClientContext';
 import { SettingsProvider } from '../context/SettingsContext';
 
 export type ConnectedChatProps = {
+    // Address of Masdif server backing the chat widget
     serverAddress: string,
+
+    // The title and subtitle are displayed in the header of the chat widget
     title?: string,
     subtitle?: string,
+
+    // Placeholder to display in the text input box
     placeholder?: string,
+
+    // Don't request TTS responses from server
     disableTTS?: boolean,
+
+    // Don't display client side settings (saved in local storage)
+    hideSettings?: boolean,
+
+    // Contents of the info tab in the chat widget. See SimpleInfoProps for more details.
     info?: SimpleInfoProps,
 };
 
@@ -23,6 +35,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                         title={props.title || "SDiFI"}
                         subtitle={props.subtitle || "Botti"}
                         placeholder={props.placeholder || "Spyrðu mig spjörunum úr..."}
+                        hideSettings={props.hideSettings || false}
                         info={props.info || {
                             paragraphs: [
                                 ('Þetta snjallmenni er hluti af SDiFI, sem er samstarfsþróunarverkefni ' +

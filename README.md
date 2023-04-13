@@ -31,7 +31,7 @@ yarn add react react-dom
 
 Example usage:
 
-```typescript
+```tsx
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import Chat from '@sdifi/webchat';
@@ -50,6 +50,7 @@ const App = () => {
                     ],
                     footer: 'Custom <i>foo</i><b>ter</b>',
                 }}
+                hideSettings={true}
             />
         </div>
     );
