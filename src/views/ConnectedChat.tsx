@@ -27,6 +27,9 @@ export type ConnectedChatProps = {
 
     // Contents of the info tab in the chat widget. See SimpleInfoProps for more details.
     info?: SimpleInfoProps,
+
+    // Should the chat not be open by default?
+    startClosed?: boolean,
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -48,6 +51,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                             ],
                             footer: '<a href="https://github.com/sdifi" target="_blank">SDiFI</a>',
                         }}
+                        startClosed={props.startClosed}
                     />
                 </ConversationContextProvider>
             </MasdifContextProvider>

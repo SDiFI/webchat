@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
 import { ConversationResponse, ConversationSentMessage } from '../api/types';
+import useSessionStorage from '../hooks/useSessionStorage';
 
 export type ConversationState = {
     conversationId: string | null,
@@ -21,23 +22,8 @@ const initialState: ConversationState = {
     error: null,
 };
 
-/* export type ConversationAction =
- *     | { type: 'ADD_TEXT', text: string }
- *     | { type: 'ADD_IMAGE', imageSrc: string }
- *     | { type: 'ADD_URL_BUTTON', title: string, url: string }
- *     | { type: 'ADD_POSTBACK_BUTTON', title: string, payload: string }
- *     | { type: 'ADD_AUDIO', audioSrc: string }
- *     | { type: 'ADD_SENT_TEXT', text: string }
- * ;
- *  */
-
 // TODO(rkjaran): Define this type in more detail
 export type ConversationAction =
-    /* | { type: 'ADD_TEXT' } & ConversationResponse
-     * | { type: 'ADD_IMAGE' } & ConversationResponse
-     * | { type: 'ADD_URL_BUTTON' } & ConversationResponse
-     * | { type: 'ADD_POSTBACK_BUTTON' } & ConversationResponse
-     * | { type: 'ADD_AUDIO' } & ConversationResponse */
     | { type: 'ADD_RESPONSE' } & ConversationResponse
     | { type: 'ADD_SENT_TEXT' } & ConversationSentMessage
     | { type: 'SET_CONVERSATION_ID', conversationId: string }
@@ -83,7 +69,14 @@ export type Props = {
 };
 
 export function ConversationContextProvider(props: Props) {
-    const [state, dispatch] = useReducer(reducer, initialState)
+    const [savedState, setSavedState] = useSessionStorage<ConversationState>('@sdifi:conversation', initialState);
+    const [state, dispatch] = useReducer(reducer, savedState)
+
+    useEffect(() => {
+        console.debug('saving state for session');
+        setSavedState(state);
+    }, [state]);
+
     return (
         <ConversationContext.Provider value={[state, dispatch]}>
             {props.children}

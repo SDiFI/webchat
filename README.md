@@ -12,7 +12,9 @@ In development. Expect breakage.
 ## Usage
 
 The Webchat widget is published both as a React component and a standalone UMD
-bundle.
+bundle. The widget has some initialization options. The ones listed in the
+examples are somewhat self-explanatory, but for a full list of initialization
+options and their types see [ConnectedChatProps](src/views/ConnectedChat.tsx).
 
 ### React component
 
@@ -51,6 +53,7 @@ const App = () => {
                     footer: 'Custom <i>foo</i><b>ter</b>',
                 }}
                 hideSettings={true}
+                startClosed={true}
             />
         </div>
     );
@@ -83,7 +86,8 @@ root.render(<App />);
             {text: 'Do something button', action: () => alert('HI!')},
           ],
           footer: 'Custom <i>foo</i><b>ter</b>',
-        }
+        },
+        startClosed: true,
       });
     }
     </script>
