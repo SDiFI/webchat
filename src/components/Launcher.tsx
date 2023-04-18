@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import openLauncherImage from '../images/launcher.svg';
 import closeLauncherImage from '../images/clear-button.svg';
+import { defaultTheme } from '../theme';
 
 const slideInAnimation = keyframes`
   from {
@@ -22,15 +23,19 @@ const LauncherButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #135afe;
+  background-color: ${({theme}) => theme.launcherBgColor};
   border: 0;
   border-radius: 50%;
   box-shadow: 0 2px 10px 1px #b5b5b5;
-  height: 60px;
+  height: ${({theme}) => theme.launcherHeight};
   margin: 0;
-  width: 60px;
+  width: ${({theme}) => theme.launcherWidth};
   box-sizing: border-box;
 `;
+
+LauncherButton.defaultProps = {
+    theme: defaultTheme,
+};
 
 
 const rotationLrAnimation = keyframes`

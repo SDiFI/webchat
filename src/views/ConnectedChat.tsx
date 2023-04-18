@@ -1,4 +1,5 @@
 import React from 'react';
+import { DefaultTheme } from 'styled-components';
 import Chat from '../components/Chat';
 import { SimpleInfoProps } from '../components/Info';
 import { AudioPlaybackProvider } from '../context/AudioPlaybackContext';
@@ -33,6 +34,8 @@ export type ConnectedChatProps = {
 
     // Should the chat not be open by default?
     startClosed?: boolean,
+
+    theme?: Partial<DefaultTheme>,
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -56,6 +59,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 footer: '<a href="https://github.com/sdifi" target="_blank">SDiFI</a>',
                             }}
                             startClosed={props.startClosed}
+                            themeOverrides={props.theme}
                         />
                     </ConversationContextProvider>
                 </AudioPlaybackProvider>

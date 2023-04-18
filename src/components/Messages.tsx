@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ConversationResponse, ConversationSentMessage } from '../api/types';
 import { useConversationContext } from '../context/ConversationContext';
+import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
 
@@ -11,17 +12,20 @@ const MessagesContainer = styled.div`
   height: 510px;
   max-height: 50vh;
 
-  background-color: #fff;
+  background-color: ${({theme}) => theme.primaryBgColor};
   overflow-y: auto;
   padding-top: 10px;
 `;
+
+MessagesContainer.defaultProps = {
+    theme: defaultTheme,
+};
 
 const MessageContainer = styled.div`
   margin: 10px;
   font-size: 16px;
   line-height: 20px;
   display: flex;
-  font-family: sans-serif;
   flex-wrap: wrap;
   position: relative;
 `;
@@ -31,33 +35,39 @@ const MessageText = styled.div`
 `;
 
 const UserMessageContainer = styled.div`
-  background-color: #003a9b;
-  color: #fff;
+  background-color: ${({theme}) => theme.userMessageBgColor};
+  color: ${({theme}) => theme.userMessageFgColor};
   border-radius: 15px;
   padding: 11px 15px;
   max-width: 215px;
   text-align: left;
-  font-family: sans-serif;
-  background-color: #135afe;
   max-width: 85%;
   margin-left: auto;
   overflow-wrap: break-word;
 `;
 
+UserMessageContainer.defaultProps = {
+    theme: defaultTheme,
+};
+
+
 const BotMessageContainer = styled.div`
-  background-color: #f4f7f9;
-  color: #000;
+  background-color: ${({theme}) => theme.botMessageBgColor};
+  color: ${({theme}) => theme.botMessageFgColor};
   border-radius: 0 15px 15px 15px;
   padding: 11px 15px;
   max-width: 215px;
   text-align: left;
-  font-family: sans-serif;
   max-width: 85%;
 
   img {
     max-width: 180px;
   }
 `;
+
+BotMessageContainer.defaultProps = {
+    theme: defaultTheme,
+};
 
 type BotMessageProps = {
     message: ConversationResponse,

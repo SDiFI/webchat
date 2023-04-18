@@ -10,7 +10,7 @@ const InfoFooter = styled.div`
   bottom: 0px;
   padding: 10px;
   font-weight: bold;
-  background-color: ${({ theme }) => theme.secondaryBackground};
+  background-color: ${({ theme }) => theme.secondaryBgColor};
 `;
 
 InfoFooter.defaultProps = {
@@ -31,7 +31,6 @@ const InfoButton = styled.button<InfoButtonProps>`
   text-align: center;
   border: 2px #eee;
   border-radius: 4px;
-  font-family: sans-serif;
   font-size: 14px;
   width: fit-content;
 

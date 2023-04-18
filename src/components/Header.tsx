@@ -1,23 +1,25 @@
 import styled from 'styled-components';
+import { defaultTheme } from '../theme';
 
 export const Header = styled.div`
   min-height: 34px;
-  background-color: #135afe;
-  color: #fff;
+  background-color: ${props => props.theme.secondaryBgColor};
+  color: ${props => props.theme.secondaryFgColor};
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-family: sans-serif;
   position: relative;
-
   padding-top: 11px;
   padding-bottom: 11px;
 `;
 
+Header.defaultProps = {
+    theme: defaultTheme,
+};
+
 export const HeaderTitle = styled.h4`
   font-size: 20px;
   margin: 0 0 0 20px;
-  font-family: sans-serif;
   font-weight: 700;
 
   text-align: left;
@@ -35,15 +37,11 @@ export const HeaderButtonGroup = styled.div`
   display: flex;
   flex-direction: row;
   align-items: end;
-
-  color: ${({theme}) => theme.headerFgColor};
 `;
 
 HeaderButtonGroup.defaultProps = {
-    theme: {
-        headerFgColor: '#000',
-    },
-}
+    theme: defaultTheme,
+};
 
 export type HeaderButtonProps = {
     active?: boolean,
