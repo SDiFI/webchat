@@ -1,32 +1,32 @@
 import styled from 'styled-components';
 
 export const Header = styled.div`
-  height: 70px;
-
+  min-height: 34px;
   background-color: #135afe;
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  text-align: center;
   font-family: sans-serif;
   position: relative;
+
+  padding-top: 11px;
+  padding-bottom: 11px;
 `;
 
 export const HeaderTitle = styled.h4`
-  top: 11px;
   font-size: 20px;
-  margin: 0;
+  margin: 0 0 0 20px;
   font-family: sans-serif;
-  position: absolute;
-  left: 20px;
   font-weight: 700;
+
+  text-align: left;
+  display: block;
+  float: left;
 `;
 
 export const HeaderSubtitle = styled.span`
-  bottom: 12px;
-  position: absolute;
-  left: 22px;
+  margin: 0 0 0 20px;
 `;
 
 export const HeaderButtonGroup = styled.div`

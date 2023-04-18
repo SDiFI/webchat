@@ -10,8 +10,10 @@ export type ConnectedChatProps = {
     // Address of Masdif server backing the chat widget
     serverAddress: string,
 
-    // The title and subtitle are displayed in the header of the chat widget
+    // The title is displayed at top of the header. A default one will be used if not provided.
     title?: string,
+
+    // The subtitle is displayed below the title. Leaving it undefined renders no subtitle.
     subtitle?: string,
 
     // Placeholder to display in the text input box
@@ -41,7 +43,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                     <ConversationContextProvider>
                         <Chat
                             title={props.title || "SDiFI"}
-                            subtitle={props.subtitle || "Botti"}
+                            subtitle={props.subtitle}
                             placeholder={props.placeholder || "Spyrðu mig spjörunum úr..."}
                             hideSettings={props.hideSettings}
                             hideMute={props.hideMute}

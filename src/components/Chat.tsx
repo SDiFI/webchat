@@ -59,7 +59,7 @@ const ConversationContainer = styled.div`
 
 export type ChatProps = {
     title: string,
-    subtitle: string,
+    subtitle?: string,
     placeholder: string,
     startClosed?: boolean,
     hideSettings?: boolean,
