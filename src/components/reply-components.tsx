@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import { Button as ButtonData, ConversationAttachment } from '../api/types';
+import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
 
@@ -102,21 +103,42 @@ function ReplyButtons({ buttons }: ReplyButtonsProps) {
 
 type ReplyAudioProps = {
     src?: string,
-    autoPlay?: boolean,
 };
 
-function ReplyAudio({ src, autoPlay }: ReplyAudioProps) {
-    // TODO: Perhaps this should rather use a widget global audio element for the playback, so that we don't get
-    //   multiple playing audio attachments at the same time.
-    const [ended, setEnded] = useState<boolean>(false);
+const ReplyAudio = styled(function ReplyAudio(props: ReplyAudioProps & { className?: string }) {
+    const src = props.src;
+    const [playback, setPlayback] = useAudioPlayback();
+    const handleClick = () => {
+        if (playback.playing && playback.src === src) {
+            setPlayback({ playing: false });
+        } else {
+            setPlayback({ playing: true, src })
+        }
+    };
 
-    if (!src || ended)
+    if (!src)
         return null;
 
     return (
-        <audio autoPlay={autoPlay} src={src} controls={false} onEnded={() => setEnded(true)} />
+        <button className={props.className} onClick={handleClick}>
+            {playback.playing && playback.src === src ? '⏹' : '⏵'}
+        </button>
     );
-}
+})`
+  background: none;
+  height: 12px;
+  width: 12px;
+  color: #888;
+  padding: 0px;
+  margin: 0px;
+  float: right;
+  text-align: center;
+  border: none;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 
 type ReplyImageProps = {
     src?: string,
@@ -138,7 +160,7 @@ type ReplyAttachmentsProps = {
     lastMessage?: boolean,
 };
 
-function ReplyAttachments({ attachments, lastMessage }: ReplyAttachmentsProps) {
+function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
     return (
         <>
             {attachments.map((attachmentData) => {
@@ -148,7 +170,6 @@ function ReplyAttachments({ attachments, lastMessage }: ReplyAttachmentsProps) {
                             <ReplyAudio
                                 key={attachmentData.payload.src}
                                 src={attachmentData.payload.src}
-                                autoPlay={lastMessage || undefined}
                             />
                         );
                     case 'image':
