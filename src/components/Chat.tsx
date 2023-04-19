@@ -13,6 +13,7 @@ import soundOffSvg from '../images/sound-off.svg';
 import Info, { SimpleInfoProps } from './Info';
 import Settings from './Settings';
 import { useSettings } from '../context/SettingsContext';
+import useSessionStorage from '../hooks/useSessionStorage';
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -69,7 +70,7 @@ export type ChatProps = {
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
 // somewhere higher up in the component tree.
 export default function Chat(props: ChatProps) {
-    const [visible, setVisible] = useState<boolean>(!props.startClosed);
+    const [visible, setVisible] = useSessionStorage<boolean>('@sdifi:visible', !props.startClosed);
     const [convoState, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
