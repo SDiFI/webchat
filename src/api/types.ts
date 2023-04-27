@@ -7,6 +7,8 @@ export type ConversationSentMessage = {
         tts?: 'true' | 'false',  // TODO: change this to boolean once/if fixed server side
         // TTS voice to use
         voice_id?: string,
+        // Whether or not message was generated via ASR
+        asr_generated?: 'true' | 'false', // TODO: change this to boolean once/if fixed server side
     },
 };
 
