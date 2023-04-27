@@ -17,7 +17,7 @@ type SettingsContextValue = [
 const SettingsContext = createContext<SettingsContextValue>([defaultSettings, () => {}]);
 
 export function SettingsProvider(props: { defaultValue?: Settings, children: React.ReactNode }) {
-    const [stored, _setStored] = useLocalStorage<Settings>('@sdifi:settings', defaultSettings);
+    const [stored, _setStored] = useLocalStorage<Settings>('@sdifi:settings', props.defaultValue ?? defaultSettings);
     const setStored = useCallback(_setStored, []);
     const ctxValue = useMemo<SettingsContextValue>(() => [stored, setStored], [stored, setStored]);
 
