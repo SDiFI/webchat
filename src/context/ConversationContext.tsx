@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useEffect, useReducer } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { ConversationResponse, ConversationSentMessage } from '../api/types';
 import useSessionStorage from '../hooks/useSessionStorage';
+import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
+import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
 
 export type ConversationState = {
     conversationId: string | null,
@@ -57,6 +59,19 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (state: Co
     }
 };
 
+const makePlaybackAfterware = (setPlaybackFn: (playbackState: PlaybackState) => void) =>
+    (action: ConversationAction, /* state: ConversationState */) => {
+        if (action.type === 'ADD_RESPONSE') {
+            const audioAttachment = action.data?.attachment?.find((attachment) => attachment.type === 'audio');
+            if (audioAttachment) {
+                setPlaybackFn({
+                    src: audioAttachment.payload.src,
+                    playing: true,
+                });
+            }
+        }
+    };
+
 export type ConversationContextValue = [
     ConversationState,
     React.Dispatch<ConversationAction>,
@@ -70,7 +85,9 @@ export type Props = {
 
 export function ConversationContextProvider(props: Props) {
     const [savedState, setSavedState] = useSessionStorage<ConversationState>('@sdifi:conversation', initialState);
-    const [state, dispatch] = useReducer(reducer, savedState)
+    const [, setPlayback] = useAudioPlayback();
+    const playbackAfterware = makePlaybackAfterware(setPlayback);
+    const [state, dispatch] = useReducerWithMiddleware(reducer, savedState, [], [playbackAfterware]);
 
     useEffect(() => {
         console.debug('saving state for session');
