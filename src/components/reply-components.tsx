@@ -38,6 +38,7 @@ function ReplyAction(props: ReplyActionProps) {
 
     const handlePostback = (_: React.MouseEvent) => {
         // TODO: We should probably move this update logic somewhere else, since SendForm is doing the exact same action
+        convoDispatch({ type: 'SEND_ACTION' });
         masdifClient?.sendMessage(convoState.conversationId!, { text: props.payload })
                      .then((responses) => {
                          responses.forEach((response) => {

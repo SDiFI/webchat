@@ -143,7 +143,7 @@ export default function Messages(_: MessagesProps) {
     const containerElement = useRef<HTMLDivElement>(null);
     useEffect(() => {
         containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
-    }, [convoContext.messages.length, convoContext.speechHypothesis])
+    }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading])
 
     return (
         <MessagesContainer ref={containerElement}>

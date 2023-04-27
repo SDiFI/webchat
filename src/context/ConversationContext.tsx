@@ -26,11 +26,12 @@ const initialState: ConversationState = {
 export type ConversationAction =
     | { type: 'ADD_RESPONSE' } & ConversationResponse
     | { type: 'ADD_SENT_TEXT' } & ConversationSentMessage
+    | { type: 'SEND_ACTION' }
     | { type: 'SET_CONVERSATION_ID', conversationId: string }
     | { type: 'START_USER_SPEECH' }
     | { type: 'END_USER_SPEECH' }
     | { type: 'SET_USER_SPEECH_PARTIAL', hypothesis: string }
-;
+    ;
 
 const reducer: React.Reducer<ConversationState, ConversationAction> = (state: ConversationState, action: ConversationAction) => {
     switch (action.type) {
@@ -44,6 +45,8 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (state: Co
                 loading: true,
                 messages: [...state.messages, { actor: 'user', ...(action as ConversationSentMessage) }],
             });
+        case 'SEND_ACTION':
+            return Object.assign({}, state, { loading: true });
         case 'SET_CONVERSATION_ID':
             return Object.assign({}, state, { conversationId: action.conversationId });
         case 'START_USER_SPEECH':
