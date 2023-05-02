@@ -52,12 +52,19 @@ export default function SpeechInput(_: SpeechInputProps) {
 
                 // TODO: Responses should be handled globally, make this only send once we have that. Something the
                 //   useMasdifClient hook should take care of.
-                masdifClient!.sendMessage(convoState.conversationId!, { text: transcript })
-                             .then((responses) => {
-                                 responses.forEach((response) => {
-                                     convoDispatch({ type: 'ADD_RESPONSE', ...response });
-                                 });
-                             });
+                masdifClient!.sendMessage(
+                    convoState.conversationId!,
+                    {
+                        text: transcript,
+                        metadata: {
+                            asr_generated: true,
+                        }
+                    }
+                ).then((responses) => {
+                    responses.forEach((response) => {
+                        convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                    });
+                });
             } else {
                 convoDispatch({ type: 'SET_USER_SPEECH_PARTIAL', hypothesis: transcript});
             }
