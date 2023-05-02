@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { ConversationResponse, ConversationSentMessage } from '../api/types';
 import { useConversationContext } from '../context/ConversationContext';
 import { defaultTheme } from '../theme';
@@ -26,7 +26,7 @@ const MessageContainer = styled.div`
   font-size: 16px;
   line-height: 20px;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   position: relative;
 `;
 
@@ -69,6 +69,20 @@ BotMessageContainer.defaultProps = {
     theme: defaultTheme,
 };
 
+function BotAvatar(_: {}) {
+    const theme = useTheme();
+    if (!theme.botAvatarImageURL)
+        return null
+
+    return (
+        <img
+            src={theme.botAvatarImageURL}
+            style={{height: theme.botAvatarImageSize}}
+            alt='Bot avatar'
+        />
+    );
+}
+
 type BotMessageProps = {
     message: ConversationResponse,
     lastMessage?: boolean,
@@ -80,6 +94,7 @@ function BotMessage(props: BotMessageProps) {
 
     return (
         <MessageContainer>
+            <BotAvatar />
             <BotMessageContainer>
                 <MessageText>
                     {props.message.text}
@@ -135,6 +150,7 @@ function SpeechHypothesisMessage(props: SpeechHypothesisProps) {
 function LoadingMessage() {
     return (
         <MessageContainer>
+            <BotAvatar />
             <BotMessageContainer>
                 <Loading />
             </BotMessageContainer>

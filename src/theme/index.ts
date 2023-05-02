@@ -18,6 +18,7 @@ export const defaultTheme: DefaultTheme = {
     userMessageBgColor: '#135afe',
     userMessageFgColor: '#fff',
 
+    botAvatarImageSize: '30px',
     botMessageBgColor: '#f4f7f9',
     botMessageFgColor: '#000',
 

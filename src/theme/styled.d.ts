@@ -19,6 +19,8 @@ declare module 'styled-components' {
         userMessageBgColor: string,
         userMessageFgColor: string,
 
+        botAvatarImageURL?: string,
+        botAvatarImageSize: string,
         botMessageBgColor: string,
         botMessageFgColor: string,
 
