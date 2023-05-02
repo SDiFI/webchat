@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, useTheme } from 'styled-components';
 import openLauncherImage from '../images/launcher.svg';
 import closeLauncherImage from '../images/clear-button.svg';
 import { defaultTheme } from '../theme';
@@ -24,12 +24,12 @@ const LauncherButton = styled.button`
   align-items: center;
   justify-content: center;
   background-color: ${({theme}) => theme.launcherBgColor};
-  border: 0;
+  border: ${({theme}) => theme.launcherShadow ? 0 : '1px solid #b5b5b5'};
   border-radius: 50%;
-  box-shadow: 0 2px 10px 1px #b5b5b5;
-  height: ${({theme}) => theme.launcherHeight};
+  box-shadow: ${({theme}) => theme.launcherShadow ? '0 2px 10px 1px #b5b5b5' : 'none'};
+  height: ${({theme}) => theme.launcherSize};
   margin: 0;
-  width: ${({theme}) => theme.launcherWidth};
+  width: ${({theme}) => theme.launcherSize};
   box-sizing: border-box;
 `;
 
@@ -61,12 +61,16 @@ type LauncherImgProps = {
 };
 
 const LauncherImg = styled.img<LauncherImgProps>`
-  width: 50%;
+  width: ${({theme}) => theme.launcherImageSize};
 
   animation-duration: .5s;
   animation-name: ${props => props.open ? rotationLrAnimation : rotationRlAnimation };
   animation-fill-mode: forwards;
 `;
+
+LauncherImg.defaultProps = {
+    theme: defaultTheme,
+};
 
 
 type LauncherProps = {
@@ -75,11 +79,14 @@ type LauncherProps = {
 };
 
 export default function Launcher({ visible, onClick }: LauncherProps) {
+    const theme = useTheme();
+    const openImgSrc = theme.launcherOpenImageURL?? openLauncherImage;
+    const closeImgSrc = theme.launcherCloseImageURL?? closeLauncherImage;
     return (
         <LauncherButton onClick={onClick}>
             {visible ?
-             <LauncherImg open={visible} src={closeLauncherImage} />
-            : <LauncherImg open={visible} src={openLauncherImage} />}
+             <LauncherImg open={visible} src={closeImgSrc} />
+            : <LauncherImg open={visible} src={openImgSrc} />}
         </LauncherButton>
     )
 }

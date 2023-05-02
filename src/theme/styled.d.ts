@@ -26,7 +26,10 @@ declare module 'styled-components' {
         formBgColor: string,
 
         launcherBgColor: string,
-        launcherHeight: string,
-        launcherWidth: string,
+        launcherSize: string,
+        launcherOpenImageURL?: string,
+        launcherCloseImageURL?: string,
+        launcherImageSize: string,
+        launcherShadow: boolean,
     }
 }

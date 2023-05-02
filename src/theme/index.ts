@@ -25,6 +25,7 @@ export const defaultTheme: DefaultTheme = {
     formBgColor: '#f4f7f9',
 
     launcherBgColor: '#135afe',
-    launcherHeight: '40px',
-    launcherWidth: '40px',
+    launcherSize: '40px',
+    launcherImageSize: '50%',
+    launcherShadow: true,
 };
