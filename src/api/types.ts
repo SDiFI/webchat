@@ -33,15 +33,34 @@ export type ConversationData = {
 };
 
 export type ConversationResponse = {
-    recipient_id: string,
+    recipient_id?: string,
     text: string,
     buttons?: Button[],
     data?: ConversationData,
 };
 
 
+type LanguageData = {
+    // BCP-46 language code
+    lang: string,
+
+    // Human explanation of the language
+    explanation: string,
+};
+
+export type InfoData = {
+    // Lanugages supported by server
+    supported_languages: LanguageData[],
+
+    // Message of the day. Multiple messages displayed if more than one element.
+    motd: string[],
+};
+
+
 export interface TMasdifClient {
     async status(): Promise<boolean>;
+
+    async info(conversationId: string): Promise<InfoData>;
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
     async createConversation(): Promise<string>;

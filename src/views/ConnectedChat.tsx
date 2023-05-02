@@ -36,6 +36,9 @@ export type ConnectedChatProps = {
     startClosed?: boolean,
 
     theme?: Partial<DefaultTheme>,
+
+    // Delay before displaying immediate responses and between multi message responses. Defaults to 1 sec.
+    fakeResponseDelaySecs?: number,
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -60,6 +63,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                             }}
                             startClosed={props.startClosed}
                             themeOverrides={props.theme}
+                            fakeResponseDelaySecs={props.fakeResponseDelaySecs}
                         />
                     </ConversationContextProvider>
                 </AudioPlaybackProvider>

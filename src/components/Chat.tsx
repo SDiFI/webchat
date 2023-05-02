@@ -72,6 +72,7 @@ export type ChatProps = {
     hideMute?: boolean,
     info?: SimpleInfoProps,
     themeOverrides?: Partial<DefaultTheme>,
+    fakeResponseDelaySecs?: number,
 };
 
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
@@ -92,6 +93,24 @@ export default function Chat(props: ChatProps) {
                 console.debug("getting convo id");
                 const conversationId = await masdifClient.createConversation();
                 convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
+
+                // TODO(rkjaran): Once we have i18n honor current language and set possible languages.
+                // TODO(rkjaran): Perhaps this should be a separate action for motd and a middleware that adds the
+                //   responses with a delay.
+                const info = await masdifClient.info(conversationId);
+                info.motd.reduce(
+                    (p, text) => p.then(() => new Promise<void>((resolve) => {
+                        convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
+                        window.setTimeout(
+                            () => {
+                                convoDispatch({ type: 'ADD_RESPONSE', text })
+                                resolve();
+                            },
+                            (props.fakeResponseDelaySecs ?? 1) * 1000
+                        );
+                    })),
+                    Promise.resolve(),
+                );
             }
         };
         fetchId();
