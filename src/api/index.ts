@@ -60,8 +60,13 @@ export default class MasdifClient implements TMasdifClient {
         const payload: ConversationSentMessage = {
             text: message.text,
             metadata: {
-                tts: `${!this.disableTTS}` as 'true' | 'false',
-                asr_generated: (message?.metadata?.asr_generated === 'true') ? 'true' : 'false',
+                tts: !this.disableTTS,
+                asr_generated: (
+                     // Not specified means no. 
+                    message?.metadata?.asr_generated
+                    ? message.metadata.asr_generated
+                    : false
+                ),
             },
         };
         const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);

@@ -4,11 +4,11 @@ export type ConversationSentMessage = {
         // Optional language code specified as BCP-47 code
         language?: string,
         // Whether to allow (or request) TTS responses. The server may send them by default.
-        tts?: 'true' | 'false',  // TODO: change this to boolean once/if fixed server side
+        tts?: boolean,
         // TTS voice to use
         voice_id?: string,
         // Whether or not message was generated via ASR
-        asr_generated?: 'true' | 'false', // TODO: change this to boolean once/if fixed server side
+        asr_generated?: boolean,
     },
 };
 

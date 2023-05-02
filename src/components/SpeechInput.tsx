@@ -57,7 +57,7 @@ export default function SpeechInput(_: SpeechInputProps) {
                     {
                         text: transcript,
                         metadata: {
-                            asr_generated: 'true',
+                            asr_generated: true,
                         }
                     }
                 ).then((responses) => {
