@@ -5,7 +5,10 @@ function getStorageOrDefault<T>(storage: Storage, key: string, defaultValue: T):
     if (!stored) {
         return defaultValue;
     }
-    return JSON.parse(stored) as T;
+    return {
+        ...defaultValue,
+        ...JSON.parse(stored),
+    } as T;
 }
 
 export default function useStorage<T>(storage: Storage, key: string, defaultValue: T): [T, Dispatch<SetStateAction<T>>] {
