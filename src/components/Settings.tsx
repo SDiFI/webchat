@@ -6,11 +6,11 @@ import AltContainer from './AltContainer';
 
 const InputGroup = styled.div`
   display: inline-block;
-  input {
+  input[type='checkbox'] {
     opacity: 0;
   }
 
-  input + label {
+  input[type='checkbox'] + label {
     position: relative;
     padding-left: 25px;
     cursor: pointer;
@@ -32,34 +32,34 @@ const InputGroup = styled.div`
       transition: all .2s;
     }
   }
-  input:not(:checked) + label {
+  input[type='checkbox']:not(:checked) + label {
       &:after {
         opacity: 0;
         transform: scale(0);
       }
   }
-  input:disabled:not(:checked) + label {
+  input[type='checkbox']:disabled:not(:checked) + label {
       &:before {
         box-shadow: none;
         border-color: #bbb;
         background-color: #ddd;
       }
   }
-  input:checked + label {
+  input[type='checkbox']:checked + label {
     &:after {
       opacity: 1;
       transform: scale(1);
     }
   }
-  input:disabled:checked + label {
+  input[type='checkbox']:disabled:checked + label {
     &:after {
       color: #999;
     }
   }
-  input:disabled + label {
+  input[type='checkbox']:disabled + label {
     color: #aaa;
   }
-  input:checked:focus + label, input:not(:checked):focus + label {
+  input[type='checkbox']:checked:focus + label, input[type='checkbox']:not(:checked):focus + label {
     &:before {
       border: 1px dotted blue;
     }
@@ -89,7 +89,7 @@ export default function Settings(_: SettingsProps) {
                                         key={`${key}-input`}
                                         name={key}
                                         type='checkbox'
-                                        checked={settings[key]}
+                                        checked={settings[key] as boolean}
                                         onChange={() => setSettings({[key]: !settings[key]})}
                                     />
                                     <label
