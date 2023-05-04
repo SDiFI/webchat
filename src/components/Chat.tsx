@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { DefaultTheme, keyframes, ThemeProvider } from 'styled-components';
 import { useConversationContext } from '../context/ConversationContext';
 import SenderForm from './SenderForm';
 import Launcher from './Launcher';
@@ -14,6 +14,7 @@ import Info, { SimpleInfoProps } from './Info';
 import Settings from './Settings';
 import { useSettings } from '../context/SettingsContext';
 import useSessionStorage from '../hooks/useSessionStorage';
+import { defaultTheme } from '../theme';
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -26,7 +27,12 @@ const ChatContainer = styled.div`
   z-index: 9999;
   align-items: flex-end;
   justify-content: flex-end;
+  font-family: ${({ theme }) => theme.fontFamily};
 `;
+
+ChatContainer.defaultProps = {
+    theme: defaultTheme,
+};
 
 const slideInAnimation = keyframes`
   from {
@@ -59,12 +65,13 @@ const ConversationContainer = styled.div`
 
 export type ChatProps = {
     title: string,
-    subtitle: string,
+    subtitle?: string,
     placeholder: string,
     startClosed?: boolean,
     hideSettings?: boolean,
     hideMute?: boolean,
     info?: SimpleInfoProps,
+    themeOverrides?: Partial<DefaultTheme>,
 };
 
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
@@ -91,64 +98,66 @@ export default function Chat(props: ChatProps) {
     }, [masdifClient, masdifStatus]);
 
     return (
-        <ChatContainer>
-            {visible && masdifStatus && (
-                <ConversationContainer>
-                    <Header>
-                        <HeaderTitle>{props.title}</HeaderTitle>
-                        <HeaderSubtitle>{props.subtitle}</HeaderSubtitle>
+        <ThemeProvider theme={{ ...defaultTheme, ...props.themeOverrides }}>
+            <ChatContainer>
+                {visible && masdifStatus && (
+                    <ConversationContainer>
+                        <Header>
+                            <HeaderTitle>{props.title}</HeaderTitle>
+                            <HeaderSubtitle>{props.subtitle}</HeaderSubtitle>
 
-                        <HeaderButtonGroup>
-                            {props.info &&
-                                <HeaderButton onClick={() => toggleView('info')} active={activeView === 'info'}>
-                                    <img src={infoSvg} />
-                                </HeaderButton>}
+                            <HeaderButtonGroup>
+                                {props.info &&
+                                    <HeaderButton onClick={() => toggleView('info')} active={activeView === 'info'}>
+                                        <img src={infoSvg} />
+                                    </HeaderButton>}
 
-                            {!props.hideMute &&
-                                <HeaderButton
-                                    title={`${settings.disableTTS ? 'Kveikja' : 'Slökkva'} á talgervingu.`}
-                                    onClick={() => setSettings({ disableTTS: !settings.disableTTS })}
-                                >
-                                    <img src={settings.disableTTS ? soundOffSvg : soundOnSvg} />
-                                </HeaderButton>}
+                                {!props.hideMute &&
+                                    <HeaderButton
+                                        title={`${settings.disableTTS ? 'Kveikja' : 'Slökkva'} á talgervingu.`}
+                                        onClick={() => setSettings({ disableTTS: !settings.disableTTS })}
+                                    >
+                                        <img src={settings.disableTTS ? soundOffSvg : soundOnSvg} />
+                                    </HeaderButton>}
 
-                            {!props.hideSettings &&
-                                <HeaderButton onClick={() => toggleView('settings')} active={activeView === 'settings'}>
-                                    <img src={cogSvg} />
-                                </HeaderButton>}
-                        </HeaderButtonGroup>
-                    </Header>
-                    {(() => {
-                        switch (activeView) {
-                            case 'info':
-                                return (
-                                    <Info
-                                        paragraphs={props.info!.paragraphs}
-                                        buttons={props.info!.buttons}
-                                        footer={props.info!.footer}
-                                    />
-                                );
-                            case 'settings':
-                                return props.hideSettings ? null : (
-                                    <Settings />
-                                );
-                            default:
-                                return (
-                                    <>
-                                        <Messages />
-                                        <SenderForm placeholder={props.placeholder} />
-                                    </>
-                                );
-                        }
-                    })()}
-                </ConversationContainer>
-            )}
-            {masdifStatus && (
-                <Launcher
-                    visible={visible}
-                    onClick={() => setVisible(!visible)}
-                />
-            )}
-        </ChatContainer>
+                                {!props.hideSettings &&
+                                    <HeaderButton onClick={() => toggleView('settings')} active={activeView === 'settings'}>
+                                        <img src={cogSvg} />
+                                    </HeaderButton>}
+                            </HeaderButtonGroup>
+                        </Header>
+                        {(() => {
+                            switch (activeView) {
+                                case 'info':
+                                    return (
+                                        <Info
+                                            paragraphs={props.info!.paragraphs}
+                                            buttons={props.info!.buttons}
+                                            footer={props.info!.footer}
+                                        />
+                                    );
+                                case 'settings':
+                                    return props.hideSettings ? null : (
+                                        <Settings />
+                                    );
+                                default:
+                                    return (
+                                        <>
+                                            <Messages />
+                                            <SenderForm placeholder={props.placeholder} />
+                                        </>
+                                    );
+                            }
+                        })()}
+                    </ConversationContainer>
+                )}
+                {masdifStatus && (
+                    <Launcher
+                        visible={visible}
+                        onClick={() => setVisible(!visible)}
+                    />
+                )}
+            </ChatContainer>
+        </ThemeProvider>
     );
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { DefaultTheme } from 'styled-components';
 import Chat from '../components/Chat';
 import { SimpleInfoProps } from '../components/Info';
 import { AudioPlaybackProvider } from '../context/AudioPlaybackContext';
@@ -10,8 +11,10 @@ export type ConnectedChatProps = {
     // Address of Masdif server backing the chat widget
     serverAddress: string,
 
-    // The title and subtitle are displayed in the header of the chat widget
+    // The title is displayed at top of the header. A default one will be used if not provided.
     title?: string,
+
+    // The subtitle is displayed below the title. Leaving it undefined renders no subtitle.
     subtitle?: string,
 
     // Placeholder to display in the text input box
@@ -31,6 +34,8 @@ export type ConnectedChatProps = {
 
     // Should the chat not be open by default?
     startClosed?: boolean,
+
+    theme?: Partial<DefaultTheme>,
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -41,7 +46,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                     <ConversationContextProvider>
                         <Chat
                             title={props.title || "SDiFI"}
-                            subtitle={props.subtitle || "Botti"}
+                            subtitle={props.subtitle}
                             placeholder={props.placeholder || "Spyrðu mig spjörunum úr..."}
                             hideSettings={props.hideSettings}
                             hideMute={props.hideMute}
@@ -54,6 +59,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 footer: '<a href="https://github.com/sdifi" target="_blank">SDiFI</a>',
                             }}
                             startClosed={props.startClosed}
+                            themeOverrides={props.theme}
                         />
                     </ConversationContextProvider>
                 </AudioPlaybackProvider>

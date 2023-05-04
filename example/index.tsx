@@ -17,6 +17,12 @@ const App = () => {
                     ],
                     footer: 'Custom <i>foo</i><b>ter</b>',
                 }}
+                theme={{
+                    secondaryBgColor: 'red',
+                    primaryBgColor: '#0f0',
+                    botMessageBgColor: '#0aa',
+                    botMessageFgColor: '#a00',
+                }}
             />
         </div>
     );

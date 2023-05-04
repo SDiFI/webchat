@@ -3,31 +3,42 @@ import styled from 'styled-components';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
 import { Settings, useSettings } from '../context/SettingsContext';
+import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 
 const Form = styled.form`
   align-items: center;
   display: flex;
-  background-color: #f4f7f9;
+  background-color: ${({theme}) => theme.formBgColor};
   min-height: 30px;
   padding: 15px 5px;
 `;
+
+Form.defaultProps = {
+    theme: defaultTheme,
+};
 
 const Textarea = styled.textarea`
   font-size: 1em;
   width: 100%;
   height: 100%;
   border: 0;
-  background-color: #f4f7f9;
+  color: ${({theme}) => theme.formFgColor};
+  background-color: ${({theme}) => theme.formBgColor};
   padding-left: 15px;
-  font-family: Inter,sans-serif;
   resize: none;
+  font-family: inherit;
 
   &:focus {
-  outline: none !important;
+    outline: none !important;
   }
 `;
+
+Textarea.defaultProps = {
+    theme: defaultTheme,
+};
+
 
 export type SenderFormProps = {
     placeholder: string,

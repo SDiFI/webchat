@@ -95,6 +95,47 @@ root.render(<App />);
 </html>
 ```
 
+## Themes
+
+The chat widget is themeable to a certain extent. The main colors can be
+customized as well as the the launcher icon and an optionally an avatar can be
+used for the bot messages. See [styled.d.ts](./src/theme/styled.d.ts) for a full
+list of properties that can be customized. These are supplied with the `theme`
+property and override the defaults.
+
+An especially atrocious example of customization:
+
+```tsx
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import ConnectedChat from '@sdifi/webchat';
+
+const App = () => {
+    return (
+        <div>
+            <ConnectedChat
+                serverAddress="http://localhost:8080"
+                title="Jóakim"
+                hideSettings={true}
+                theme={{
+                    secondaryBgColor: 'red',
+                    primaryBgColor: '#0f0',
+                    botMessageBgColor: '#0aa',
+                    botMessageFgColor: '#a00',
+                    launcherShadow: false,
+                    launcherSize: '30px',
+                    formFgColor: '#000',
+                    formBgColor: '#0a0',
+                    botAvatarImageURL: 'https://www.geeksvgs.com/files/a/19/Rubber-Duck.png',
+                }}
+            />
+        </div>
+    );
+};
+```
+
+![Theme](/docs/sdifi_theme.png?raw=true)
+
 ## Speech input
 
 Currently the speech recognition input is provided by a direct client side

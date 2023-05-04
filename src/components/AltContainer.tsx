@@ -13,11 +13,10 @@ const AltContainer = styled.div`
   justify-content: space-evenly;
   text-align: center;
   align-items: center;
-  font-family: sans-serif;
   position: relative;
 
-  background-color: ${props => props.theme.secondaryBackground};
-  color: ${props => props.theme.secondaryFontColor};
+  background-color: ${props => props.theme.secondaryBgColor};
+  color: ${props => props.theme.secondaryFgColor};
 
   a {
     color: inherit;
