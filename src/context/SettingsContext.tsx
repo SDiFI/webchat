@@ -2,7 +2,7 @@ import React, { Dispatch, createContext, useContext, useMemo, useCallback } from
 import useLocalStorage from '../hooks/useLocalStorage';
 
 export type Settings = {
-    disableTTS?: boolean,
+    disableTTS: boolean,
 };
 
 const defaultSettings: Settings = {
@@ -10,14 +10,18 @@ const defaultSettings: Settings = {
 };
 
 type SettingsContextValue = [
-    Partial<Settings>,
-    Dispatch<Partial<Settings>>,
+    Settings,
+    Dispatch<Settings>,
 ];
 
 const SettingsContext = createContext<SettingsContextValue>([defaultSettings, () => {}]);
 
-export function SettingsProvider(props: { defaultValue?: Settings, children: React.ReactNode }) {
-    const [stored, _setStored] = useLocalStorage<Settings>('@sdifi:settings', props.defaultValue ?? defaultSettings);
+export function SettingsProvider(props: { defaultValue?: Partial<Settings>, children: React.ReactNode }) {
+    const [stored, _setStored] = useLocalStorage<Settings>(
+        '@sdifi:settings',
+        props.defaultValue ? { ...defaultSettings, ...props.defaultValue } : defaultSettings
+    );
+
     const setStored = useCallback(_setStored, []);
     const ctxValue = useMemo<SettingsContextValue>(() => [stored, setStored], [stored, setStored]);
 

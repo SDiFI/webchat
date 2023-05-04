@@ -40,7 +40,7 @@ export type ConnectedChatProps = {
 
 export default function ConnectedChat(props: ConnectedChatProps) {
     return (
-        <SettingsProvider defaultValue={{ disableTTS: props.disableTTS }}>
+        <SettingsProvider defaultValue={{ disableTTS: !!props.disableTTS }}>
             <MasdifContextProvider serverAddress={props.serverAddress}>
                 <AudioPlaybackProvider>
                     <ConversationContextProvider>
