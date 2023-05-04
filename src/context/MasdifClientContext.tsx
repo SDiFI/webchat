@@ -20,7 +20,7 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
             extraHeaders: props.extraHttpHeaders,
             disableTTS: settings.disableTTS,
         }));
-    }, [props.serverAddress, settings])
+    }, [props.serverAddress, settings.disableTTS])
 
     return (
         <MasdifClientContext.Provider value={masdifClient}>
