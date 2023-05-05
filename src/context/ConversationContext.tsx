@@ -33,6 +33,7 @@ export type ConversationAction =
     | { type: 'START_USER_SPEECH' }
     | { type: 'END_USER_SPEECH' }
     | { type: 'SET_USER_SPEECH_PARTIAL', hypothesis: string }
+    | { type: 'DELAY_MOTD_RESPONSE' }
     ;
 
 const reducer: React.Reducer<ConversationState, ConversationAction> = (state: ConversationState, action: ConversationAction) => {
@@ -57,6 +58,8 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (state: Co
             return Object.assign({}, state, { userSpeaking: false, speechHypothesis: undefined });
         case 'SET_USER_SPEECH_PARTIAL':
             return Object.assign({}, state, { userSpeaking: true, speechHypothesis: action.hypothesis });
+        case 'DELAY_MOTD_RESPONSE':
+            return Object.assign({}, state, { loading: true });
         default:
             throw new Error('Unknown action type');
     }

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { ConversationSentMessage, ConversationResponse, TMasdifClient, MasdifClientOptions } from './types';
+import { ConversationSentMessage, ConversationResponse, TMasdifClient, MasdifClientOptions, InfoData } from './types';
 
 // Example usage of MasdifClient:
 //
@@ -45,6 +45,11 @@ export default class MasdifClient implements TMasdifClient {
             console.error('Could not contact server');
             return false;
         }
+    }
+
+    async info(conversationId: string) {
+        const response = await this.http.get<InfoData>(`/info?id=${conversationId}`);
+        return response.data;
     }
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
