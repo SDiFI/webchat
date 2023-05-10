@@ -5,6 +5,7 @@ import { SimpleInfoProps } from '../components/Info';
 import { AudioPlaybackProvider } from '../context/AudioPlaybackContext';
 import { ConversationContextProvider } from '../context/ConversationContext';
 import { MasdifContextProvider } from '../context/MasdifClientContext';
+import { I18nProvider } from '../context/I18nContext';
 import { SettingsProvider } from '../context/SettingsContext';
 
 export type ConnectedChatProps = {
@@ -43,31 +44,38 @@ export type ConnectedChatProps = {
 
 export default function ConnectedChat(props: ConnectedChatProps) {
     return (
-        <SettingsProvider defaultValue={{ disableTTS: !!props.disableTTS }}>
-            <MasdifContextProvider serverAddress={props.serverAddress}>
-                <AudioPlaybackProvider>
-                    <ConversationContextProvider>
-                        <Chat
-                            title={props.title || "SDiFI"}
-                            subtitle={props.subtitle}
-                            placeholder={props.placeholder || "Spyrðu mig spjörunum úr..."}
-                            hideSettings={props.hideSettings}
-                            hideMute={props.hideMute}
-                            info={props.info || {
-                                paragraphs: [
-                                    ('Þetta snjallmenni er hluti af SDiFI, sem er samstarfsþróunarverkefni ' +
-                                     'Háskólans í Reykjavík, Grammatek og Tiro.'),
-                                    'Snjallmennið <b>Jóakim</b> veit ekkert voða mikið, en getur svarað spurningum um Andabæ.'
-                                ],
-                                footer: '<a href="https://github.com/sdifi" target="_blank">SDiFI</a>',
-                            }}
-                            startClosed={props.startClosed}
-                            themeOverrides={props.theme}
-                            fakeResponseDelaySecs={props.fakeResponseDelaySecs}
+        <SettingsProvider defaultValue={
+            {
+                disableTTS: !!props.disableTTS,
+                language: "is-IS",
+            }
+        }>
+            <I18nProvider>
+                <MasdifContextProvider serverAddress={props.serverAddress}>
+                    <AudioPlaybackProvider>
+                        <ConversationContextProvider>
+                            <Chat
+                                title={props.title || "SDiFI"}
+                                subtitle={props.subtitle}
+                                placeholder={props.placeholder}
+                                hideSettings={props.hideSettings}
+                                hideMute={props.hideMute}
+                                info={props.info || {
+                                    paragraphs: [
+                                        ('Þetta snjallmenni er hluti af SDiFI, sem er samstarfsþróunarverkefni ' +
+                                        'Háskólans í Reykjavík, Grammatek og Tiro.'),
+                                        'Snjallmennið <b>Jóakim</b> veit ekkert voða mikið, en getur svarað spurningum um Andabæ.'
+                                    ],
+                                    footer: '<a href="https://github.com/sdifi" target="_blank">SDiFI</a>',
+                                }}
+                                startClosed={props.startClosed}
+                                themeOverrides={props.theme}
+                                fakeResponseDelaySecs={props.fakeResponseDelaySecs}
                         />
-                    </ConversationContextProvider>
-                </AudioPlaybackProvider>
-            </MasdifContextProvider>
+                        </ConversationContextProvider>
+                    </AudioPlaybackProvider>
+                </MasdifContextProvider>
+            </I18nProvider>
         </SettingsProvider>
     );
 }

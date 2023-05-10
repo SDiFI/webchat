@@ -15,6 +15,7 @@ import Settings from './Settings';
 import { useSettings } from '../context/SettingsContext';
 import useSessionStorage from '../hooks/useSessionStorage';
 import { defaultTheme } from '../theme';
+import intl from 'react-intl-universal';
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -66,7 +67,7 @@ const ConversationContainer = styled.div`
 export type ChatProps = {
     title: string,
     subtitle?: string,
-    placeholder: string,
+    placeholder?: string,
     startClosed?: boolean,
     hideSettings?: boolean,
     hideMute?: boolean,
@@ -123,7 +124,7 @@ export default function Chat(props: ChatProps) {
                     <ConversationContainer>
                         <Header>
                             <HeaderTitle>{props.title}</HeaderTitle>
-                            <HeaderSubtitle>{props.subtitle}</HeaderSubtitle>
+                            <HeaderSubtitle>{props.subtitle || intl.get("SUBTITLE")}</HeaderSubtitle>
 
                             <HeaderButtonGroup>
                                 {props.info &&
@@ -163,7 +164,7 @@ export default function Chat(props: ChatProps) {
                                     return (
                                         <>
                                             <Messages />
-                                            <SenderForm placeholder={props.placeholder} />
+                                            <SenderForm placeholder={props.placeholder || intl.get("CHAT_PLACEHOLDER")} />
                                         </>
                                     );
                             }

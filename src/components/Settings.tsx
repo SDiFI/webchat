@@ -1,7 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Settings as SettingsValue, useSettings } from '../context/SettingsContext';
+import intl from 'react-intl-universal';
 import AltContainer from './AltContainer';
+import { languagesCodes, useI18n } from '../context/I18nContext';
 
 
 const InputGroup = styled.div`
@@ -66,16 +68,20 @@ const InputGroup = styled.div`
   }
 `;
 
-
-// TODO: Switch to t-strings once we need translations.
-const settingsDescription: {[Property in keyof SettingsValue]: string} = {
-    disableTTS: 'Sleppa talgervingu',
+const getSettingsDescription = (setting: keyof SettingsValue) => {
+    // TODO(Smári, STIFI-29): Switch to t-strings once we need translations.
+    const settingsDescription: {[Property in keyof SettingsValue]: string} = {
+        disableTTS: intl.get("SETTINGS_DESCRIPTION_DISABLE_TTS"),
+        language: 'Tungumál',
+    };
+    return settingsDescription[setting];
 };
 
 export type SettingsProps = {};
 
 export default function Settings(_: SettingsProps) {
     const [settings, setSettings] = useSettings();
+    const [, setI18n] = useI18n();
     return (
         <AltContainer>
             <InputGroup>
@@ -97,10 +103,38 @@ export default function Settings(_: SettingsProps) {
                                         htmlFor={key}
                                         onClick={() => setSettings({[key]: !settings[key]})}
                                     >
-                                        {settingsDescription[key]}
+                                        {getSettingsDescription(key)}
                                     </label>
                                 </React.Fragment>
                             );
+                        case 'string':
+                            if (key === "language") {
+                                return (
+                                    <React.Fragment key={`${key}-group`}>
+                                        {languagesCodes.map((lang) => {
+                                            return (
+                                                <React.Fragment key={`${lang}-sub-group`}>
+                                                    <input
+                                                        key={`${lang}-input`}
+                                                        name={lang}
+                                                        type='radio'
+                                                        value={lang}
+                                                        checked={lang === settings.language}
+                                                        onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
+                                                    />
+                                                    <label
+                                                        key={`${lang}-label`}
+                                                        htmlFor={lang}
+                                                    >
+                                                        {lang}
+                                                    </label>
+                                                </React.Fragment>
+                                            );
+                                        })}
+                                    </React.Fragment>
+                                );
+                            }
+                            return null;
                         default:
                             console.warn("don't know what to do with this one");
                             return null;
