@@ -60,14 +60,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 placeholder={props.placeholder}
                                 hideSettings={props.hideSettings}
                                 hideMute={props.hideMute}
-                                info={props.info || {
-                                    paragraphs: [
-                                        ('Þetta snjallmenni er hluti af SDiFI, sem er samstarfsþróunarverkefni ' +
-                                        'Háskólans í Reykjavík, Grammatek og Tiro.'),
-                                        'Snjallmennið <b>Jóakim</b> veit ekkert voða mikið, en getur svarað spurningum um Andabæ.'
-                                    ],
-                                    footer: '<a href="https://github.com/sdifi" target="_blank">SDiFI</a>',
-                                }}
+                                info={props.info}
                                 startClosed={props.startClosed}
                                 themeOverrides={props.theme}
                                 fakeResponseDelaySecs={props.fakeResponseDelaySecs}

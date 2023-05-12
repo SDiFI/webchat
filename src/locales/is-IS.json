@@ -1,5 +1,10 @@
 {
-    "SUBTITLE": "Þjarkur",
+    "CHAT_DEFAULT_SUBTITLE": "Þjarkur",
+    "CHAT_DEFAULT_PLACEHOLDER": "Spyrðu mig spjörunum úr...",
+    "CHAT_DEFAULT_INFO_PARAGRAPH_01": "Þetta snjallmenni er hluti af SDiFI, sem er samstarfsþróunarverkefni Háskólans í Reykjavík, Grammatek og Tiro.",
+    "CHAT_DEFAULT_INFO_PARAGRAPH_02": "Snjallmennið <b>{name}</b> veit ekkert voða mikið, en getur svarað spurningum um Andabæ.",
+    "CHAT_DEFAULT_INFO_FOOTER": "<a href=\"https:\/\/github.com/sdifi\" target=\"_blank\">SDiFI</a>",
+    "CHAT_HEADERBUTTON_TOGGLE_TTS": "{option, plural, =0 {Slökkva} other {Kveikja}} á talgervingu.",
     "SETTINGS_DESCRIPTION_DISABLE_TTS": "Sleppa talgervingu",
-    "CHAT_PLACEHOLDER": "Spyrðu mig spjörunum úr..."
+    "SETTINGS_DESCRIPTION_LANGUAGE": "Tungumál"
 }
