@@ -14,9 +14,8 @@ export type ConversationSentMessage = {
 
 export type ConversationAttachment =
     | { type: 'audio', payload: { src: string } }
-    | { type: 'image', payload: { title?: string, src: string } }
-    | { type: 'audio', payload: { src: string } }
-    | { type: 'video', payload: { title: string, src: string } }
+    | { type: 'image', payload: { title?: string, link?: string, src: string } }
+    | { type: 'video', payload: { title: string, link?: string, src: string } }
 ;
 
 export type Button = { content_type?: 'text', title: string } & (
