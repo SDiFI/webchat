@@ -4,6 +4,7 @@ import { Button as ButtonData, ConversationAttachment } from '../api/types';
 import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
+import { useSettings } from '../context/SettingsContext';
 
 const replyStyle = css`
     background-color: #ccc;
@@ -36,12 +37,19 @@ type ReplyActionProps = {
 function ReplyAction(props: ReplyActionProps) {
     const masdifClient = useMasdifClient();
     const [convoState, convoDispatch] = useConversationContext();
+    const [settings] = useSettings();
 
     const handlePostback = (_: React.MouseEvent) => {
         // TODO: We should probably move this update logic somewhere else, since SendForm is doing the exact same action
         convoDispatch({ type: 'SEND_ACTION' });
-        masdifClient?.sendMessage(convoState.conversationId!, { text: props.payload }).then(responses => {
-            responses.forEach(response => {
+        masdifClient?.sendMessage(
+            convoState.conversationId!,
+            {
+                text: props.payload,
+                metadata: { language: settings.language },
+            }
+        ).then((responses) => {
+            responses.forEach((response) => {
                 convoDispatch({ type: 'ADD_RESPONSE', ...response });
             });
         });

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { performSingleUttSpeechRecognition } from '../api/speech';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
+import { useSettings } from '../context/SettingsContext';
 import SpeakIcon from './SpeakIcon';
 
 const Button = styled.button`
@@ -36,6 +37,7 @@ export type SpeechInputProps = {};
 export default function SpeechInput(_: SpeechInputProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
+    const [settings] = useSettings();
 
     async function handleSpeak() {
         if (convoState.userSpeaking) {
@@ -57,6 +59,7 @@ export default function SpeechInput(_: SpeechInputProps) {
                         text: transcript,
                         metadata: {
                             asr_generated: true,
+                            language: settings.language,
                         },
                     })
                     .then(responses => {
