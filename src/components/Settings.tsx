@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Settings as SettingsValue, useSettings } from '../context/SettingsContext';
 import intl from 'react-intl-universal';
 import AltContainer from './AltContainer';
+import { useI18n } from '../context/I18nContext';
+
 
 const InputGroup = styled.div`
     display: inline-block;
@@ -83,7 +85,7 @@ export type SettingsProps = {};
 
 export default function Settings(_: SettingsProps) {
     const [settings, setSettings] = useSettings();
-    const [, setI18n] = useI18n();
+    const [i18n, setI18n] = useI18n();
     return (
         <AltContainer>
             <InputGroup>
@@ -113,22 +115,23 @@ export default function Settings(_: SettingsProps) {
                             if (key === "language") {
                                 return (
                                     <React.Fragment key={`${key}-group`}>
-                                        {languagesCodes.map((lang) => {
+                                        {i18n.supportedLocales.map((langData) => {
                                             return (
-                                                <React.Fragment key={`${lang}-sub-group`}>
+                                                <React.Fragment key={`${langData.lang}-sub-group`}>
                                                     <input
-                                                        key={`${lang}-input`}
-                                                        name={lang}
+                                                        key={`${langData.lang}-input`}
+                                                        name={langData.lang}
                                                         type='radio'
-                                                        value={lang}
-                                                        checked={lang === settings.language}
+                                                        value={langData.lang}
+                                                        checked={langData.lang === settings.language}
                                                         onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
+                                                        title={langData.explanation}
                                                     />
                                                     <label
-                                                        key={`${lang}-label`}
-                                                        htmlFor={lang}
+                                                        key={`${langData.lang}-label`}
+                                                        htmlFor={langData.lang}
                                                     >
-                                                        {lang}
+                                                        {langData.lang}
                                                     </label>
                                                 </React.Fragment>
                                             );

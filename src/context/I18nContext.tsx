@@ -3,6 +3,9 @@ import { useSettings } from "./SettingsContext";
 import intl from 'react-intl-universal';
 
 import { locales } from '../locales/locales';
+import { useMasdifClient, useMasdifStatus } from "./MasdifClientContext";
+import { useConversationContext } from "./ConversationContext";
+import { LanguageData } from "../api/types";
 
 export const i18nLocales = {
     "is-IS": locales.isIS,
@@ -10,13 +13,20 @@ export const i18nLocales = {
 };
 
 export type I18n = {
+    // Current locale selection.
     currentLanguageCode: string,
+    
+    // Local (widget) supported locales.
     locales: typeof i18nLocales,
+    
+    // An intersection of local (widget) supported locales and masdif supported languages.
+    supportedLocales: LanguageData[],
 };
 
 export const defaultI18n: I18n = {
     currentLanguageCode: "is-IS",
     locales: i18nLocales,
+    supportedLocales: [],
 };
 
 type I18nContextValue = [
@@ -24,22 +34,67 @@ type I18nContextValue = [
     Dispatch<I18n>,
 ];
 
-// TODO(Smári, STIFI-29): Get the data and populate this array dynamically.
-export const languagesCodes = ["is-IS", "en-US"] as const;
-type LanguageCodeTuple = typeof languagesCodes;
+export const supportedLanguages = ["is-IS", "en-US"] as const;
+type LanguageCodeTuple = typeof supportedLanguages;
 type LanguageCode = LanguageCodeTuple[number];
 function isValidLanguageCode(languageCode: string): languageCode is LanguageCode {
-    return languagesCodes.includes(languageCode as LanguageCode);
+    return supportedLanguages.includes(languageCode as LanguageCode);
 }
 
 export const I18nContext = createContext<I18nContextValue>([defaultI18n, () => {}]);
 
 export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: React.ReactNode }) {
     const [settings, setSettings] = useSettings();
+    const masdifClient = useMasdifClient();
+    const masdifStatus = useMasdifStatus();
+    const [convoState] = useConversationContext();
     const [i18n, setI18n] = useState<I18n>({
         currentLanguageCode: settings.language,
         locales: i18nLocales,
+        supportedLocales: [],
     });
+
+    useEffect(() => {
+        const getSupportedLanguages = async () => {
+            const msg: string = "Unable to fetch supported languages.";
+            if (!convoState.conversationId) {
+                console.warn(`${msg}. No conversation id present.`);
+                return [];
+            }
+            if (masdifClient && masdifStatus) {
+                const info = await masdifClient.info(convoState.conversationId);
+                if (!info) {
+                    console.warn(`${msg} Unable to fetch data.`);
+                    return [];
+                }
+                return info.supported_languages;
+            }
+            console.warn(msg);
+            return [];
+        };
+        getSupportedLanguages().then((langs) => {
+            if (langs.length > 0) {
+                const webchatSupportedLocales: string[] = Object.keys(i18n.locales);
+                const masdifSupportedLanguages: string[] = langs.map((lang) => { return lang.lang });
+                masdifSupportedLanguages.forEach((l) => {
+                    if (!isValidLanguageCode(l)) {
+                        throw new Error("Invalid language code!");
+                    }
+                });
+                
+                const commonlySupportedLanguages: string[] = webchatSupportedLocales.filter((l) => masdifSupportedLanguages.includes(l));
+                
+                console.debug('Supported widget languages:', webchatSupportedLocales);
+                console.debug('Supported chatbot languages:', masdifSupportedLanguages);
+                console.debug('Supported languages (intersection):', commonlySupportedLanguages);
+
+                setI18n({
+                    ...i18n,
+                    ['supportedLocales']: langs.filter((l) => commonlySupportedLanguages.includes(l.lang)),
+                });
+            }
+        });
+    }, [masdifClient, masdifStatus]);
 
     useEffect(() => {
         if (!isValidLanguageCode(i18n.currentLanguageCode)) {
