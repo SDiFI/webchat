@@ -140,20 +140,29 @@ const ReplyAudio = styled(function ReplyAudio(props: ReplyAudioProps & { classNa
   }
 `;
 
-
 type ReplyImageProps = {
     src?: string,
     alt?: string,
     title?: string,
+    // Image is a link if present
+    link?: string,
 };
 
-function ReplyImage({ src, alt, title }: ReplyImageProps) {
+function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
     if (!src)
         return null;
 
-    return (
-        <img src={src} alt={alt} title={title} />
-    );
+    const image = <img src={src} alt={alt} title={title} />;
+
+    if (link) {
+        return (
+            <a href={link} target="_blank">
+                {image}
+            </a>
+        );
+    }
+
+    return image;
 }
 
 type ReplyAttachmentsProps = {
@@ -178,6 +187,7 @@ function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
                             <ReplyImage
                                 key={attachmentData.payload.src}
                                 src={attachmentData.payload.src}
+                                link={attachmentData.payload.link}
                             />
                         );
                     default:
