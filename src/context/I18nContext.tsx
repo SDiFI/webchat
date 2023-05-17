@@ -58,7 +58,7 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
         const getSupportedLanguages = async () => {
             const msg: string = "Unable to fetch supported languages.";
             if (!convoState.conversationId) {
-                console.warn(`${msg}. No conversation id present.`);
+                console.warn(`${msg} No conversation id present.`);
                 return [];
             }
             if (masdifClient && masdifStatus) {
@@ -72,29 +72,33 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
             console.warn(msg);
             return [];
         };
-        getSupportedLanguages().then((langs) => {
-            if (langs.length > 0) {
-                const webchatSupportedLocales: string[] = Object.keys(i18n.locales);
-                const masdifSupportedLanguages: string[] = langs.map((lang) => { return lang.lang });
-                masdifSupportedLanguages.forEach((l) => {
-                    if (!isValidLanguageCode(l)) {
-                        throw new Error("Invalid language code!");
-                    }
-                });
-                
-                const commonlySupportedLanguages: string[] = webchatSupportedLocales.filter((l) => masdifSupportedLanguages.includes(l));
-                
-                console.debug('Supported widget languages:', webchatSupportedLocales);
-                console.debug('Supported chatbot languages:', masdifSupportedLanguages);
-                console.debug('Supported languages (intersection):', commonlySupportedLanguages);
 
-                setI18n({
-                    ...i18n,
-                    ['supportedLocales']: langs.filter((l) => commonlySupportedLanguages.includes(l.lang)),
-                });
-            }
-        });
-    }, [masdifClient, masdifStatus]);
+        if (i18n.supportedLocales.length === 0) {
+            getSupportedLanguages().then((langs) => {
+                if (langs.length > 0) {
+                    const webchatSupportedLocales: string[] = Object.keys(i18n.locales);
+                    const masdifSupportedLanguages: string[] = langs.map((lang) => { return lang.lang });
+                    masdifSupportedLanguages.forEach((l) => {
+                        if (!isValidLanguageCode(l)) {
+                            throw new Error("Invalid language code!");
+                        }
+                    });
+                    
+                    const commonlySupportedLanguages: string[] = webchatSupportedLocales.filter((l) => masdifSupportedLanguages.includes(l));
+                    
+                    console.debug('Supported widget languages:', webchatSupportedLocales);
+                    console.debug('Supported chatbot languages:', masdifSupportedLanguages);
+                    console.debug('Supported languages (intersection):', commonlySupportedLanguages);
+                    commonlySupportedLanguages.length === 0 && console.warn('Backend does not support any locally supported locale!');
+    
+                    setI18n({
+                        ...i18n,
+                        ['supportedLocales']: langs.filter((l) => commonlySupportedLanguages.includes(l.lang)),
+                    });
+                }
+            });
+        }
+    }, [convoState.conversationId, masdifClient, masdifStatus]);
 
     useEffect(() => {
         if (!isValidLanguageCode(i18n.currentLanguageCode)) {

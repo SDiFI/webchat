@@ -47,7 +47,7 @@ export type LanguageData = {
 };
 
 export type InfoData = {
-    // Lanugages supported by server
+    // Languages supported by server
     supported_languages: LanguageData[];
 
     // Message of the day. Multiple messages displayed if more than one element.

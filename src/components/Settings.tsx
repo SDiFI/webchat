@@ -112,7 +112,7 @@ export default function Settings(_: SettingsProps) {
                                 </React.Fragment>
                             );
                         case 'string':
-                            if (key === "language") {
+                            if (key === "language" && i18n.supportedLocales.length > 1) {
                                 return (
                                     <React.Fragment key={`${key}-group`}>
                                         {i18n.supportedLocales.map((langData) => {
