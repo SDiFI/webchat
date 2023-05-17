@@ -40,7 +40,7 @@ export type ConversationResponse = {
 };
 
 
-type LanguageData = {
+export type LanguageData = {
     // BCP-46 language code
     lang: string,
 

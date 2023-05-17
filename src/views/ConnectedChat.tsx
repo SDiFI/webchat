@@ -50,10 +50,10 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                 language: "is-IS",
             }
         }>
-            <I18nProvider>
-                <MasdifContextProvider serverAddress={props.serverAddress}>
-                    <AudioPlaybackProvider>
-                        <ConversationContextProvider>
+            <MasdifContextProvider serverAddress={props.serverAddress}>
+                <AudioPlaybackProvider>
+                    <ConversationContextProvider>
+                        <I18nProvider>
                             <Chat
                                 title={props.title || "SDiFI"}
                                 subtitle={props.subtitle}
@@ -64,11 +64,11 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 startClosed={props.startClosed}
                                 themeOverrides={props.theme}
                                 fakeResponseDelaySecs={props.fakeResponseDelaySecs}
-                        />
-                        </ConversationContextProvider>
-                    </AudioPlaybackProvider>
-                </MasdifContextProvider>
-            </I18nProvider>
+                            />
+                        </I18nProvider>
+                    </ConversationContextProvider>
+                </AudioPlaybackProvider>
+            </MasdifContextProvider>
         </SettingsProvider>
     );
 }
