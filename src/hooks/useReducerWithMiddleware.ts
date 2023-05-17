@@ -1,7 +1,8 @@
 import React, { useEffect, useReducer, useRef } from 'react';
 
 /**
- * Reducer hook with multiple middleware functions and multiple afterware functions for side-effects.
+ * Reducer hook with multiple middleware functions and multiple afterware functions for side-effects. Note that the
+   afterware functions will miss everything but the last dispatch in a rapid sequence.
  */
 export function useReducerWithMiddleware<S, A>(
     reducer: React.Reducer<S, A>,
