@@ -115,27 +115,24 @@ export default function Settings(_: SettingsProps) {
                             if (key === "language" && i18n.supportedLocales.length > 1) {
                                 return (
                                     <React.Fragment key={`${key}-group`}>
-                                        {i18n.supportedLocales.map((langData) => {
-                                            return (
-                                                <React.Fragment key={`${langData.lang}-sub-group`}>
-                                                    <input
-                                                        key={`${langData.lang}-input`}
-                                                        name={langData.lang}
-                                                        type='radio'
-                                                        value={langData.lang}
-                                                        checked={langData.lang === settings.language}
-                                                        onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
-                                                        title={langData.explanation}
-                                                    />
-                                                    <label
-                                                        key={`${langData.lang}-label`}
-                                                        htmlFor={langData.lang}
-                                                    >
-                                                        {langData.lang}
-                                                    </label>
-                                                </React.Fragment>
-                                            );
-                                        })}
+                                        <select
+                                            defaultValue={settings.language}
+                                            onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
+                                        >
+                                            {i18n.supportedLocales.map((langData) => {
+                                                return (
+                                                    <React.Fragment key={`${langData.lang}-sub-group`}>
+                                                        <option
+                                                            key={`${langData.lang}-input`}
+                                                            value={langData.lang}
+                                                            title={langData.explanation}
+                                                        >
+                                                            {langData.lang}
+                                                        </option>
+                                                    </React.Fragment>
+                                                );
+                                            })}
+                                        </select>
                                     </React.Fragment>
                                 );
                             }
