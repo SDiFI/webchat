@@ -21,6 +21,7 @@ export const defaultTheme: DefaultTheme = {
     botAvatarImageSize: '30px',
     botMessageBgColor: '#f4f7f9',
     botMessageFgColor: '#000',
+    botMessageMaxImageWidth: '100%',
 
     formFgColor: '#000',
     formBgColor: '#f4f7f9',

@@ -61,7 +61,7 @@ const BotMessageContainer = styled.div`
   max-width: 85%;
 
   img {
-    max-width: 180px;
+    max-width: ${({theme}) => theme.botMessageMaxImageWidth};
   }
 `;
 
