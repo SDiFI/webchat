@@ -11,7 +11,7 @@ const Form = styled.form`
   align-items: center;
   display: flex;
   background-color: ${({theme}) => theme.formBgColor};
-  min-height: 30px;
+  height: ${({theme}) => theme.formHeight};
   padding: 15px 5px;
 `;
 

@@ -26,6 +26,7 @@ declare module 'styled-components' {
 
         formFgColor: string,
         formBgColor: string,
+        formHeight: string,
 
         launcherBgColor: string,
         launcherSize: string,

@@ -24,6 +24,7 @@ export const defaultTheme: DefaultTheme = {
 
     formFgColor: '#000',
     formBgColor: '#f4f7f9',
+    formHeight: '44px',
 
     launcherBgColor: '#135afe',
     launcherSize: '40px',
