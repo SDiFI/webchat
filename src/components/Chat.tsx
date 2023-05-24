@@ -91,7 +91,6 @@ export default function Chat(props: ChatProps) {
                 const conversationId = await masdifClient.createConversation();
                 convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
-                // TODO(Smári, rkjaran, STIFI-29): Once we have i18n honor current language and set possible languages.
                 // TODO(rkjaran): Perhaps this should be a separate action for motd and a middleware that adds the
                 //   responses with a delay.
                 const info = await masdifClient.info(conversationId);
