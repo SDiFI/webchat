@@ -70,6 +70,34 @@ const InputGroup = styled.div`
             border: 1px dotted blue;
         }
     }
+<<<<<<< HEAD
+=======
+  }
+  select {
+    position: relative;
+    margin-top: 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 14px;
+    width: 75px;
+  }
+  select + label {
+    padding-left: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  option {
+    font-size: 14px;
+  }
+`;
+
+const SettingsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 50%;
+>>>>>>> e06efd7 (I18n implementation wrap-up)
 `;
 
 const getSettingsDescription = (setting: keyof SettingsValue) => {
@@ -88,52 +116,66 @@ export default function Settings(_: SettingsProps) {
     const [i18n, setI18n] = useI18n();
     return (
         <AltContainer>
-            <InputGroup>
+            <SettingsContainer>
                 {Object.keys(settings).map(value => {
                     const key = value as keyof SettingsValue;
                     switch (typeof settings[key]) {
                         case 'boolean':
                             return (
-                                <React.Fragment key={`${key}-group`}>
-                                    <input
-                                        key={`${key}-input`}
-                                        name={key}
-                                        type='checkbox'
-                                        checked={settings[key] as boolean}
-                                        onChange={() => setSettings({ [key]: !settings[key] })}
-                                    />
-                                    <label
-                                        key={`${key}-label`}
-                                        htmlFor={key}
-                                        onClick={() => setSettings({ [key]: !settings[key] })}
-                                    >
-                                        {getSettingsDescription(key)}
-                                    </label>
-                                </React.Fragment>
+                                <InputGroup key={`${key}-group`}>
+                                    <React.Fragment key={`${key}-fragment`}>
+                                        <input
+                                            key={`${key}-input`}
+                                            name={key}
+                                            type='checkbox'
+                                            checked={settings[key] as boolean}
+                                            onChange={() => setSettings({ [key]: !settings[key] })}
+                                        />
+                                        <label
+                                            key={`${key}-label`}
+                                            htmlFor={key}
+                                            onClick={() => setSettings({ [key]: !settings[key] })}
+                                        >
+                                            {getSettingsDescription(key)}
+                                        </label>
+                                    </React.Fragment>
+                                </InputGroup>
                             );
                         case 'string':
-                            if (key === "language" && i18n.supportedLocales.length > 1) {
+                            if (key === "language") {
                                 return (
-                                    <React.Fragment key={`${key}-group`}>
-                                        <select
-                                            defaultValue={settings.language}
-                                            onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
-                                        >
-                                            {i18n.supportedLocales.map((langData) => {
-                                                return (
-                                                    <React.Fragment key={`${langData.lang}-sub-group`}>
-                                                        <option
-                                                            key={`${langData.lang}-input`}
-                                                            value={langData.lang}
-                                                            title={langData.explanation}
-                                                        >
-                                                            {langData.lang}
-                                                        </option>
-                                                    </React.Fragment>
-                                                );
-                                            })}
-                                        </select>
-                                    </React.Fragment>
+                                    <InputGroup key={`${key}-group`}>
+                                        <React.Fragment key={`${key}-fragment`}>
+                                            <select
+                                                defaultValue={settings.language}
+                                                onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
+                                                disabled={i18n.supportedLocales.length < 2}
+                                                title={i18n.supportedLocales.length < 2 ? intl.get('SETTINGS_LANGUAGE_SELECTION_DISABLED') : ''}
+                                            >
+                                                {i18n.supportedLocales.map((langData) => {
+                                                    return (
+                                                        <React.Fragment key={`${langData.lang}-sub-group`}>
+                                                            <option
+                                                                key={`${langData.lang}-input`}
+                                                                value={langData.lang}
+                                                                title={langData.explanation}
+                                                            >
+                                                                {
+                                                                    intl.get(`SETTINGS_LANGUAGE_SELECTION_${langData.lang.toUpperCase()}`)
+                                                                }
+                                                            </option>
+                                                        </React.Fragment>
+                                                    );
+                                                })}
+                                            </select>
+                                            <label
+                                                key={`${key}-label`}
+                                                htmlFor={key}
+                                            >
+                                                {getSettingsDescription(key)}
+                                            </label>
+                                        </React.Fragment>
+                                    </InputGroup>
                                 );
                             }
                             return null;
@@ -142,7 +184,7 @@ export default function Settings(_: SettingsProps) {
                             return null;
                     }
                 })}
-            </InputGroup>
+            </SettingsContainer>
         </AltContainer>
     );
 }
