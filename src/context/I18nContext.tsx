@@ -1,15 +1,15 @@
-import React, { createContext, Dispatch, useContext, useEffect, useState } from "react";
-import { useSettings } from "./SettingsContext";
+import React, { createContext, Dispatch, useContext, useEffect, useState } from 'react';
+import { useSettings } from './SettingsContext';
 import intl from 'react-intl-universal';
 
 import { locales } from '../locales/locales';
-import { useMasdifClient, useMasdifStatus } from "./MasdifClientContext";
-import { useConversationContext } from "./ConversationContext";
-import { LanguageData } from "../api/types";
+import { useMasdifClient, useMasdifStatus } from './MasdifClientContext';
+import { useConversationContext } from './ConversationContext';
+import { LanguageData } from '../api/types';
 
 export const i18nLocales = {
-    "is-IS": locales.isIS,
-    "en-US": locales.enUS,
+    'is-IS': locales.isIS,
+    'en-US': locales.enUS,
 };
 
 export type I18n = {
@@ -24,7 +24,7 @@ export type I18n = {
 };
 
 export const defaultI18n: I18n = {
-    currentLanguageCode: "is-IS",
+    currentLanguageCode: 'is-IS',
     locales: i18nLocales,
     supportedLocales: [],
 };
@@ -34,7 +34,7 @@ type I18nContextValue = [
     Dispatch<I18n>,
 ];
 
-export const supportedLanguages = ["is-IS", "en-US"] as const;
+export const supportedLanguages = ['is-IS', 'en-US'] as const;
 type LanguageCodeTuple = typeof supportedLanguages;
 type LanguageCode = LanguageCodeTuple[number];
 function isValidLanguageCode(languageCode: string): languageCode is LanguageCode {
@@ -56,7 +56,7 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
 
     useEffect(() => {
         const getSupportedLanguages = async () => {
-            const msg: string = "Unable to fetch supported languages.";
+            const msg: string = 'Unable to fetch supported languages.';
             if (!convoState.conversationId) {
                 console.warn(`${msg} No conversation id present.`);
                 return [];
@@ -80,7 +80,7 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
                     const masdifSupportedLanguages: string[] = langs.map((lang) => { return lang.lang });
                     masdifSupportedLanguages.forEach((l) => {
                         if (!isValidLanguageCode(l)) {
-                            throw new Error("Invalid language code!");
+                            throw new Error('Invalid language code!');
                         }
                     });
                     
@@ -102,13 +102,13 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
 
     useEffect(() => {
         if (!isValidLanguageCode(i18n.currentLanguageCode)) {
-            throw new Error("Invalid language code!");
+            throw new Error('Invalid language code!');
         }
         intl.init({
             locales: defaultI18n.locales,
             currentLocale: i18n.currentLanguageCode,
         });
-        setSettings({["language"]: i18n.currentLanguageCode});
+        setSettings({['language']: i18n.currentLanguageCode});
     }, [i18n.currentLanguageCode]);
 
     return(

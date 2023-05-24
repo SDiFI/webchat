@@ -47,7 +47,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
         <SettingsProvider defaultValue={
             {
                 disableTTS: !!props.disableTTS,
-                language: "is-IS",
+                language: 'is-IS',
             }
         }>
             <MasdifContextProvider serverAddress={props.serverAddress}>
@@ -55,7 +55,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                     <ConversationContextProvider>
                         <I18nProvider>
                             <Chat
-                                title={props.title || "SDiFI"}
+                                title={props.title || 'SDiFI'}
                                 subtitle={props.subtitle}
                                 placeholder={props.placeholder}
                                 hideSettings={props.hideSettings}

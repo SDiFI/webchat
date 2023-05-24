@@ -103,8 +103,8 @@ const SettingsContainer = styled.div`
 const getSettingsDescription = (setting: keyof SettingsValue) => {
     // TODO(Smári, STIFI-29): Switch to t-strings once we need translations.
     const settingsDescription: {[Property in keyof SettingsValue]: string} = {
-        disableTTS: intl.get("SETTINGS_DESCRIPTION_DISABLE_TTS"),
-        language: intl.get("SETTINGS_DESCRIPTION_LANGUAGE"),
+        disableTTS: intl.get('SETTINGS_DESCRIPTION_DISABLE_TTS'),
+        language: intl.get('SETTINGS_DESCRIPTION_LANGUAGE'),
     };
     return settingsDescription[setting];
 };
@@ -142,7 +142,7 @@ export default function Settings(_: SettingsProps) {
                                 </InputGroup>
                             );
                         case 'string':
-                            if (key === "language") {
+                            if (key === 'language') {
                                 return (
                                     <InputGroup key={`${key}-group`}>
                                         <React.Fragment key={`${key}-fragment`}>

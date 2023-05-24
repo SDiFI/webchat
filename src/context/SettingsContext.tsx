@@ -8,7 +8,7 @@ export type Settings = {
 
 const defaultSettings: Settings = {
     disableTTS: false,
-    language: "is-IS",
+    language: 'is-IS',
 };
 
 type SettingsContextValue = [Settings, Dispatch<Settings>];
