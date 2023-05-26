@@ -5,6 +5,8 @@ import { useConversationContext } from '../context/ConversationContext';
 import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
+import thumbsDown from '../images/thumbs-down-regular.svg';
+import thumbsUp from '../images/thumbs-up-regular.svg';
 
 // TODO: Make responsive
 const MessagesContainer = styled.div`
@@ -67,11 +69,64 @@ BotMessageContainer.defaultProps = {
     theme: defaultTheme,
 };
 
+
+const BotMessageFeedbackButtonContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
+`;
+
+const BotMessageFeedbackThumbIcon = styled.img`
+    height: 25px;
+    width: 25px;
+`;
+
+// TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
+const Button = styled.button`
+  border: none;
+  background: unset;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:disabled {
+   cursor: auto;
+  }
+`
+
 function BotAvatar(_: {}) {
     const theme = useTheme();
     if (!theme.botAvatarImageURL) return null;
 
     return <img src={theme.botAvatarImageURL} style={{ height: theme.botAvatarImageSize }} alt='Bot avatar' />;
+}
+
+
+type BotMessageThumbProps = {
+    up: boolean,
+};
+
+function BotMessageFeedbackButton({ up }: BotMessageThumbProps) {
+    // TODO(Smári): Add i18n strings for alt and title strings.
+    return (
+        <Button
+        >
+            <BotMessageFeedbackThumbIcon
+                src={up ? thumbsUp : thumbsDown}
+                alt={up ? 'Gott svar!' : 'Ekki hjálplegt.'}
+                title={up ? 'Gott svar!' : 'Ekki hjálplegt.'}
+            />
+        </Button>
+    )
+}
+
+function BotMessageFeedback() {
+    return (
+        <BotMessageFeedbackButtonContainer>
+            <BotMessageFeedbackButton up={false} />
+            <BotMessageFeedbackButton up={true} />
+        </BotMessageFeedbackButtonContainer>
+    );
 }
 
 type BotMessageProps = {
@@ -90,6 +145,7 @@ function BotMessage(props: BotMessageProps) {
                 <MessageText>{props.message.text}</MessageText>
                 <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
                 <ReplyButtons buttons={buttons || []} />
+                <BotMessageFeedback />
             </BotMessageContainer>
         </MessageContainer>
     );
