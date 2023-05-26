@@ -74,14 +74,14 @@ const BotMessageFeedbackButtonContainer = styled.div`
     justify-content: flex-end;
 `;
 
-const BotMessageFeedbackThumbIcon = styled.img<{ $vertFlip?: boolean; }>`
+const BotMessageFeedbackThumbIcon = styled.img<{ $horFlip?: boolean; }>`
     height: 25px;
     width: 25px;
-    transform: ${props => props.$vertFlip ? 'scaleX(-1)': ''};
+    transform: ${props => props.$horFlip ? 'scaleX(-1)': ''};
 `;
 
 BotMessageFeedbackThumbIcon.defaultProps = {
-    $vertFlip: false,
+    $horFlip: false,
 };
 
 // TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
@@ -108,40 +108,40 @@ function BotAvatar(_: {}) {
 
 type BotMessageFeedbackButtonProps = {
     up: boolean,
-    vertFlip: boolean,
-    msg: string,
+    horFlip: boolean,
+    hoverMsg: string,
 };
 
-function BotMessageFeedbackButton({ up, vertFlip, msg }: BotMessageFeedbackButtonProps) {
-    // TODO(Smári): Add i18n strings for alt and title strings.
+function BotMessageFeedbackButton({ up, horFlip, hoverMsg }: BotMessageFeedbackButtonProps) {
     return (
         <Button
         >
             <BotMessageFeedbackThumbIcon
                 src={up ? thumbsUp : thumbsDown}
-                alt={msg}
-                title={msg}
-                $vertFlip={vertFlip}
+                alt={hoverMsg}
+                title={hoverMsg}
+                $horFlip={horFlip}
             />
         </Button>
     )
 }
 
 BotMessageFeedbackButton.defaultProps = {
-    vertFlip: false,
+    horFlip: false,
 };
 
 function BotMessageFeedback() {
+    // TODO(Smári): Add i18n strings for alt and title strings.
     return (
         <BotMessageFeedbackButtonContainer>
             <BotMessageFeedbackButton
                 up
-                msg='Gott svar!'
+                hoverMsg='Gott svar!'
             />
             <BotMessageFeedbackButton
                 up={false}
-                msg='Ekki hjálplegt.'
-                vertFlip
+                hoverMsg='Ekki hjálplegt.'
+                horFlip
             />
         </BotMessageFeedbackButtonContainer>
     );
