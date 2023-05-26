@@ -23,6 +23,7 @@ const App = () => {
                     botMessageBgColor: '#0aa',
                     botMessageFgColor: '#a00',
                 }}
+                askForFeedback={true}
             />
         </div>
     );

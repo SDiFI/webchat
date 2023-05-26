@@ -150,6 +150,7 @@ function BotMessageFeedback() {
 type BotMessageProps = {
     message: ConversationResponse;
     lastMessage?: boolean;
+    askForFeedback: boolean;
 };
 
 function BotMessage(props: BotMessageProps) {
@@ -163,8 +164,13 @@ function BotMessage(props: BotMessageProps) {
                 <MessageText>{props.message.text}</MessageText>
                 <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
                 <ReplyButtons buttons={buttons || []} />
-                <BotMessageFeedback />
             </BotMessageContainer>
+            {/*TODO(Smári, STIFI-27): Make feedback buttons persistent (should not disappear on rerender)*/}
+            {
+                props.askForFeedback
+                && props.lastMessage
+                && <BotMessageFeedback />
+            }
         </MessageContainer>
     );
 }
@@ -214,14 +220,15 @@ function LoadingMessage() {
     );
 }
 
-type MessagesProps = {};
 
-export default function Messages(_: MessagesProps) {
-    // TODO(rkjaran): This component should probably not be getting messages as a prop, since it's already using
-    // ConversationContext.
+type MessagesProps = {
+    askForFeedback?: boolean,
+};
+
+export default function Messages({ askForFeedback }: MessagesProps) {
     const [convoContext] = useConversationContext();
-
     const containerElement = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
     }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading]);
@@ -235,9 +242,8 @@ export default function Messages(_: MessagesProps) {
                             <BotMessage
                                 key={idx}
                                 message={message}
-                                lastMessage={
-                                    convoContext.messages.length - 1 === idx /* TODO: make available from context */
-                                }
+                                lastMessage={(convoContext.messages.length - 1 === idx) /* TODO: make available from context */}
+                                askForFeedback={askForFeedback ? askForFeedback : false}
                             />
                         );
                     case 'user':
