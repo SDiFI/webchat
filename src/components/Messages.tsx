@@ -69,16 +69,20 @@ BotMessageContainer.defaultProps = {
     theme: defaultTheme,
 };
 
-
 const BotMessageFeedbackButtonContainer = styled.div`
     display: flex;
     justify-content: flex-end;
 `;
 
-const BotMessageFeedbackThumbIcon = styled.img`
+const BotMessageFeedbackThumbIcon = styled.img<{ $vertFlip?: boolean; }>`
     height: 25px;
     width: 25px;
+    transform: ${props => props.$vertFlip ? 'scaleX(-1)': ''};
 `;
+
+BotMessageFeedbackThumbIcon.defaultProps = {
+    $vertFlip: false,
+};
 
 // TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
 const Button = styled.button`
@@ -102,29 +106,43 @@ function BotAvatar(_: {}) {
 }
 
 
-type BotMessageThumbProps = {
+type BotMessageFeedbackButtonProps = {
     up: boolean,
+    vertFlip: boolean,
+    msg: string,
 };
 
-function BotMessageFeedbackButton({ up }: BotMessageThumbProps) {
+function BotMessageFeedbackButton({ up, vertFlip, msg }: BotMessageFeedbackButtonProps) {
     // TODO(Smári): Add i18n strings for alt and title strings.
     return (
         <Button
         >
             <BotMessageFeedbackThumbIcon
                 src={up ? thumbsUp : thumbsDown}
-                alt={up ? 'Gott svar!' : 'Ekki hjálplegt.'}
-                title={up ? 'Gott svar!' : 'Ekki hjálplegt.'}
+                alt={msg}
+                title={msg}
+                $vertFlip={vertFlip}
             />
         </Button>
     )
 }
 
+BotMessageFeedbackButton.defaultProps = {
+    vertFlip: false,
+};
+
 function BotMessageFeedback() {
     return (
         <BotMessageFeedbackButtonContainer>
-            <BotMessageFeedbackButton up={false} />
-            <BotMessageFeedbackButton up={true} />
+            <BotMessageFeedbackButton
+                up
+                msg='Gott svar!'
+            />
+            <BotMessageFeedbackButton
+                up={false}
+                msg='Ekki hjálplegt.'
+                vertFlip
+            />
         </BotMessageFeedbackButtonContainer>
     );
 }
