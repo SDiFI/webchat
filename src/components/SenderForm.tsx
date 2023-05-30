@@ -8,11 +8,11 @@ import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 
 const Form = styled.form`
-  align-items: center;
-  display: flex;
-  background-color: ${({theme}) => theme.formBgColor};
-  height: ${({theme}) => theme.formHeight};
-  padding: 15px 5px;
+    align-items: center;
+    display: flex;
+    background-color: ${({ theme }) => theme.formBgColor};
+    height: ${({ theme }) => theme.formHeight};
+    padding: 15px 5px;
 `;
 
 Form.defaultProps = {
@@ -20,28 +20,27 @@ Form.defaultProps = {
 };
 
 const Textarea = styled.textarea`
-  font-size: 1em;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  color: ${({theme}) => theme.formFgColor};
-  background-color: ${({theme}) => theme.formBgColor};
-  padding-left: 15px;
-  resize: none;
-  font-family: inherit;
+    font-size: 1em;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    color: ${({ theme }) => theme.formFgColor};
+    background-color: ${({ theme }) => theme.formBgColor};
+    padding-left: 15px;
+    resize: none;
+    font-family: inherit;
 
-  &:focus {
-    outline: none !important;
-  }
+    &:focus {
+        outline: none !important;
+    }
 `;
 
 Textarea.defaultProps = {
     theme: defaultTheme,
 };
 
-
 export type SenderFormProps = {
-    placeholder: string,
+    placeholder: string;
 };
 
 export default function SenderForm(props: SenderFormProps) {
@@ -54,20 +53,29 @@ export default function SenderForm(props: SenderFormProps) {
         if (!text) return;
 
         if (text.startsWith('/debug image')) {
-            const duckUrl = 'https://www.pinclipart.com/picdir/middle/122-1222832_kooz-top-donald-duck-drawing-color-clipart.png';
-            convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: 'Þetta er mynd', data: { attachment: [
-                { type: 'image', payload: { src: duckUrl } },
-            ] } });
+            const duckUrl =
+                'https://www.pinclipart.com/picdir/middle/122-1222832_kooz-top-donald-duck-drawing-color-clipart.png';
+            convoDispatch({
+                type: 'ADD_RESPONSE',
+                recipient_id: 'debug',
+                text: 'Þetta er mynd',
+                data: { attachment: [{ type: 'image', payload: { src: duckUrl } }] },
+            });
 
             setText('');
             return;
         }
 
         if (text.startsWith('/debug button')) {
-            convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: 'Þetta eru takkar', buttons: [
-                { title: 'Gerðu þetta', payload: '/request_contact{"subject":"Fjármál"}' },
-                { title: 'Farðu þangað', url: 'https://duckduckgo.com' },
-            ]});
+            convoDispatch({
+                type: 'ADD_RESPONSE',
+                recipient_id: 'debug',
+                text: 'Þetta eru takkar',
+                buttons: [
+                    { title: 'Gerðu þetta', payload: '/request_contact{"subject":"Fjármál"}' },
+                    { title: 'Farðu þangað', url: 'https://duckduckgo.com' },
+                ],
+            });
 
             setText('');
             return;
@@ -76,7 +84,7 @@ export default function SenderForm(props: SenderFormProps) {
         if (text.startsWith('/debug settings ')) {
             const subcommand = text.substring(16);
             if (subcommand.startsWith('get')) {
-                convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: JSON.stringify(settings)});
+                convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: JSON.stringify(settings) });
             } else if (subcommand.startsWith('set ')) {
                 setSettings(JSON.parse(subcommand.substring(4)) as Partial<Settings>);
             }
@@ -93,12 +101,11 @@ export default function SenderForm(props: SenderFormProps) {
             return;
         }
 
-        masdifClient.sendMessage(convoState.conversationId, { text })
-                    .then((responses) => {
-                        responses.forEach((response) => {
-                            convoDispatch({ type: 'ADD_RESPONSE', ...response });
-                        });
-                    });
+        masdifClient.sendMessage(convoState.conversationId, { text }).then(responses => {
+            responses.forEach(response => {
+                convoDispatch({ type: 'ADD_RESPONSE', ...response });
+            });
+        });
     };
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -122,12 +129,8 @@ export default function SenderForm(props: SenderFormProps) {
                 value={text}
                 onChange={({ target }) => setText(target.value)}
                 onKeyDown={handleKeyDown}
-            >
-            </Textarea>
-            <SendButton
-                ready={!!text}
-                onClick={sendText}
-            />
+            ></Textarea>
+            <SendButton ready={!!text} onClick={sendText} />
         </Form>
     );
 }

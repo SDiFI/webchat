@@ -2,38 +2,38 @@ import 'styled-components';
 
 declare module 'styled-components' {
     export interface DefaultTheme {
-        fontFamily: string,
+        fontFamily: string;
 
-        primaryBgColor: string,
-        secondaryBgColor: string,
-        secondaryFgColor: string,
+        primaryBgColor: string;
+        secondaryBgColor: string;
+        secondaryFgColor: string;
 
-        secondaryButtonBg: string,
-        secondaryButtonHoverBg: string,
-        secondaryButtonFg: string,
+        secondaryButtonBg: string;
+        secondaryButtonHoverBg: string;
+        secondaryButtonFg: string;
 
-        primaryButtonBg: string,
-        primaryButtonHoverBg: string,
-        primaryButtonFg: string,
+        primaryButtonBg: string;
+        primaryButtonHoverBg: string;
+        primaryButtonFg: string;
 
-        userMessageBgColor: string,
-        userMessageFgColor: string,
+        userMessageBgColor: string;
+        userMessageFgColor: string;
 
-        botAvatarImageURL?: string,
-        botAvatarImageSize: string,
-        botMessageBgColor: string,
-        botMessageFgColor: string,
-        botMessageMaxImageWidth: string,
+        botAvatarImageURL?: string;
+        botAvatarImageSize: string;
+        botMessageBgColor: string;
+        botMessageFgColor: string;
+        botMessageMaxImageWidth: string;
 
-        formFgColor: string,
-        formBgColor: string,
-        formHeight: string,
+        formFgColor: string;
+        formBgColor: string;
+        formHeight: string;
 
-        launcherBgColor: string,
-        launcherSize: string,
-        launcherOpenImageURL?: string,
-        launcherCloseImageURL?: string,
-        launcherImageSize: string,
-        launcherShadow: boolean,
+        launcherBgColor: string;
+        launcherSize: string;
+        launcherOpenImageURL?: string;
+        launcherCloseImageURL?: string;
+        launcherImageSize: string;
+        launcherShadow: boolean;
     }
 }

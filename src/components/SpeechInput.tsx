@@ -6,21 +6,21 @@ import { useMasdifClient } from '../context/MasdifClientContext';
 import SpeakIcon from './SpeakIcon';
 
 const Button = styled.button`
-  border: none;
-  background: unset;
+    border: none;
+    background: unset;
 
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+        cursor: pointer;
+    }
 
-  &:disabled {
-   cursor: auto;
-  }
-`
+    &:disabled {
+        cursor: auto;
+    }
+`;
 
 type SpeakButtonProps = {
-    active: boolean,
-    onClick: () => void,
+    active: boolean;
+    onClick: () => void;
 };
 
 function SpeakButton(props: SpeakButtonProps) {
@@ -52,31 +52,25 @@ export default function SpeechInput(_: SpeechInputProps) {
 
                 // TODO: Responses should be handled globally, make this only send once we have that. Something the
                 //   useMasdifClient hook should take care of.
-                masdifClient!.sendMessage(
-                    convoState.conversationId!,
-                    {
+                masdifClient!
+                    .sendMessage(convoState.conversationId!, {
                         text: transcript,
                         metadata: {
                             asr_generated: true,
-                        }
-                    }
-                ).then((responses) => {
-                    responses.forEach((response) => {
-                        convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                        },
+                    })
+                    .then(responses => {
+                        responses.forEach(response => {
+                            convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                        });
                     });
-                });
             } else {
-                convoDispatch({ type: 'SET_USER_SPEECH_PARTIAL', hypothesis: transcript});
+                convoDispatch({ type: 'SET_USER_SPEECH_PARTIAL', hypothesis: transcript });
             }
         });
 
-        convoDispatch({ type: 'END_USER_SPEECH' })
+        convoDispatch({ type: 'END_USER_SPEECH' });
     }
 
-    return (
-        <SpeakButton
-            onClick={handleSpeak}
-            active={convoState.userSpeaking}
-        />
-    );
+    return <SpeakButton onClick={handleSpeak} active={convoState.userSpeaking} />;
 }

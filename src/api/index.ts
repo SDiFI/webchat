@@ -22,7 +22,7 @@ export default class MasdifClient implements TMasdifClient {
                 ...(options?.extraHeaders ? options.extraHeaders : {}),
             },
             validateStatus: (status: number) => {
-                return status >= 200 && status < 300 || status === 503;
+                return (status >= 200 && status < 300) || status === 503;
             },
         });
 
@@ -34,10 +34,12 @@ export default class MasdifClient implements TMasdifClient {
             const response = await this.http.get('/health');
             if (response.status === 503) {
                 console.warn('Server not fully healthy.');
-                return response.data.tts !== 'OK' &&
-                       response.data.database === 'OK' &&
-                       response.data.dialog_system === 'OK' &&
-                       response.data.sidekiq === 'OK';
+                return (
+                    response.data.tts !== 'OK' &&
+                    response.data.database === 'OK' &&
+                    response.data.dialog_system === 'OK' &&
+                    response.data.sidekiq === 'OK'
+                );
             }
 
             return response.status === 200 && response.data.masdif === 'OK';
@@ -54,9 +56,9 @@ export default class MasdifClient implements TMasdifClient {
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
     async createConversation() {
-        const response = await this.http.post<{conversation_id: string}>('/conversations');
+        const response = await this.http.post<{ conversation_id: string }>('/conversations');
         if (response.status !== 200) {
-            throw new Error("Could not create a new conversation");
+            throw new Error('Could not create a new conversation');
         }
         return response.data.conversation_id;
     }
@@ -66,17 +68,14 @@ export default class MasdifClient implements TMasdifClient {
             text: message.text,
             metadata: {
                 tts: !this.disableTTS,
-                asr_generated: (
-                     // Not specified means no. 
-                    message?.metadata?.asr_generated
-                    ? message.metadata.asr_generated
-                    : false
-                ),
+                asr_generated:
+                    // Not specified means no.
+                    message?.metadata?.asr_generated ? message.metadata.asr_generated : false,
             },
         };
         const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
         if (response.status !== 200) {
-            throw new Error("Could not send message to server.");
+            throw new Error('Could not send message to server.');
         }
         return response.data;
     }

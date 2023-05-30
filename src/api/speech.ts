@@ -6,39 +6,42 @@ import {
     StreamingRecognizeRequest,
     RecognitionConfig_AudioEncoding,
     StreamingRecognizeResponse_SpeechEventType,
-} from '../proto/tiro/speech/v1alpha/speech'
+} from '../proto/tiro/speech/v1alpha/speech';
 
 const floatTo16BitPCM = (output: ArrayBuffer, input: Float32Array, offset?: number) => {
     const outView = new DataView(output);
     if (!offset) offset = 0;
-    for (var i = 0; i < input.length; i++, offset += 2) {
-        var s = Math.max(-1, Math.min(1, input[i]));
-        outView.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    for (let i = 0; i < input.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, input[i]));
+        outView.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
     }
 };
 
-export async function* createAudioContentRequests(audioCtx: AudioContext, signal: AbortSignal): AsyncIterable<DeepPartial<StreamingRecognizeRequest>> {
+export async function* createAudioContentRequests(
+    audioCtx: AudioContext,
+    signal: AbortSignal,
+): AsyncIterable<DeepPartial<StreamingRecognizeRequest>> {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    const audioNode = audioCtx.createMediaStreamSource(stream)
+    const audioNode = audioCtx.createMediaStreamSource(stream);
     const processingNode = audioCtx.createScriptProcessor(8192, 1, 1);
 
     async function* audioprocess(signal: AbortSignal): AsyncIterable<AudioProcessingEvent> {
         while (true) {
             const opts = { signal };
             yield await new Promise(rs =>
-                processingNode.addEventListener('audioprocess', rs, opts as AddEventListenerOptions));
+                processingNode.addEventListener('audioprocess', rs, opts as AddEventListenerOptions),
+            );
         }
-    };
+    }
 
-    audioNode.connect(processingNode)
-        .connect(audioCtx.destination);
+    audioNode.connect(processingNode).connect(audioCtx.destination);
 
     for await (const e of audioprocess(signal)) {
         if (signal.aborted) {
             break;
         }
 
-        if (!e.inputBuffer.getChannelData(0).every((elem) => elem === 0)) {
+        if (!e.inputBuffer.getChannelData(0).every(elem => elem === 0)) {
             const content = new Uint8Array(e.inputBuffer.getChannelData(0).length * 2);
             floatTo16BitPCM(content.buffer, e.inputBuffer.getChannelData(0));
             yield { audioContent: content };
@@ -46,15 +49,13 @@ export async function* createAudioContentRequests(audioCtx: AudioContext, signal
     }
 }
 
-
-
 export type SingleUttSpeechRecognitionOptions = {
-    enableAutomaticPunctuation?: boolean,
+    enableAutomaticPunctuation?: boolean;
 
     // BCP-46 language code, defaults to 'is-IS'
-    languageCode?: string,
+    languageCode?: string;
 
-    serverAddress?: string
+    serverAddress?: string;
 };
 
 // This opens a channel and creates a client on each invocation
@@ -108,7 +109,9 @@ export async function performSingleUttSpeechRecognition(
                     const transcript = alternatives[0].transcript;
                     handleTranscript(transcript, { isFinal: result.isFinal });
                 }
-            } else if (response.speechEventType === StreamingRecognizeResponse_SpeechEventType.END_OF_SINGLE_UTTERANCE) {
+            } else if (
+                response.speechEventType === StreamingRecognizeResponse_SpeechEventType.END_OF_SINGLE_UTTERANCE
+            ) {
                 handleTranscript('', { isFinal: true });
                 abortcontroller.abort();
             }

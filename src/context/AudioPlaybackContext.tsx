@@ -1,30 +1,27 @@
 import React, { createContext, Dispatch, useContext, useEffect, useRef, useState } from 'react';
 
 export type PlaybackState = {
-    src?: string,
-    playing: boolean,
+    src?: string;
+    playing: boolean;
 };
 
-export type AudioPlaybackContextValue = [
-    PlaybackState,
-    Dispatch<PlaybackState>,
-];
+export type AudioPlaybackContextValue = [PlaybackState, Dispatch<PlaybackState>];
 
-const AudioPlaybackContext = createContext<AudioPlaybackContextValue>([
-    { playing: false }, () => {}]);
+const AudioPlaybackContext = createContext<AudioPlaybackContextValue>([{ playing: false }, () => {}]);
 
 export type AudioPlaybackProviderProps = {
-    children: React.ReactNode,
+    children: React.ReactNode;
 };
 
 export function AudioPlaybackProvider({ children }: AudioPlaybackProviderProps) {
-    const refContainer = useRef<HTMLAudioElement>(null)
+    const refContainer = useRef<HTMLAudioElement>(null);
     const [playback, setPlayback] = useState<PlaybackState>({ playing: false });
 
     useEffect(() => {
-        const handleEnded = () => setPlayback({
-            playing: false,
-        });
+        const handleEnded = () =>
+            setPlayback({
+                playing: false,
+            });
         refContainer.current?.addEventListener('ended', handleEnded);
         refContainer.current?.addEventListener('pause', handleEnded);
         return function cleanup() {

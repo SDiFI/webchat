@@ -16,27 +16,26 @@ const slideInAnimation = keyframes`
 `;
 
 const LauncherButton = styled.button`
-  animation-duration: .5s;
-  animation-name: ${slideInAnimation};
-  animation-fill-mode: forwards;
+    animation-duration: 0.5s;
+    animation-name: ${slideInAnimation};
+    animation-fill-mode: forwards;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: ${({theme}) => theme.launcherBgColor};
-  border: ${({theme}) => theme.launcherShadow ? 0 : '1px solid #b5b5b5'};
-  border-radius: 50%;
-  box-shadow: ${({theme}) => theme.launcherShadow ? '0 2px 10px 1px #b5b5b5' : 'none'};
-  height: ${({theme}) => theme.launcherSize};
-  margin: 0;
-  width: ${({theme}) => theme.launcherSize};
-  box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: ${({ theme }) => theme.launcherBgColor};
+    border: ${({ theme }) => (theme.launcherShadow ? 0 : '1px solid #b5b5b5')};
+    border-radius: 50%;
+    box-shadow: ${({ theme }) => (theme.launcherShadow ? '0 2px 10px 1px #b5b5b5' : 'none')};
+    height: ${({ theme }) => theme.launcherSize};
+    margin: 0;
+    width: ${({ theme }) => theme.launcherSize};
+    box-sizing: border-box;
 `;
 
 LauncherButton.defaultProps = {
     theme: defaultTheme,
 };
-
 
 const rotationLrAnimation = keyframes`
   from  {
@@ -57,36 +56,37 @@ const rotationRlAnimation = keyframes`
 `;
 
 type LauncherImgProps = {
-    open: boolean,
+    open: boolean;
 };
 
 const LauncherImg = styled.img<LauncherImgProps>`
-  width: ${({theme}) => theme.launcherImageSize};
+    width: ${({ theme }) => theme.launcherImageSize};
 
-  animation-duration: .5s;
-  animation-name: ${props => props.open ? rotationLrAnimation : rotationRlAnimation };
-  animation-fill-mode: forwards;
+    animation-duration: 0.5s;
+    animation-name: ${props => (props.open ? rotationLrAnimation : rotationRlAnimation)};
+    animation-fill-mode: forwards;
 `;
 
 LauncherImg.defaultProps = {
     theme: defaultTheme,
 };
 
-
 type LauncherProps = {
-    visible: boolean,
-    onClick: () => void,
+    visible: boolean;
+    onClick: () => void;
 };
 
 export default function Launcher({ visible, onClick }: LauncherProps) {
     const theme = useTheme();
-    const openImgSrc = theme.launcherOpenImageURL?? openLauncherImage;
-    const closeImgSrc = theme.launcherCloseImageURL?? closeLauncherImage;
+    const openImgSrc = theme.launcherOpenImageURL ?? openLauncherImage;
+    const closeImgSrc = theme.launcherCloseImageURL ?? closeLauncherImage;
     return (
         <LauncherButton onClick={onClick}>
-            {visible ?
-             <LauncherImg open={visible} src={closeImgSrc} />
-            : <LauncherImg open={visible} src={openImgSrc} />}
+            {visible ? (
+                <LauncherImg open={visible} src={closeImgSrc} />
+            ) : (
+                <LauncherImg open={visible} src={openImgSrc} />
+            )}
         </LauncherButton>
-    )
+    );
 }

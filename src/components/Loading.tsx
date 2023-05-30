@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import loadingAnimation from '../images/loading-gif.gif'
+import loadingAnimation from '../images/loading-gif.gif';
 
 const LoadingImg = styled.img`
-  width: 30px;
-  height: 30px;
+    width: 30px;
+    height: 30px;
 `;
 
 export type LoadingProps = {};

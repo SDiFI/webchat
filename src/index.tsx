@@ -3,7 +3,4 @@ import { init } from './index-umd';
 
 export default ConnectedChat;
 
-export {
-    ConnectedChatProps,
-    init,
-};
+export { ConnectedChatProps, init };

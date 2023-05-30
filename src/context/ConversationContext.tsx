@@ -5,15 +5,12 @@ import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
 import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
 
 export type ConversationState = {
-    conversationId: string | null,
-    messages: (
-        | ({ actor?: 'bot' } & ConversationResponse)
-        | ({ actor: 'user' } & ConversationSentMessage)
-    )[],
-    speechHypothesis?: string,
-    loading: boolean,
-    userSpeaking: boolean,
-    error: string | null,
+    conversationId: string | null;
+    messages: (({ actor?: 'bot' } & ConversationResponse) | ({ actor: 'user' } & ConversationSentMessage))[];
+    speechHypothesis?: string;
+    loading: boolean;
+    userSpeaking: boolean;
+    error: string | null;
 };
 
 const initialState: ConversationState = {
@@ -26,17 +23,19 @@ const initialState: ConversationState = {
 
 // TODO(rkjaran): Define this type in more detail
 export type ConversationAction =
-    | { type: 'ADD_RESPONSE' } & ConversationResponse
-    | { type: 'ADD_SENT_TEXT' } & ConversationSentMessage
+    | ({ type: 'ADD_RESPONSE' } & ConversationResponse)
+    | ({ type: 'ADD_SENT_TEXT' } & ConversationSentMessage)
     | { type: 'SEND_ACTION' }
-    | { type: 'SET_CONVERSATION_ID', conversationId: string }
+    | { type: 'SET_CONVERSATION_ID'; conversationId: string }
     | { type: 'START_USER_SPEECH' }
     | { type: 'END_USER_SPEECH' }
-    | { type: 'SET_USER_SPEECH_PARTIAL', hypothesis: string }
-    | { type: 'DELAY_MOTD_RESPONSE' }
-    ;
+    | { type: 'SET_USER_SPEECH_PARTIAL'; hypothesis: string }
+    | { type: 'DELAY_MOTD_RESPONSE' };
 
-const reducer: React.Reducer<ConversationState, ConversationAction> = (state: ConversationState, action: ConversationAction) => {
+const reducer: React.Reducer<ConversationState, ConversationAction> = (
+    state: ConversationState,
+    action: ConversationAction,
+) => {
     switch (action.type) {
         case 'ADD_RESPONSE':
             return Object.assign({}, state, {
@@ -65,29 +64,27 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (state: Co
     }
 };
 
-const makePlaybackMiddleware = (setPlaybackFn: (playbackState: PlaybackState) => void) =>
-    (action: ConversationAction, /* state: ConversationState */) => {
-        if (action.type === 'ADD_RESPONSE') {
-            console.debug('response data', action.data)
-            const audioAttachment = action.data?.attachment?.find((attachment) => attachment.type === 'audio');
-            if (audioAttachment) {
-                setPlaybackFn({
-                    src: audioAttachment.payload.src,
-                    playing: true,
-                });
-            }
+const makePlaybackMiddleware = (setPlaybackFn: (playbackState: PlaybackState) => void) => (
+    action: ConversationAction /* state: ConversationState */,
+) => {
+    if (action.type === 'ADD_RESPONSE') {
+        console.debug('response data', action.data);
+        const audioAttachment = action.data?.attachment?.find(attachment => attachment.type === 'audio');
+        if (audioAttachment) {
+            setPlaybackFn({
+                src: audioAttachment.payload.src,
+                playing: true,
+            });
         }
-    };
+    }
+};
 
-export type ConversationContextValue = [
-    ConversationState,
-    React.Dispatch<ConversationAction>,
-];
+export type ConversationContextValue = [ConversationState, React.Dispatch<ConversationAction>];
 
 const ConversationContext = createContext<ConversationContextValue>([initialState, () => {}]);
 
 export type Props = {
-    children?: React.ReactNode,
+    children?: React.ReactNode;
 };
 
 export function ConversationContextProvider(props: Props) {
@@ -101,11 +98,7 @@ export function ConversationContextProvider(props: Props) {
         setSavedState(state);
     }, [state]);
 
-    return (
-        <ConversationContext.Provider value={[state, dispatch]}>
-            {props.children}
-        </ConversationContext.Provider>
-    );
+    return <ConversationContext.Provider value={[state, dispatch]}>{props.children}</ConversationContext.Provider>;
 }
 
 export const useConversationContext = () => useContext(ConversationContext);

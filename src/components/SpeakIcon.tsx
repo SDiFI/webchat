@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type SpeakIconProps = {
-    active: boolean,
+    active: boolean;
 };
 
 export default function SpeakIcon({ active }: SpeakIconProps) {
@@ -16,9 +16,7 @@ export default function SpeakIcon({ active }: SpeakIconProps) {
             width='25'
             height='25'
         >
-            <g
-                style={active ? { fill: 'red' } : {}}
-            >
+            <g style={active ? { fill: 'red' } : {}}>
                 <path
                     d='M44,28c-0.552,0-1,0.447-1,1v6c0,7.72-6.28,14-14,14s-14-6.28-14-14v-6c0-0.553-0.448-1-1-1s-1,0.447-1,1v6
 	c0,8.485,6.644,15.429,15,15.949V56h-5c-0.552,0-1,0.447-1,1s0.448,1,1,1h12c0.552,0,1-0.447,1-1s-0.448-1-1-1h-5v-5.051

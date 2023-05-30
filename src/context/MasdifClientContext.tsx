@@ -6,9 +6,9 @@ import { useSettings } from './SettingsContext';
 const MasdifClientContext = createContext<TMasdifClient | null>(null);
 
 export type MasdifClientContextProviderProps = {
-    serverAddress: string,
-    extraHttpHeaders?: { [key: string]: string },
-    children?: React.ReactNode,
+    serverAddress: string;
+    extraHttpHeaders?: { [key: string]: string };
+    children?: React.ReactNode;
 };
 
 export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
@@ -16,17 +16,15 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
     const [settings] = useSettings();
 
     useEffect(() => {
-        setMasdifClient(new MasdifClient(props.serverAddress, {
-            extraHeaders: props.extraHttpHeaders,
-            disableTTS: settings.disableTTS,
-        }));
-    }, [props.serverAddress, settings.disableTTS])
+        setMasdifClient(
+            new MasdifClient(props.serverAddress, {
+                extraHeaders: props.extraHttpHeaders,
+                disableTTS: settings.disableTTS,
+            }),
+        );
+    }, [props.serverAddress, settings.disableTTS]);
 
-    return (
-        <MasdifClientContext.Provider value={masdifClient}>
-            {props.children}
-        </MasdifClientContext.Provider>
-    );
+    return <MasdifClientContext.Provider value={masdifClient}>{props.children}</MasdifClientContext.Provider>;
 }
 
 export const useMasdifClient = () => useContext(MasdifClientContext);
@@ -43,7 +41,7 @@ export function useMasdifStatus() {
                 setStatus(await masdifClient?.status());
                 handler = window.setTimeout(fetchStatus, 30000);
             }
-        }
+        };
 
         fetchStatus();
 
