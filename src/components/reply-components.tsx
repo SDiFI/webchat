@@ -42,17 +42,16 @@ function ReplyAction(props: ReplyActionProps) {
     const handlePostback = (_: React.MouseEvent) => {
         // TODO: We should probably move this update logic somewhere else, since SendForm is doing the exact same action
         convoDispatch({ type: 'SEND_ACTION' });
-        masdifClient?.sendMessage(
-            convoState.conversationId!,
-            {
+        masdifClient
+            ?.sendMessage(convoState.conversationId!, {
                 text: props.payload,
                 metadata: { language: settings.language },
-            }
-        ).then((responses) => {
-            responses.forEach((response) => {
-                convoDispatch({ type: 'ADD_RESPONSE', ...response });
+            })
+            .then(responses => {
+                responses.forEach(response => {
+                    convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                });
             });
-        });
     };
 
     return <ReplyButton onClick={handlePostback}>{props.title}</ReplyButton>;

@@ -37,7 +37,6 @@ export type ConversationResponse = {
     data?: ConversationData;
 };
 
-
 export type LanguageData = {
     // BCP-46 language code
     lang: string;

@@ -131,7 +131,9 @@ export default function Chat(props: ChatProps) {
 
                                 {!props.hideMute && (
                                     <HeaderButton
-                                        title={intl.get('CHAT_HEADERBUTTON_TOGGLE_TTS', {option: settings.disableTTS ? 1 : 0})}
+                                        title={intl.get('CHAT_HEADERBUTTON_TOGGLE_TTS', {
+                                            option: settings.disableTTS ? 1 : 0,
+                                        })}
                                         onClick={() => setSettings({ disableTTS: !settings.disableTTS })}
                                     >
                                         <img src={settings.disableTTS ? soundOffSvg : soundOnSvg} />
@@ -156,7 +158,7 @@ export default function Chat(props: ChatProps) {
                                             paragraphs={
                                                 props.info?.paragraphs || [
                                                     intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_01'),
-                                                    intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_02', {name: props.title}),
+                                                    intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_02', { name: props.title }),
                                                 ]
                                             }
                                             buttons={props.info?.buttons}
@@ -169,7 +171,9 @@ export default function Chat(props: ChatProps) {
                                     return (
                                         <>
                                             <Messages />
-                                            <SenderForm placeholder={props.placeholder || intl.get('CHAT_DEFAULT_PLACEHOLDER')} />
+                                            <SenderForm
+                                                placeholder={props.placeholder || intl.get('CHAT_DEFAULT_PLACEHOLDER')}
+                                            />
                                         </>
                                     );
                             }

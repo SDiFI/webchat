@@ -14,13 +14,13 @@ export const i18nLocales = {
 
 export type I18n = {
     // Current locale selection.
-    currentLanguageCode: string,
-    
+    currentLanguageCode: string;
+
     // Local (widget) supported locales.
-    locales: typeof i18nLocales,
-    
+    locales: typeof i18nLocales;
+
     // An intersection of local (widget) supported locales and masdif supported languages.
-    supportedLocales: LanguageData[],
+    supportedLocales: LanguageData[];
 };
 
 export const defaultI18n: I18n = {
@@ -29,10 +29,7 @@ export const defaultI18n: I18n = {
     supportedLocales: [],
 };
 
-type I18nContextValue = [
-    I18n,
-    Dispatch<I18n>,
-];
+type I18nContextValue = [I18n, Dispatch<I18n>];
 
 export const supportedLanguages = ['is-IS', 'en-US'] as const;
 type LanguageCodeTuple = typeof supportedLanguages;
@@ -43,7 +40,7 @@ function isValidLanguageCode(languageCode: string): languageCode is LanguageCode
 
 export const I18nContext = createContext<I18nContextValue>([defaultI18n, () => {}]);
 
-export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: React.ReactNode }) {
+export function I18nProvider(props: { defaultValue?: Partial<I18n>; children: React.ReactNode }) {
     const [settings, setSettings] = useSettings();
     const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
@@ -74,26 +71,31 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
         };
 
         if (i18n.supportedLocales.length === 0) {
-            getSupportedLanguages().then((langs) => {
+            getSupportedLanguages().then(langs => {
                 if (langs.length > 0) {
                     const webchatSupportedLocales: string[] = Object.keys(i18n.locales);
-                    const masdifSupportedLanguages: string[] = langs.map((lang) => { return lang.lang });
-                    masdifSupportedLanguages.forEach((l) => {
+                    const masdifSupportedLanguages: string[] = langs.map(lang => {
+                        return lang.lang;
+                    });
+                    masdifSupportedLanguages.forEach(l => {
                         if (!isValidLanguageCode(l)) {
                             throw new Error('Invalid language code!');
                         }
                     });
-                    
-                    const commonlySupportedLanguages: string[] = webchatSupportedLocales.filter((l) => masdifSupportedLanguages.includes(l));
-                    
+
+                    const commonlySupportedLanguages: string[] = webchatSupportedLocales.filter(l =>
+                        masdifSupportedLanguages.includes(l),
+                    );
+
                     console.debug('Supported widget languages:', webchatSupportedLocales);
                     console.debug('Supported chatbot languages:', masdifSupportedLanguages);
                     console.debug('Supported languages (intersection):', commonlySupportedLanguages);
-                    commonlySupportedLanguages.length === 0 && console.warn('Backend does not support any locally supported locale!');
-    
+                    commonlySupportedLanguages.length === 0 &&
+                        console.warn('Backend does not support any locally supported locale!');
+
                     setI18n({
                         ...i18n,
-                        ['supportedLocales']: langs.filter((l) => commonlySupportedLanguages.includes(l.lang)),
+                        supportedLocales: langs.filter(l => commonlySupportedLanguages.includes(l.lang)),
                     });
                 }
             });
@@ -108,22 +110,18 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>, children: Re
             locales: defaultI18n.locales,
             currentLocale: i18n.currentLanguageCode,
         });
-        setSettings({['language']: i18n.currentLanguageCode});
+        setSettings({ language: i18n.currentLanguageCode });
     }, [i18n.currentLanguageCode]);
 
-    return(
-        <I18nContext.Provider value={[i18n, setI18n]}>
-            {props.children}
-        </I18nContext.Provider>
-    );
+    return <I18nContext.Provider value={[i18n, setI18n]}>{props.children}</I18nContext.Provider>;
 }
 
 export function useI18n(): [I18n, Dispatch<Partial<I18n>>] {
     const [ctx, setCtx] = useContext(I18nContext);
 
     const mergeAndSetValue = (newI18n: Partial<I18n>) => {
-        setCtx({...ctx, ...newI18n});
-    }
+        setCtx({ ...ctx, ...newI18n });
+    };
 
     return [ctx, mergeAndSetValue];
 }

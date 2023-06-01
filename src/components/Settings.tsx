@@ -5,11 +5,10 @@ import intl from 'react-intl-universal';
 import AltContainer from './AltContainer';
 import { useI18n } from '../context/I18nContext';
 
-
 const InputGroup = styled.div`
     display: inline-block;
     input[type='checkbox'] {
-        opacity: 0;
+        display: none;
     }
 
     input[type='checkbox'] + label {
@@ -70,8 +69,6 @@ const InputGroup = styled.div`
             border: 1px dotted blue;
         }
     }
-<<<<<<< HEAD
-=======
   }
   select {
     position: relative;
@@ -92,16 +89,15 @@ const InputGroup = styled.div`
 `;
 
 const SettingsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  width: 50%;
->>>>>>> e06efd7 (I18n implementation wrap-up)
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 50%;
 `;
 
 const getSettingsDescription = (setting: keyof SettingsValue) => {
-    const settingsDescription: {[Property in keyof SettingsValue]: string} = {
+    const settingsDescription: { [Property in keyof SettingsValue]: string } = {
         disableTTS: intl.get('SETTINGS_DESCRIPTION_DISABLE_TTS'),
         language: intl.get('SETTINGS_DESCRIPTION_LANGUAGE'),
     };
@@ -147,11 +143,15 @@ export default function Settings(_: SettingsProps) {
                                         <React.Fragment key={`${key}-fragment`}>
                                             <select
                                                 defaultValue={settings.language}
-                                                onChange={(e) => setI18n({['currentLanguageCode']: e.target.value})}
+                                                onChange={e => setI18n({ ['currentLanguageCode']: e.target.value })}
                                                 disabled={i18n.supportedLocales.length < 2}
-                                                title={i18n.supportedLocales.length < 2 ? intl.get('SETTINGS_LANGUAGE_SELECTION_DISABLED') : ''}
+                                                title={
+                                                    i18n.supportedLocales.length < 2
+                                                        ? intl.get('SETTINGS_LANGUAGE_SELECTION_DISABLED')
+                                                        : ''
+                                                }
                                             >
-                                                {i18n.supportedLocales.map((langData) => {
+                                                {i18n.supportedLocales.map(langData => {
                                                     return (
                                                         <React.Fragment key={`${langData.lang}-sub-group`}>
                                                             <option
@@ -159,18 +159,15 @@ export default function Settings(_: SettingsProps) {
                                                                 value={langData.lang}
                                                                 title={langData.explanation}
                                                             >
-                                                                {
-                                                                    intl.get(`SETTINGS_LANGUAGE_SELECTION_${langData.lang.toUpperCase()}`)
-                                                                }
+                                                                {intl.get(
+                                                                    `SETTINGS_LANGUAGE_SELECTION_${langData.lang.toUpperCase()}`,
+                                                                )}
                                                             </option>
                                                         </React.Fragment>
                                                     );
                                                 })}
                                             </select>
-                                            <label
-                                                key={`${key}-label`}
-                                                htmlFor={key}
-                                            >
+                                            <label key={`${key}-label`} htmlFor={key}>
                                                 {getSettingsDescription(key)}
                                             </label>
                                         </React.Fragment>
