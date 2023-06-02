@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { ConversationResponse, ConversationSentMessage } from '../api/types';
-import { useConversationContext } from '../context/ConversationContext';
+import { ConversationSentMessage } from '../api/types';
+import { BotConversationMessage, useConversationContext } from '../context/ConversationContext';
 import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
@@ -148,7 +148,7 @@ function BotMessageFeedback() {
 }
 
 type BotMessageProps = {
-    message: ConversationResponse;
+    message: BotConversationMessage;
     lastMessage?: boolean;
     askForFeedback: boolean;
 };
@@ -168,7 +168,7 @@ function BotMessage(props: BotMessageProps) {
             {/*TODO(Smári, STIFI-27): Make feedback buttons persistent (should not disappear on rerender)*/}
             {
                 props.askForFeedback
-                && props.lastMessage
+                && props.message.isLast
                 && <BotMessageFeedback />
             }
         </MessageContainer>

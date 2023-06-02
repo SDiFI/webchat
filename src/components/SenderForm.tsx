@@ -107,8 +107,13 @@ export default function SenderForm(props: SenderFormProps) {
                 metadata: { language: settings.language },
             })
             .then(responses => {
-                responses.forEach(response => {
-                    convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                responses.forEach((response, i, responseArr) => {
+                    let message: BotConversationMessage = {
+                                ...response,
+                                actor: "bot",
+                                isLast: i === (responseArr.length - 1),
+                            };
+                            convoDispatch({ type: 'ADD_RESPONSE', ...message });
                 });
             });
     };
