@@ -4,9 +4,20 @@ import useSessionStorage from '../hooks/useSessionStorage';
 import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
 import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
 
+export type BotConversationMessage = {
+    actor?: 'bot',
+    uuid: string,
+    isLast: boolean,
+    // positiveFeedback?: boolean | undefined
+} & ConversationResponse;
+
+export type UserConversationMessage = {
+    actor: 'user' 
+} & ConversationSentMessage;
+
 export type ConversationState = {
     conversationId: string | null;
-    messages: (({ actor?: 'bot' } & ConversationResponse) | ({ actor: 'user' } & ConversationSentMessage))[];
+    messages: (BotConversationMessage | UserConversationMessage)[];
     speechHypothesis?: string;
     loading: boolean;
     userSpeaking: boolean;
