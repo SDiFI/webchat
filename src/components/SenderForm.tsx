@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useConversationContext } from '../context/ConversationContext';
+import { BotConversationMessage, useConversationContext } from '../context/ConversationContext';
 import { useMasdifClient } from '../context/MasdifClientContext';
 import { Settings, useSettings } from '../context/SettingsContext';
 import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
+
+declare global {
+    interface Crypto {
+        randomUUID: () => string;
+    }
+};
 
 const Form = styled.form`
     align-items: center;
@@ -111,6 +117,7 @@ export default function SenderForm(props: SenderFormProps) {
                     let message: BotConversationMessage = {
                                 ...response,
                                 actor: "bot",
+                                uuid: crypto.randomUUID(),              // TODO(Smári, STIFI-27): Use masdif's assigned message uuid's when they have been made available.
                                 isLast: i === (responseArr.length - 1),
                             };
                             convoDispatch({ type: 'ADD_RESPONSE', ...message });
