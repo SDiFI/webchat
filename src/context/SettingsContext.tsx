@@ -3,10 +3,12 @@ import useLocalStorage from '../hooks/useLocalStorage';
 
 export type Settings = {
     disableTTS: boolean;
+    language: string;
 };
 
 const defaultSettings: Settings = {
     disableTTS: false,
+    language: 'is-IS',
 };
 
 type SettingsContextValue = [Settings, Dispatch<Settings>];

@@ -15,6 +15,7 @@ import Settings from './Settings';
 import { useSettings } from '../context/SettingsContext';
 import useSessionStorage from '../hooks/useSessionStorage';
 import { defaultTheme } from '../theme';
+import intl from 'react-intl-universal';
 
 const ChatContainer = styled.div`
     position: fixed;
@@ -62,7 +63,7 @@ const ConversationContainer = styled.div`
 export type ChatProps = {
     title: string;
     subtitle?: string;
-    placeholder: string;
+    placeholder?: string;
     startClosed?: boolean;
     hideSettings?: boolean;
     hideMute?: boolean;
@@ -90,7 +91,6 @@ export default function Chat(props: ChatProps) {
                 const conversationId = await masdifClient.createConversation();
                 convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
-                // TODO(rkjaran): Once we have i18n honor current language and set possible languages.
                 // TODO(rkjaran): Perhaps this should be a separate action for motd and a middleware that adds the
                 //   responses with a delay.
                 const info = await masdifClient.info(conversationId);
@@ -120,7 +120,7 @@ export default function Chat(props: ChatProps) {
                     <ConversationContainer>
                         <Header>
                             <HeaderTitle>{props.title}</HeaderTitle>
-                            <HeaderSubtitle>{props.subtitle}</HeaderSubtitle>
+                            <HeaderSubtitle>{props.subtitle || intl.get('CHAT_DEFAULT_SUBTITLE')}</HeaderSubtitle>
 
                             <HeaderButtonGroup>
                                 {props.info && (
@@ -131,7 +131,9 @@ export default function Chat(props: ChatProps) {
 
                                 {!props.hideMute && (
                                     <HeaderButton
-                                        title={`${settings.disableTTS ? 'Kveikja' : 'Slökkva'} á talgervingu.`}
+                                        title={intl.get('CHAT_HEADERBUTTON_TOGGLE_TTS', {
+                                            option: settings.disableTTS ? 1 : 0,
+                                        })}
                                         onClick={() => setSettings({ disableTTS: !settings.disableTTS })}
                                     >
                                         <img src={settings.disableTTS ? soundOffSvg : soundOnSvg} />
@@ -153,9 +155,14 @@ export default function Chat(props: ChatProps) {
                                 case 'info':
                                     return (
                                         <Info
-                                            paragraphs={props.info!.paragraphs}
-                                            buttons={props.info!.buttons}
-                                            footer={props.info!.footer}
+                                            paragraphs={
+                                                props.info?.paragraphs || [
+                                                    intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_01'),
+                                                    intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_02', { name: props.title }),
+                                                ]
+                                            }
+                                            buttons={props.info?.buttons}
+                                            footer={props.info?.footer || intl.get('CHAT_DEFAULT_INFO_FOOTER')}
                                         />
                                     );
                                 case 'settings':
@@ -164,7 +171,9 @@ export default function Chat(props: ChatProps) {
                                     return (
                                         <>
                                             <Messages />
-                                            <SenderForm placeholder={props.placeholder} />
+                                            <SenderForm
+                                                placeholder={props.placeholder || intl.get('CHAT_DEFAULT_PLACEHOLDER')}
+                                            />
                                         </>
                                     );
                             }

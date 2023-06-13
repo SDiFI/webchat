@@ -37,7 +37,7 @@ export type ConversationResponse = {
     data?: ConversationData;
 };
 
-type LanguageData = {
+export type LanguageData = {
     // BCP-46 language code
     lang: string;
 
@@ -46,7 +46,7 @@ type LanguageData = {
 };
 
 export type InfoData = {
-    // Lanugages supported by server
+    // Languages supported by server
     supported_languages: LanguageData[];
 
     // Message of the day. Multiple messages displayed if more than one element.

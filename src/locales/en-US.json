@@ -1,0 +1,13 @@
+{
+    "CHAT_DEFAULT_SUBTITLE": "Bot",
+    "CHAT_DEFAULT_PLACEHOLDER": "Ask away...",
+    "CHAT_DEFAULT_INFO_PARAGRAPH_01": "This chatbot is part of SDiFI, a collaborative development project by Reykjavik University, Grammatek and Tiro.",
+    "CHAT_DEFAULT_INFO_PARAGRAPH_02": "<b>{name}</b>, the chatbot, might not know much, but he can answer questions about Duckburg.",
+    "CHAT_DEFAULT_INFO_FOOTER": "<a href=\"https://github.com/sdifi\" target=\"_blank\">SDiFI</a>",
+    "CHAT_HEADERBUTTON_TOGGLE_TTS": "Turn TTS {option, plural, =0 {off} other {on}}.",
+    "SETTINGS_DESCRIPTION_DISABLE_TTS": "Turn off TTS",
+    "SETTINGS_DESCRIPTION_LANGUAGE": "Language",
+    "SETTINGS_LANGUAGE_SELECTION_DISABLED": "This chatbot only supports one language.",
+    "SETTINGS_LANGUAGE_SELECTION_IS-IS": "Icelandic",
+    "SETTINGS_LANGUAGE_SELECTION_EN-US": "English"
+}

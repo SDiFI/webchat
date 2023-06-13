@@ -101,11 +101,16 @@ export default function SenderForm(props: SenderFormProps) {
             return;
         }
 
-        masdifClient.sendMessage(convoState.conversationId, { text }).then(responses => {
-            responses.forEach(response => {
-                convoDispatch({ type: 'ADD_RESPONSE', ...response });
+        masdifClient
+            .sendMessage(convoState.conversationId, {
+                text: text,
+                metadata: { language: settings.language },
+            })
+            .then(responses => {
+                responses.forEach(response => {
+                    convoDispatch({ type: 'ADD_RESPONSE', ...response });
+                });
             });
-        });
     };
 
     const handleSubmit = (event: React.FormEvent) => {
