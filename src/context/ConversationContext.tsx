@@ -4,11 +4,13 @@ import useSessionStorage from '../hooks/useSessionStorage';
 import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
 import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
 
+type BotConversationMessageFeedback = {
+    [key: string]: string,
+};
+
 export type BotConversationMessage = {
     actor?: 'bot',
-    uuid: string,
     isLast: boolean,
-    // positiveFeedback?: boolean | undefined
 } & ConversationResponse;
 
 export type UserConversationMessage = {
@@ -22,6 +24,7 @@ export type ConversationState = {
     loading: boolean;
     userSpeaking: boolean;
     error: string | null;
+    feedback: BotConversationMessageFeedback;
 };
 
 const initialState: ConversationState = {
@@ -30,6 +33,7 @@ const initialState: ConversationState = {
     loading: false,
     userSpeaking: false,
     error: null,
+    feedback: {},
 };
 
 // TODO(rkjaran): Define this type in more detail
@@ -41,7 +45,9 @@ export type ConversationAction =
     | { type: 'START_USER_SPEECH' }
     | { type: 'END_USER_SPEECH' }
     | { type: 'SET_USER_SPEECH_PARTIAL'; hypothesis: string }
-    | { type: 'DELAY_MOTD_RESPONSE' };
+    | { type: 'DELAY_MOTD_RESPONSE' }
+    | { type: 'SET_RESPONSE_REACTION', messageId: string, value: string };
+    ;
 
 const reducer: React.Reducer<ConversationState, ConversationAction> = (
     state: ConversationState,
@@ -70,6 +76,13 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (
             return Object.assign({}, state, { userSpeaking: true, speechHypothesis: action.hypothesis });
         case 'DELAY_MOTD_RESPONSE':
             return Object.assign({}, state, { loading: true });
+        case 'SET_RESPONSE_REACTION':
+            return Object.assign({}, state, {
+                feedback: {
+                    ...state.feedback,
+                    [action.messageId]: action.value,
+                },
+            });
         default:
             throw new Error('Unknown action type');
     }
@@ -89,6 +102,12 @@ const makePlaybackMiddleware = (setPlaybackFn: (playbackState: PlaybackState) =>
         }
     }
 };
+
+// TODO(Smári, STIFI-27): Continue here with side-effect implementation (see comment in STIFI-50)
+// const makeMessageInteractionMiddleware = (messageInteractionFn: (message: ConversationSentMessage) => void) =>
+//     (action: ConversationAction) => {
+//         return;
+//     };
 
 export type ConversationContextValue = [ConversationState, React.Dispatch<ConversationAction>];
 

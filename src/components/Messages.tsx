@@ -5,9 +5,8 @@ import { BotConversationMessage, useConversationContext } from '../context/Conve
 import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
-import thumbsDown from '../images/thumbs-down-regular.svg';
-import thumbsUp from '../images/thumbs-up-regular.svg';
 import { useMasdifClient } from '../context/MasdifClientContext';
+import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
 
 // TODO: Make responsive
 const MessagesContainer = styled.div`
@@ -75,16 +74,6 @@ const BotMessageFeedbackButtonContainer = styled.div`
     justify-content: flex-end;
 `;
 
-const BotMessageFeedbackThumbIcon = styled.img<{ $horFlip?: boolean; }>`
-    height: 25px;
-    width: 25px;
-    transform: ${props => props.$horFlip ? 'scaleX(-1)': ''};
-`;
-
-BotMessageFeedbackThumbIcon.defaultProps = {
-    $horFlip: false,
-};
-
 // TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
 const Button = styled.button`
   border: none;
@@ -108,30 +97,40 @@ function BotAvatar(_: {}) {
 
 type BotMessageFeedbackButtonProps = {
     up: boolean,
-    horFlip: boolean,
     hoverMsg: string,
     messageId: string,
 };
 
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
-    const [convoContext, ] = useConversationContext();
+    const [convoContext, convoDispatch] = useConversationContext();
     const masdifClient = useMasdifClient();
 
     const sendFeedback = (up: boolean) => {
-        console.log(`${up ? 'Gott': 'Slæmt'} feedback`);
+        console.log(`${up ? 'Gott': 'Slæmt'} feedback fyrir ${props.messageId}`);
         console.debug(props.messageId);
         
-        if (!masdifClient || !convoContext.conversationId) {
-            console.error('No client or no conversation ID. Something bad happened');
+        if (
+            !masdifClient 
+            || !convoContext.conversationId
+            || !props.messageId
+        ) {
+            console.error('No client, no conversation ID or no message ID. Something bad happened');
             return;
         }
 
-        masdifClient.sendMessage(
-            convoContext.conversationId,
-            { text: `/feedback{"feedback": ${up ? "positive" : "negative"}, "message_id": ${props.messageId}}` },
+        // TODO(Smári, STIFI-27): Lock buttons after one given feedback. Prevent spamming to Masdif.
+        masdifClient!.sendMessage(
+            convoContext.conversationId!,
+            {
+                text: `/feedback{"value":"${up ? "positive" : "negative"}"}`,
+                message_id: props.messageId!,
+            },
         ).then((responses) => {
-            // TODO(Smári, STIFI-27): Save message feedback state to session storage. Also style button so it is visible
-            //                        that it has been toggled.
+            // TODO(Smári, STIFI-27): Check if response is 200 and only update state if so.
+            convoDispatch({
+                type: 'SET_RESPONSE_REACTION',
+                messageId: props.messageId, value: up ? 'positive' : 'negative'
+            });
             console.debug(responses);
         });
     };
@@ -141,18 +140,24 @@ function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
             onClick={() => sendFeedback(props.up)}
         >
             <BotMessageFeedbackThumbIcon
-                src={props.up ? thumbsUp : thumbsDown}
-                alt={props.hoverMsg}
-                title={props.hoverMsg}
-                $horFlip={props.horFlip}
+                positive={props.up}
+                toggled={
+                    (
+                        props.up
+                        && props.messageId in convoContext.feedback
+                        && convoContext.feedback[props.messageId] == 'positive'
+                    )
+                    ||
+                    (
+                        !props.up
+                        && props.messageId in convoContext.feedback
+                        && convoContext.feedback[props.messageId] == 'negative'
+                    )
+                }
             />
         </Button>
     );
 }
-
-BotMessageFeedbackButton.defaultProps = {
-    horFlip: false,
-};
 
 type BotMessageFeedbackProps = {
     messageId: string,
@@ -161,10 +166,6 @@ type BotMessageFeedbackProps = {
 
 function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
     // TODO(Smári): Add i18n strings for alt and title strings.
-    // TODO(Smári, STIFI-27): Use isPositive to display button as toggled depending on its value.
-    //                        Change this into a radio button?
-    // console.log(isPositive);
-    
     return (
         <BotMessageFeedbackButtonContainer>
             <BotMessageFeedbackButton
@@ -176,7 +177,6 @@ function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
                 up={false}
                 messageId={messageId}
                 hoverMsg='Ekki hjálplegt.'
-                horFlip
             />
         </BotMessageFeedbackButtonContainer>
     );
@@ -200,11 +200,10 @@ function BotMessage(props: BotMessageProps) {
                 <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
                 <ReplyButtons buttons={buttons || []} />
             </BotMessageContainer>
-            {/*TODO(Smári, STIFI-27): Make feedback buttons persistent (should not disappear on rerender)*/}
             {
                 props.askForFeedback
                 && props.message.isLast
-                && <BotMessageFeedback messageId={props.message.uuid} />
+                && <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
             }
         </MessageContainer>
     );

@@ -10,6 +10,8 @@ export type ConversationSentMessage = {
         // Whether or not message was generated via ASR
         asr_generated?: boolean;
     };
+    // Optional message id for feedback messages.
+    message_id?: string;
 };
 
 export type ConversationAttachment =
@@ -31,6 +33,7 @@ export type ConversationData = {
 };
 
 export type ConversationResponse = {
+    message_id?: string;
     recipient_id?: string;
     text: string;
     buttons?: Button[];

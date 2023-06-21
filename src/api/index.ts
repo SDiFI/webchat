@@ -73,7 +73,12 @@ export default class MasdifClient implements TMasdifClient {
                     message?.metadata?.asr_generated ? message.metadata.asr_generated : false,
                 language: message?.metadata?.language ? message.metadata.language : undefined,
             },
+            message_id: message.message_id ? message.message_id : '',
         };
+        // Masdif does not expect the message_id property unless when receiving a /feedback.
+        // TODO(Smári): Can we solve this in a smarter way than removing the property afterwards?
+        !message.message_id && delete payload.message_id;
+
         const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
         if (response.status !== 200) {
             throw new Error('Could not send message to server.');
