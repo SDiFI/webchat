@@ -7,7 +7,6 @@ import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 
-
 const Form = styled.form`
     align-items: center;
     display: flex;
@@ -58,7 +57,8 @@ export default function SenderForm(props: SenderFormProps) {
             const duckUrl =
                 'https://www.pinclipart.com/picdir/middle/122-1222832_kooz-top-donald-duck-drawing-color-clipart.png';
             convoDispatch({
-                message_id: '', type: 'ADD_RESPONSE',
+                message_id: '',
+                type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta er mynd',
                 data: { attachment: [{ type: 'image', payload: { src: duckUrl } }] },
@@ -70,7 +70,8 @@ export default function SenderForm(props: SenderFormProps) {
 
         if (text.startsWith('/debug button')) {
             convoDispatch({
-                message_id: '', type: 'ADD_RESPONSE',
+                message_id: '',
+                type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta eru takkar',
                 buttons: [
@@ -86,7 +87,12 @@ export default function SenderForm(props: SenderFormProps) {
         if (text.startsWith('/debug settings ')) {
             const subcommand = text.substring(16);
             if (subcommand.startsWith('get')) {
-                convoDispatch({ message_id: '', type: 'ADD_RESPONSE', recipient_id: 'debug', text: JSON.stringify(settings) });
+                convoDispatch({
+                    message_id: '',
+                    type: 'ADD_RESPONSE',
+                    recipient_id: 'debug',
+                    text: JSON.stringify(settings),
+                });
             } else if (subcommand.startsWith('set ')) {
                 setSettings(JSON.parse(subcommand.substring(4)) as Partial<Settings>);
             }
@@ -95,9 +101,14 @@ export default function SenderForm(props: SenderFormProps) {
         }
 
         if (text.startsWith('/debug multi')) {
-            const messages: string[] = ["Afi minn fór á honum Rauð", "Eitthvað suður á bæi,", "að sækja bæði sykur og brauð,", "sitt af hvoru tagi"];
-            messages.forEach((msg) => {
-                convoDispatch({ message_id: '', type: 'ADD_RESPONSE', recipient_id: 'debug', text: msg});
+            const messages: string[] = [
+                'Afi minn fór á honum Rauð',
+                'Eitthvað suður á bæi,',
+                'að sækja bæði sykur og brauð,',
+                'sitt af hvoru tagi',
+            ];
+            messages.forEach(msg => {
+                convoDispatch({ message_id: '', type: 'ADD_RESPONSE', recipient_id: 'debug', text: msg });
             });
             setText('');
             return;
@@ -120,11 +131,11 @@ export default function SenderForm(props: SenderFormProps) {
             .then(responses => {
                 responses.forEach((response, i, responseArr) => {
                     let message: BotConversationMessage = {
-                                ...response,
-                                actor: "bot",
-                                isLast: i === (responseArr.length - 1),
-                            };
-                            convoDispatch({ type: 'ADD_RESPONSE', ...message });
+                        ...response,
+                        actor: 'bot',
+                        isLast: i === responseArr.length - 1,
+                    };
+                    convoDispatch({ type: 'ADD_RESPONSE', ...message });
                 });
             });
     };

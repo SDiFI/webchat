@@ -42,7 +42,7 @@ export type ConnectedChatProps = {
     fakeResponseDelaySecs?: number;
 
     // Whether bot should ask user for feedback for its answers.
-    askForFeedback?: boolean,
+    askForFeedback?: boolean;
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -68,7 +68,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 themeOverrides={props.theme}
                                 fakeResponseDelaySecs={props.fakeResponseDelaySecs}
                                 askForFeedback={props.askForFeedback}
-                        />
+                            />
                         </I18nProvider>
                     </ConversationContextProvider>
                 </AudioPlaybackProvider>

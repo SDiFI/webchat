@@ -76,17 +76,17 @@ const BotMessageFeedbackButtonContainer = styled.div`
 
 // TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
 const Button = styled.button`
-  border: none;
-  background: unset;
+    border: none;
+    background: unset;
 
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+        cursor: pointer;
+    }
 
-  &:disabled {
-   cursor: auto;
-  }
-`
+    &:disabled {
+        cursor: auto;
+    }
+`;
 
 function BotAvatar(_: {}) {
     const theme = useTheme();
@@ -96,9 +96,9 @@ function BotAvatar(_: {}) {
 }
 
 type BotMessageFeedbackButtonProps = {
-    up: boolean,
-    hoverMsg: string,
-    messageId: string,
+    up: boolean;
+    hoverMsg: string;
+    messageId: string;
 };
 
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
@@ -106,53 +106,42 @@ function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     const masdifClient = useMasdifClient();
 
     const sendFeedback = (up: boolean) => {
-        console.log(`${up ? 'Gott': 'Slæmt'} feedback fyrir ${props.messageId}`);
+        console.log(`${up ? 'Gott' : 'Slæmt'} feedback fyrir ${props.messageId}`);
         console.debug(props.messageId);
-        
-        if (
-            !masdifClient 
-            || !convoContext.conversationId
-            || !props.messageId
-        ) {
+
+        if (!masdifClient || !convoContext.conversationId || !props.messageId) {
             console.error('No client, no conversation ID or no message ID. Something bad happened');
             return;
         }
 
         // TODO(Smári, STIFI-27): Lock buttons after one given feedback. Prevent spamming to Masdif.
-        masdifClient!.sendMessage(
-            convoContext.conversationId!,
-            {
-                text: `/feedback{"value":"${up ? "positive" : "negative"}"}`,
+        masdifClient!
+            .sendMessage(convoContext.conversationId!, {
+                text: `/feedback{"value":"${up ? 'positive' : 'negative'}"}`,
                 message_id: props.messageId!,
-            },
-        ).then((responses) => {
-            // TODO(Smári, STIFI-27): Check if response is 200 and only update state if so.
-            convoDispatch({
-                type: 'SET_RESPONSE_REACTION',
-                messageId: props.messageId, value: up ? 'positive' : 'negative'
+            })
+            .then(responses => {
+                // TODO(Smári, STIFI-27): Check if response is 200 and only update state if so.
+                convoDispatch({
+                    type: 'SET_RESPONSE_REACTION',
+                    messageId: props.messageId,
+                    value: up ? 'positive' : 'negative',
+                });
+                console.debug(responses);
             });
-            console.debug(responses);
-        });
     };
 
     return (
-        <Button
-            onClick={() => sendFeedback(props.up)}
-        >
+        <Button onClick={() => sendFeedback(props.up)}>
             <BotMessageFeedbackThumbIcon
                 positive={props.up}
                 toggled={
-                    (
-                        props.up
-                        && props.messageId in convoContext.feedback
-                        && convoContext.feedback[props.messageId] == 'positive'
-                    )
-                    ||
-                    (
-                        !props.up
-                        && props.messageId in convoContext.feedback
-                        && convoContext.feedback[props.messageId] == 'negative'
-                    )
+                    (props.up &&
+                        props.messageId in convoContext.feedback &&
+                        convoContext.feedback[props.messageId] == 'positive') ||
+                    (!props.up &&
+                        props.messageId in convoContext.feedback &&
+                        convoContext.feedback[props.messageId] == 'negative')
                 }
             />
         </Button>
@@ -160,24 +149,16 @@ function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
 }
 
 type BotMessageFeedbackProps = {
-    messageId: string,
-    isPositive?: boolean | undefined,
+    messageId: string;
+    isPositive?: boolean | undefined;
 };
 
 function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
     // TODO(Smári): Add i18n strings for alt and title strings.
     return (
         <BotMessageFeedbackButtonContainer>
-            <BotMessageFeedbackButton
-                up
-                messageId={messageId}
-                hoverMsg='Gott svar!'
-            />
-            <BotMessageFeedbackButton
-                up={false}
-                messageId={messageId}
-                hoverMsg='Ekki hjálplegt.'
-            />
+            <BotMessageFeedbackButton up messageId={messageId} hoverMsg='Gott svar!' />
+            <BotMessageFeedbackButton up={false} messageId={messageId} hoverMsg='Ekki hjálplegt.' />
         </BotMessageFeedbackButtonContainer>
     );
 }
@@ -200,11 +181,9 @@ function BotMessage(props: BotMessageProps) {
                 <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
                 <ReplyButtons buttons={buttons || []} />
             </BotMessageContainer>
-            {
-                props.askForFeedback
-                && props.message.isLast
-                && <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
-            }
+            {props.askForFeedback && props.message.isLast && (
+                <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
+            )}
         </MessageContainer>
     );
 }
@@ -254,9 +233,8 @@ function LoadingMessage() {
     );
 }
 
-
 type MessagesProps = {
-    askForFeedback?: boolean,
+    askForFeedback?: boolean;
 };
 
 export default function Messages({ askForFeedback }: MessagesProps) {
@@ -276,7 +254,9 @@ export default function Messages({ askForFeedback }: MessagesProps) {
                             <BotMessage
                                 key={idx}
                                 message={message}
-                                lastMessage={(convoContext.messages.length - 1 === idx) /* TODO: make available from context */}
+                                lastMessage={
+                                    convoContext.messages.length - 1 === idx /* TODO: make available from context */
+                                }
                                 askForFeedback={askForFeedback ? askForFeedback : false}
                             />
                         );

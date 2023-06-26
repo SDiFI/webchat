@@ -5,16 +5,16 @@ import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
 import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
 
 type BotConversationMessageFeedback = {
-    [key: string]: string,
+    [key: string]: string;
 };
 
 export type BotConversationMessage = {
-    actor?: 'bot',
-    isLast: boolean,
+    actor?: 'bot';
+    isLast: boolean;
 } & ConversationResponse;
 
 export type UserConversationMessage = {
-    actor: 'user' 
+    actor: 'user';
 } & ConversationSentMessage;
 
 export type ConversationState = {
@@ -46,9 +46,7 @@ export type ConversationAction =
     | { type: 'END_USER_SPEECH' }
     | { type: 'SET_USER_SPEECH_PARTIAL'; hypothesis: string }
     | { type: 'DELAY_MOTD_RESPONSE' }
-    | { type: 'SET_RESPONSE_REACTION', messageId: string, value: string };
-    ;
-
+    | { type: 'SET_RESPONSE_REACTION'; messageId: string; value: string };
 const reducer: React.Reducer<ConversationState, ConversationAction> = (
     state: ConversationState,
     action: ConversationAction,

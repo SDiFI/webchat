@@ -70,7 +70,7 @@ export type ChatProps = {
     info?: SimpleInfoProps;
     themeOverrides?: Partial<DefaultTheme>;
     fakeResponseDelaySecs?: number;
-    askForFeedback?: boolean,
+    askForFeedback?: boolean;
 };
 
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
