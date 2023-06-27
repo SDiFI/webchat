@@ -73,4 +73,5 @@ export interface TMasdifClient {
 export type MasdifClientOptions = {
     extraHeaders?: { [key: string]: string };
     disableTTS?: boolean;
+    language?: string;
 };

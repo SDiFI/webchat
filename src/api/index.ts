@@ -13,6 +13,7 @@ export default class MasdifClient implements TMasdifClient {
     // TODO: Support user settings from local storage, for thing like TTS.
     private http: AxiosInstance;
     private disableTTS: boolean;
+    private language?: string;
 
     constructor(baseURL: string, options: MasdifClientOptions | undefined) {
         this.http = axios.create({
@@ -27,6 +28,7 @@ export default class MasdifClient implements TMasdifClient {
         });
 
         this.disableTTS = options?.disableTTS || false;
+        this.language = options?.language || undefined;
     }
 
     async status() {
@@ -71,7 +73,7 @@ export default class MasdifClient implements TMasdifClient {
                 asr_generated:
                     // Not specified means no.
                     message?.metadata?.asr_generated ? message.metadata.asr_generated : false,
-                language: message?.metadata?.language ? message.metadata.language : undefined,
+                language: this.language,
             },
             message_id: message.message_id ? message.message_id : '',
         };

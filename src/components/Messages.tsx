@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
+import intl from 'react-intl-universal';
 import { ConversationSentMessage } from '../api/types';
 import { BotConversationMessage, useConversationContext } from '../context/ConversationContext';
 import { defaultTheme } from '../theme';
@@ -132,7 +133,7 @@ function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     };
 
     return (
-        <Button onClick={() => sendFeedback(props.up)}>
+        <Button title={props.hoverMsg} onClick={() => sendFeedback(props.up)}>
             <BotMessageFeedbackThumbIcon
                 positive={props.up}
                 toggled={
@@ -154,11 +155,14 @@ type BotMessageFeedbackProps = {
 };
 
 function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
-    // TODO(Smári): Add i18n strings for alt and title strings.
     return (
         <BotMessageFeedbackButtonContainer>
-            <BotMessageFeedbackButton up messageId={messageId} hoverMsg='Gott svar!' />
-            <BotMessageFeedbackButton up={false} messageId={messageId} hoverMsg='Ekki hjálplegt.' />
+            <BotMessageFeedbackButton up messageId={messageId} hoverMsg={intl.get('FEEDBACK_TOOLTIP_POSITIVE')} />
+            <BotMessageFeedbackButton
+                up={false}
+                messageId={messageId}
+                hoverMsg={intl.get('FEEDBACK_TOOLTIP_NEGATIVE')}
+            />
         </BotMessageFeedbackButtonContainer>
     );
 }
