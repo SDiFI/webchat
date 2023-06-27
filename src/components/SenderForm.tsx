@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { BotConversationMessage, useConversationContext } from '../context/ConversationContext';
-import { useMasdifClient } from '../context/MasdifClientContext';
+import { useConversationContext } from '../context/ConversationContext';
 import { Settings, useSettings } from '../context/SettingsContext';
 import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
@@ -46,7 +45,6 @@ export type SenderFormProps = {
 export default function SenderForm(props: SenderFormProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const [text, setText] = useState('');
-    const masdifClient = useMasdifClient();
     const [settings, setSettings] = useSettings();
 
     const sendText = () => {
@@ -116,28 +114,6 @@ export default function SenderForm(props: SenderFormProps) {
 
         convoDispatch({ type: 'ADD_SENT_TEXT', text });
         setText('');
-
-        if (!masdifClient || !convoState.conversationId) {
-            // TODO: If these are null, something is wrong... Do something about that
-            console.error('No client or no conversation ID. Something bad happened');
-            return;
-        }
-
-        masdifClient
-            .sendMessage(convoState.conversationId, {
-                text: text,
-                metadata: { language: settings.language },
-            })
-            .then(responses => {
-                responses.forEach((response, i, responseArr) => {
-                    let message: BotConversationMessage = {
-                        ...response,
-                        actor: 'bot',
-                        isLast: i === responseArr.length - 1,
-                    };
-                    convoDispatch({ type: 'ADD_RESPONSE', ...message });
-                });
-            });
     };
 
     const handleSubmit = (event: React.FormEvent) => {

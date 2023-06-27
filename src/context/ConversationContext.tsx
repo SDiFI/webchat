@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { ConversationResponse, ConversationSentMessage } from '../api/types';
+import { ConversationResponse, ConversationSentMessage, TMasdifClient } from '../api/types';
+import { useMasdifClient } from '../context/MasdifClientContext';
 import useSessionStorage from '../hooks/useSessionStorage';
 import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
 import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
+import { Settings, useSettings } from './SettingsContext';
 
 type BotConversationMessageFeedback = {
     [key: string]: string;
@@ -40,7 +42,7 @@ const initialState: ConversationState = {
 export type ConversationAction =
     | ({ type: 'ADD_RESPONSE' } & ConversationResponse)
     | ({ type: 'ADD_SENT_TEXT' } & ConversationSentMessage)
-    | { type: 'SEND_ACTION' }
+    | { type: 'SEND_ACTION'; payload: string }
     | { type: 'SET_CONVERSATION_ID'; conversationId: string }
     | { type: 'START_USER_SPEECH' }
     | { type: 'END_USER_SPEECH' }
@@ -102,10 +104,41 @@ const makePlaybackMiddleware = (setPlaybackFn: (playbackState: PlaybackState) =>
 };
 
 // TODO(Smári, STIFI-27): Continue here with side-effect implementation (see comment in STIFI-50)
-// const makeMessageInteractionMiddleware = (messageInteractionFn: (message: ConversationSentMessage) => void) =>
-//     (action: ConversationAction) => {
-//         return;
-//     };
+const makeMessageInteractionMiddleware = (
+    settings: Settings,
+    masdifClient: TMasdifClient | null,
+) => (
+    action: ConversationAction,
+    state: ConversationState,
+    dispatch: React.Dispatch<ConversationAction>,
+) => {
+    if (action.type === 'ADD_SENT_TEXT' || action.type === 'SEND_ACTION') {
+        if (!masdifClient || !state.conversationId) {
+            // TODO: If these are null, something is wrong... Do something about that
+            console.error('No client or no conversation ID. Something bad happened');
+            return;
+        }
+
+        masdifClient!
+            .sendMessage(state.conversationId!, {
+                text: action.type === 'ADD_SENT_TEXT' ? action.text : action.payload,
+                metadata: {
+                    asr_generated: action.type === 'ADD_SENT_TEXT' ? action.metadata?.asr_generated : undefined,
+                    language: settings.language
+                },
+            })
+            .then(responses => {
+                responses.forEach((response, i, responseArr) => {
+                    const message: BotConversationMessage = {
+                        ...response,
+                        actor: 'bot',
+                        isLast: i === responseArr.length - 1,
+                    };
+                    dispatch({ type: 'ADD_RESPONSE', ...message });
+                });
+            });
+    }
+};
 
 export type ConversationContextValue = [ConversationState, React.Dispatch<ConversationAction>];
 
@@ -116,10 +149,17 @@ export type Props = {
 };
 
 export function ConversationContextProvider(props: Props) {
+    const masdifClient = useMasdifClient();
+    const [settings,] = useSettings();
     const [savedState, setSavedState] = useSessionStorage<ConversationState>('@sdifi:conversation', initialState);
     const [, setPlayback] = useAudioPlayback();
+
     const playbackMiddleware = makePlaybackMiddleware(setPlayback);
-    const [state, dispatch] = useReducerWithMiddleware(reducer, savedState, [playbackMiddleware], []);
+    const messageInteractionMiddleware = makeMessageInteractionMiddleware(
+        settings,
+        masdifClient,
+    );
+    const [state, dispatch] = useReducerWithMiddleware(reducer, savedState, [playbackMiddleware, messageInteractionMiddleware], []);
 
     useEffect(() => {
         console.debug('saving state for session');

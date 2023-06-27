@@ -7,21 +7,21 @@ import React, { useEffect, useReducer, useRef } from 'react';
 export function useReducerWithMiddleware<S, A>(
     reducer: React.Reducer<S, A>,
     initialState: S,
-    middlewareFns: Array<(action: A, state: S) => void>,
-    afterwareFns: Array<(action: A, state: S) => void>,
+    middlewareFns: Array<(action: A, state: S, dispatch: React.Dispatch<A>) => void>,
+    afterwareFns: Array<(action: A, state: S, dispatch: React.Dispatch<A>) => void>,
 ): [S, React.Dispatch<A>] {
     const [state, dispatch] = useReducer(reducer, initialState);
     const actionRef = useRef<A>();
 
     const dispatchWithMiddleware: React.Dispatch<A> = (action: A) => {
-        middlewareFns.forEach(fn => fn(action, state));
+        middlewareFns.forEach(fn => fn(action, state, dispatchWithMiddleware));
         actionRef.current = action;
         dispatch(action);
     };
 
     useEffect(() => {
         if (!actionRef.current) return;
-        afterwareFns.forEach(fn => actionRef.current && fn(actionRef.current, state));
+        afterwareFns.forEach(fn => actionRef.current && fn(actionRef.current, state, dispatchWithMiddleware));
         actionRef.current = undefined;
     }, [afterwareFns, state]);
 
