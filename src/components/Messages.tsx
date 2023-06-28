@@ -6,7 +6,6 @@ import { BotConversationMessage, useConversationContext } from '../context/Conve
 import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
-import { useMasdifClient } from '../context/MasdifClientContext';
 import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
 
 // TODO: Make responsive
@@ -104,32 +103,15 @@ type BotMessageFeedbackButtonProps = {
 
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     const [convoContext, convoDispatch] = useConversationContext();
-    const masdifClient = useMasdifClient();
-
     const sendFeedback = (up: boolean) => {
-        console.log(`${up ? 'Gott' : 'Slæmt'} feedback fyrir ${props.messageId}`);
-        console.debug(props.messageId);
-
-        if (!masdifClient || !convoContext.conversationId || !props.messageId) {
-            console.error('No client, no conversation ID or no message ID. Something bad happened');
-            return;
-        }
-
         // TODO(Smári, STIFI-27): Lock buttons after one given feedback. Prevent spamming to Masdif.
-        masdifClient!
-            .sendMessage(convoContext.conversationId!, {
-                text: `/feedback{"value":"${up ? 'positive' : 'negative'}"}`,
-                message_id: props.messageId!,
-            })
-            .then(responses => {
-                // TODO(Smári, STIFI-27): Check if response is 200 and only update state if so.
-                convoDispatch({
-                    type: 'SET_RESPONSE_REACTION',
-                    messageId: props.messageId,
-                    value: up ? 'positive' : 'negative',
-                });
-                console.debug(responses);
-            });
+
+        console.log(`${up ? 'Já' : 'Nei'}kvæð endurgjöf fyrir ${props.messageId}`);
+        convoDispatch({
+            type: 'SET_RESPONSE_REACTION',
+            messageId: props.messageId,
+            value: up ? 'positive' : 'negative',
+        });
     };
 
     return (
