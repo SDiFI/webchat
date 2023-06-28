@@ -58,7 +58,7 @@ const BotMessageContainer = styled.div`
     padding: 11px 15px;
     max-width: 215px;
     text-align: left;
-    max-width: 85%;
+    max-width: 71%;
 
     img {
         max-width: ${({ theme }) => theme.botMessageMaxImageWidth};
@@ -69,9 +69,14 @@ BotMessageContainer.defaultProps = {
     theme: defaultTheme,
 };
 
+const BotMessageFeedbackContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+`;
+
 const BotMessageFeedbackButtonContainer = styled.div`
     display: flex;
-    justify-content: flex-end;
 `;
 
 // TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
@@ -139,14 +144,16 @@ type BotMessageFeedbackProps = {
 
 function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
     return (
-        <BotMessageFeedbackButtonContainer>
-            <BotMessageFeedbackButton up messageId={messageId} hoverMsg={intl.get('FEEDBACK_TOOLTIP_POSITIVE')} />
-            <BotMessageFeedbackButton
-                up={false}
-                messageId={messageId}
-                hoverMsg={intl.get('FEEDBACK_TOOLTIP_NEGATIVE')}
-            />
-        </BotMessageFeedbackButtonContainer>
+        <BotMessageFeedbackContainer>
+            <BotMessageFeedbackButtonContainer>
+                <BotMessageFeedbackButton up messageId={messageId} hoverMsg={intl.get('FEEDBACK_TOOLTIP_POSITIVE')} />
+                <BotMessageFeedbackButton
+                    up={false}
+                    messageId={messageId}
+                    hoverMsg={intl.get('FEEDBACK_TOOLTIP_NEGATIVE')}
+                />
+            </BotMessageFeedbackButtonContainer>
+        </BotMessageFeedbackContainer>
     );
 }
 
