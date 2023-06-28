@@ -104,8 +104,9 @@ type BotMessageFeedbackButtonProps = {
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     const [convoContext, convoDispatch] = useConversationContext();
     const sendFeedback = (up: boolean) => {
-        // TODO(Smári, STIFI-27): Lock buttons after one given feedback. Prevent spamming to Masdif.
-
+        if (Object.keys(convoContext.feedback).includes(props.messageId)) {
+            return;
+        }
         console.log(`${up ? 'Já' : 'Nei'}kvæð endurgjöf fyrir ${props.messageId}`);
         convoDispatch({
             type: 'SET_RESPONSE_REACTION',
