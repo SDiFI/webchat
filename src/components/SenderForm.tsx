@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useConversationContext } from '../context/ConversationContext';
+import { ConversationAction, useConversationContext } from '../context/ConversationContext';
 import { Settings, useSettings } from '../context/SettingsContext';
 import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
@@ -50,12 +50,10 @@ export default function SenderForm(props: SenderFormProps) {
     const sendText = () => {
         if (!text) return;
 
-        // TODO(Smári, STIFI-27): Can we get rid of the message_id's here?
         if (text.startsWith('/debug image')) {
             const duckUrl =
                 'https://www.pinclipart.com/picdir/middle/122-1222832_kooz-top-donald-duck-drawing-color-clipart.png';
             convoDispatch({
-                message_id: '',
                 type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta er mynd',
@@ -68,7 +66,6 @@ export default function SenderForm(props: SenderFormProps) {
 
         if (text.startsWith('/debug button')) {
             convoDispatch({
-                message_id: '',
                 type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta eru takkar',
@@ -86,7 +83,6 @@ export default function SenderForm(props: SenderFormProps) {
             const subcommand = text.substring(16);
             if (subcommand.startsWith('get')) {
                 convoDispatch({
-                    message_id: '',
                     type: 'ADD_RESPONSE',
                     recipient_id: 'debug',
                     text: JSON.stringify(settings),
@@ -105,8 +101,13 @@ export default function SenderForm(props: SenderFormProps) {
                 'að sækja bæði sykur og brauð,',
                 'sitt af hvoru tagi',
             ];
-            messages.forEach(msg => {
-                convoDispatch({ message_id: '', type: 'ADD_RESPONSE', recipient_id: 'debug', text: msg });
+            messages.forEach((msg, i, arr) => {
+                convoDispatch({
+                    type: 'ADD_RESPONSE',
+                    recipient_id: 'debug',
+                    text: msg,
+                    isLast: i === arr.length - 1,
+                } as ConversationAction);
             });
             setText('');
             return;

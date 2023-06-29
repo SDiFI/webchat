@@ -102,39 +102,32 @@ const makePlaybackMiddleware = (setPlaybackFn: (playbackState: PlaybackState) =>
     }
 };
 
-const makeMessageInteractionMiddleware = (
-    masdifClient: TMasdifClient | null,
-) => (
+const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) => (
     action: ConversationAction,
     state: ConversationState,
     dispatch: React.Dispatch<ConversationAction>,
 ) => {
-    const sendActionNames: Array<Partial<ConversationAction["type"]>> = [
+    const sendActionNames: Array<Partial<ConversationAction['type']>> = [
         'ADD_SENT_TEXT',
         'SEND_ACTION',
-        'SET_RESPONSE_REACTION'
+        'SET_RESPONSE_REACTION',
     ];
     if (sendActionNames.includes(action.type)) {
-        if (
-            !masdifClient ||
-            !state.conversationId || 
-            (action.type === 'SET_RESPONSE_REACTION' && !action.messageId)
-        ) {
+        if (!masdifClient || !state.conversationId || (action.type === 'SET_RESPONSE_REACTION' && !action.messageId)) {
             // TODO: If these are null, something is wrong... Do something about that.
             console.error('No client, no conversation ID or no message ID. Something bad happened');
             return;
         }
 
-        const text: string = (
+        const text: string =
             action.type === 'ADD_SENT_TEXT'
-            ? action.text
-            : action.type === 'SEND_ACTION'
-            ? action.payload
-            : action.type === 'SET_RESPONSE_REACTION'
-            ? `/feedback{"value":"'${action.value}'"}`
-            : ''
-        );
-        text.length === 0 && console.warn("Sending message with an empty text string.");
+                ? action.text
+                : action.type === 'SEND_ACTION'
+                ? action.payload
+                : action.type === 'SET_RESPONSE_REACTION'
+                ? `/feedback{"value":"'${action.value}'"}`
+                : '';
+        text.length === 0 && console.warn('Sending message with an empty text string.');
 
         masdifClient!
             .sendMessage(state.conversationId!, {
@@ -142,7 +135,7 @@ const makeMessageInteractionMiddleware = (
                 metadata: {
                     asr_generated: action.type === 'ADD_SENT_TEXT' ? action.metadata?.asr_generated : undefined,
                 },
-                ...action.type === 'SET_RESPONSE_REACTION' && { message_id: action.messageId }
+                ...(action.type === 'SET_RESPONSE_REACTION' && { message_id: action.messageId }),
             })
             .then(responses => {
                 if (action.type === 'SET_RESPONSE_REACTION') {
@@ -176,7 +169,12 @@ export function ConversationContextProvider(props: Props) {
 
     const playbackMiddleware = makePlaybackMiddleware(setPlayback);
     const messageInteractionMiddleware = makeMessageInteractionMiddleware(masdifClient);
-    const [state, dispatch] = useReducerWithMiddleware(reducer, savedState, [playbackMiddleware, messageInteractionMiddleware], []);
+    const [state, dispatch] = useReducerWithMiddleware(
+        reducer,
+        savedState,
+        [playbackMiddleware, messageInteractionMiddleware],
+        [],
+    );
 
     useEffect(() => {
         console.debug('saving state for session');
