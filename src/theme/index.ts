@@ -31,4 +31,9 @@ export const defaultTheme: DefaultTheme = {
     launcherSize: '40px',
     launcherImageSize: '50%',
     launcherShadow: true,
+
+    feedbackButtonUntoggledColor: '#000',
+    feedbackButtonPositiveToggledColor: '#00ff00',
+    feedbackButtonNegativeToggledColor: '#ff0000',
+    feedbackButtonScale: 1,
 };

@@ -79,7 +79,6 @@ const BotMessageFeedbackButtonContainer = styled.div`
     display: flex;
 `;
 
-// TODO(Smári): Taken from SpeechInput.tsx. Refactor and reuse!
 const Button = styled.button`
     border: none;
     background: unset;
@@ -91,6 +90,10 @@ const Button = styled.button`
     &:disabled {
         cursor: auto;
     }
+`;
+
+const Space = styled.div`
+    padding-right: 1px;
 `;
 
 function BotAvatar(_: {}) {
@@ -147,6 +150,7 @@ function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
         <BotMessageFeedbackContainer>
             <BotMessageFeedbackButtonContainer>
                 <BotMessageFeedbackButton up messageId={messageId} hoverMsg={intl.get('FEEDBACK_TOOLTIP_POSITIVE')} />
+                <Space />
                 <BotMessageFeedbackButton
                     up={false}
                     messageId={messageId}
