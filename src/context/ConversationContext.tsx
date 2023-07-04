@@ -47,7 +47,8 @@ export type ConversationAction =
     | { type: 'END_USER_SPEECH' }
     | { type: 'SET_USER_SPEECH_PARTIAL'; hypothesis: string }
     | { type: 'DELAY_MOTD_RESPONSE' }
-    | { type: 'SET_RESPONSE_REACTION'; messageId: string; value: string };
+    | { type: 'SET_RESPONSE_REACTION'; messageId: string; value: string }
+    | { type: 'REMOVE_RESPONSE_REACTION'; messageId: string; value: string };
 const reducer: React.Reducer<ConversationState, ConversationAction> = (
     state: ConversationState,
     action: ConversationAction,
@@ -82,6 +83,13 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (
                     [action.messageId]: action.value,
                 },
             });
+        case 'REMOVE_RESPONSE_REACTION':
+            const { [action.messageId]: value, ...feedback } = state.feedback;
+            return Object.assign({}, state, {
+                feedback: {
+                    ...feedback,
+                },
+            });
         default:
             throw new Error('Unknown action type');
     }
@@ -111,9 +119,15 @@ const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) =>
         'ADD_SENT_TEXT',
         'SEND_ACTION',
         'SET_RESPONSE_REACTION',
+        'REMOVE_RESPONSE_REACTION',
     ];
     if (sendActionNames.includes(action.type)) {
-        if (!masdifClient || !state.conversationId || (action.type === 'SET_RESPONSE_REACTION' && !action.messageId)) {
+        if (
+            !masdifClient ||
+            !state.conversationId ||
+            (action.type === 'SET_RESPONSE_REACTION' && !action.messageId) ||
+            (action.type === 'REMOVE_RESPONSE_REACTION' && !action.messageId)
+        ) {
             // TODO: If these are null, something is wrong... Do something about that.
             console.error('No client, no conversation ID or no message ID. Something bad happened');
             return;
@@ -124,7 +138,7 @@ const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) =>
                 ? action.text
                 : action.type === 'SEND_ACTION'
                 ? action.payload
-                : action.type === 'SET_RESPONSE_REACTION'
+                : action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION'
                 ? `/feedback{"value":"${action.value}"}`
                 : '';
         text.length === 0 && console.warn('Sending message with an empty text string.');
@@ -135,10 +149,12 @@ const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) =>
                 metadata: {
                     asr_generated: action.type === 'ADD_SENT_TEXT' ? action.metadata?.asr_generated : undefined,
                 },
-                ...(action.type === 'SET_RESPONSE_REACTION' && { message_id: action.messageId }),
+                ...((action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION') && {
+                    message_id: action.messageId,
+                }),
             })
             .then(responses => {
-                if (action.type === 'SET_RESPONSE_REACTION') {
+                if (action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION') {
                     // Don't do anything with feedback answers for now.
                     return;
                 }

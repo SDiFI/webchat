@@ -113,33 +113,56 @@ type BotMessageFeedbackButtonProps = {
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     const masdifClient = useMasdifClient();
     const [convoContext, convoDispatch] = useConversationContext();
-    const sendFeedback = (up: boolean, value: string) => {
-        if (Object.keys(convoContext.feedback).includes(props.messageId)) {
-            return;
-        }
-        console.log(`${up ? 'Já' : 'Nei'}kvæð endurgjöf fyrir ${props.messageId}`);
+    const sendFeedback = (value: string, feedbackValues: FeedbackValue) => {
+        console.log(`Endurgjöf fyrir ${props.messageId}: ${value}`);
         convoDispatch({
-            type: 'SET_RESPONSE_REACTION',
+            type: value === feedbackValues.untoggle ? 'REMOVE_RESPONSE_REACTION' : 'SET_RESPONSE_REACTION',
             messageId: props.messageId,
             value,
         });
     };
 
-    const feedbackValue: FeedbackValue = masdifClient!.getFeedbackValues();
+    const determineFeedbackValue = (up: boolean, feedbackValues: FeedbackValue) => {
+        if (!Object.keys(convoContext.feedback).includes(props.messageId)) {
+            // No feedback record present for message.
+            return up ? feedbackValues.thumbUp : feedbackValues.thumbDown;
+        }
+        if (up && convoContext.feedback[props.messageId] === feedbackValues.thumbUp) {
+            // Up-thumb pressed, feedback record present and it's thumbUp value => Untoggle
+            return feedbackValues.untoggle;
+        }
+        if (up && convoContext.feedback[props.messageId] === feedbackValues.thumbDown) {
+            // Up-thumb pressed, feedback record present and it's thumbDown value => Switch value to thumbUp
+            return feedbackValues.thumbUp;
+        }
+        if (!up && convoContext.feedback[props.messageId] === feedbackValues.thumbDown) {
+            // Down-thumb pressed, feedback record present and it's thumbDown value => Untoggle
+            return feedbackValues.untoggle;
+        }
+        if (!up && convoContext.feedback[props.messageId] === feedbackValues.thumbUp) {
+            // Down-thumb pressed, feedback record present and it's thumbUp value => Switch value to thumbDown
+            return feedbackValues.thumbDown;
+        }
+
+        console.warn('Empty feedback value.');
+        return '';
+    };
+
+    const feedbackValues: FeedbackValue = masdifClient!.getFeedbackValues();
     return (
         <Button
             title={props.hoverMsg}
-            onClick={() => sendFeedback(props.up, props.up ? feedbackValue.thumbUp : feedbackValue.thumbDown)}
+            onClick={() => sendFeedback(determineFeedbackValue(props.up, feedbackValues), feedbackValues)}
         >
             <BotMessageFeedbackThumbIcon
                 positive={props.up}
                 toggled={
                     (props.up &&
                         props.messageId in convoContext.feedback &&
-                        convoContext.feedback[props.messageId] == feedbackValue.thumbUp) ||
+                        convoContext.feedback[props.messageId] === feedbackValues.thumbUp) ||
                     (!props.up &&
                         props.messageId in convoContext.feedback &&
-                        convoContext.feedback[props.messageId] == feedbackValue.thumbDown)
+                        convoContext.feedback[props.messageId] === feedbackValues.thumbDown)
                 }
             />
         </Button>
