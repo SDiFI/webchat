@@ -144,7 +144,6 @@ function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
 
 type ReplyAttachmentsProps = {
     attachments: ConversationAttachment[];
-    lastMessage?: boolean;
 };
 
 function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {

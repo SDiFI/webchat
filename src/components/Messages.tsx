@@ -169,7 +169,6 @@ function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
 
 type BotMessageProps = {
     message: BotConversationMessage;
-    lastMessage?: boolean;
 };
 
 function BotMessage(props: BotMessageProps) {
@@ -183,7 +182,7 @@ function BotMessage(props: BotMessageProps) {
             <BotAvatar />
             <BotMessageContainer>
                 <MessageText>{props.message.text}</MessageText>
-                <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
+                <ReplyAttachments attachments={attachments || []} />
                 <ReplyButtons buttons={buttons || []} />
             </BotMessageContainer>
             {masdifClient?.shouldAskForFeedback() && props.message.isLast && (
@@ -251,15 +250,7 @@ export default function Messages() {
             {convoContext.messages.map((message, idx) => {
                 switch (message.actor) {
                     case 'bot':
-                        return (
-                            <BotMessage
-                                key={idx}
-                                message={message}
-                                lastMessage={
-                                    convoContext.messages.length - 1 === idx /* TODO: make available from context */ // TODO(Smári, STIFI-27): Eeeh?
-                                }
-                            />
-                        );
+                        return <BotMessage key={idx} message={message} />;
                     case 'user':
                         return <UserMessage key={idx} message={message} />;
                     default:
