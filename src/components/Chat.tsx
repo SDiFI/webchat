@@ -70,7 +70,6 @@ export type ChatProps = {
     info?: SimpleInfoProps;
     themeOverrides?: Partial<DefaultTheme>;
     fakeResponseDelaySecs?: number;
-    askForFeedback?: boolean;
 };
 
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
@@ -171,7 +170,7 @@ export default function Chat(props: ChatProps) {
                                 default:
                                     return (
                                         <>
-                                            <Messages askForFeedback={props.askForFeedback} />
+                                            <Messages />
                                             <SenderForm
                                                 placeholder={props.placeholder || intl.get('CHAT_DEFAULT_PLACEHOLDER')}
                                             />

@@ -1,5 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
-import { ConversationSentMessage, ConversationResponse, TMasdifClient, MasdifClientOptions, InfoData } from './types';
+import {
+    ConversationSentMessage,
+    ConversationResponse,
+    TMasdifClient,
+    MasdifClientOptions,
+    InfoData,
+    FeedbackValue,
+} from './types';
 
 // Example usage of MasdifClient:
 //
@@ -14,8 +21,15 @@ export default class MasdifClient implements TMasdifClient {
     private http: AxiosInstance;
     private disableTTS: boolean;
     private language?: string;
+    private askForFeedback: boolean;
+    private feedbackValues: FeedbackValue;
 
-    constructor(baseURL: string, options: MasdifClientOptions | undefined) {
+    constructor(
+        baseURL: string,
+        options: MasdifClientOptions | undefined,
+        askForFeedback?: boolean,
+        feedbackValues?: FeedbackValue,
+    ) {
         this.http = axios.create({
             baseURL,
             headers: {
@@ -29,6 +43,12 @@ export default class MasdifClient implements TMasdifClient {
 
         this.disableTTS = options?.disableTTS || false;
         this.language = options?.language || undefined;
+        this.askForFeedback = askForFeedback || false;
+        this.feedbackValues = feedbackValues || {
+            thumbDown: 'negative',
+            thumbUp: 'positive',
+            untoggle: 'none',
+        };
     }
 
     async status() {
@@ -87,5 +107,13 @@ export default class MasdifClient implements TMasdifClient {
 
     async conversationHistory() {
         // TODO: Implement once historic replies returned by the server are in JSON
+    }
+
+    shouldAskForFeedback() {
+        return this.askForFeedback;
+    }
+
+    getFeedbackValues() {
+        return this.feedbackValues;
     }
 }

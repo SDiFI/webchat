@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import MasdifClient from '../api';
-import { TMasdifClient } from '../api/types';
+import { FeedbackValue, TMasdifClient } from '../api/types';
 import { useSettings } from './SettingsContext';
 
 const MasdifClientContext = createContext<TMasdifClient | null>(null);
@@ -8,6 +8,8 @@ const MasdifClientContext = createContext<TMasdifClient | null>(null);
 export type MasdifClientContextProviderProps = {
     serverAddress: string;
     extraHttpHeaders?: { [key: string]: string };
+    askForFeedback?: boolean;
+    feedbackValues?: FeedbackValue;
     children?: React.ReactNode;
 };
 
@@ -17,13 +19,18 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
 
     useEffect(() => {
         setMasdifClient(
-            new MasdifClient(props.serverAddress, {
-                extraHeaders: props.extraHttpHeaders,
-                disableTTS: settings.disableTTS,
-                language: settings.language,
-            }),
+            new MasdifClient(
+                props.serverAddress,
+                {
+                    extraHeaders: props.extraHttpHeaders,
+                    disableTTS: settings.disableTTS,
+                    language: settings.language,
+                },
+                props.askForFeedback,
+                props.feedbackValues,
+            ),
         );
-    }, [props.serverAddress, settings.disableTTS, settings.language]);
+    }, [props.serverAddress, settings.disableTTS, settings.language, props.askForFeedback, props.feedbackValues]);
 
     return <MasdifClientContext.Provider value={masdifClient}>{props.children}</MasdifClientContext.Provider>;
 }

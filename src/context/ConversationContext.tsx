@@ -125,7 +125,7 @@ const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) =>
                 : action.type === 'SEND_ACTION'
                 ? action.payload
                 : action.type === 'SET_RESPONSE_REACTION'
-                ? `/feedback{"value":"'${action.value}'"}`
+                ? `/feedback{"value":"${action.value}"}`
                 : '';
         text.length === 0 && console.warn('Sending message with an empty text string.');
 

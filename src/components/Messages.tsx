@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
 import intl from 'react-intl-universal';
-import { ConversationSentMessage } from '../api/types';
+import { ConversationSentMessage, FeedbackValue } from '../api/types';
 import { BotConversationMessage, useConversationContext } from '../context/ConversationContext';
 import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
 import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
+import { useMasdifClient } from '../context/MasdifClientContext';
 
 // TODO: Make responsive
 const MessagesContainer = styled.div`
@@ -110,8 +111,9 @@ type BotMessageFeedbackButtonProps = {
 };
 
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
+    const masdifClient = useMasdifClient();
     const [convoContext, convoDispatch] = useConversationContext();
-    const sendFeedback = (up: boolean) => {
+    const sendFeedback = (up: boolean, value: string) => {
         if (Object.keys(convoContext.feedback).includes(props.messageId)) {
             return;
         }
@@ -119,21 +121,25 @@ function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
         convoDispatch({
             type: 'SET_RESPONSE_REACTION',
             messageId: props.messageId,
-            value: up ? 'positive' : 'negative',
+            value,
         });
     };
 
+    const feedbackValue: FeedbackValue = masdifClient!.getFeedbackValues();
     return (
-        <Button title={props.hoverMsg} onClick={() => sendFeedback(props.up)}>
+        <Button
+            title={props.hoverMsg}
+            onClick={() => sendFeedback(props.up, props.up ? feedbackValue.thumbUp : feedbackValue.thumbDown)}
+        >
             <BotMessageFeedbackThumbIcon
                 positive={props.up}
                 toggled={
                     (props.up &&
                         props.messageId in convoContext.feedback &&
-                        convoContext.feedback[props.messageId] == 'positive') ||
+                        convoContext.feedback[props.messageId] == feedbackValue.thumbUp) ||
                     (!props.up &&
                         props.messageId in convoContext.feedback &&
-                        convoContext.feedback[props.messageId] == 'negative')
+                        convoContext.feedback[props.messageId] == feedbackValue.thumbDown)
                 }
             />
         </Button>
@@ -164,10 +170,11 @@ function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
 type BotMessageProps = {
     message: BotConversationMessage;
     lastMessage?: boolean;
-    askForFeedback: boolean;
 };
 
 function BotMessage(props: BotMessageProps) {
+    const masdifClient = useMasdifClient();
+
     const buttons = props.message.buttons;
     const attachments = props.message.data?.attachment;
 
@@ -179,7 +186,7 @@ function BotMessage(props: BotMessageProps) {
                 <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
                 <ReplyButtons buttons={buttons || []} />
             </BotMessageContainer>
-            {props.askForFeedback && props.message.isLast && (
+            {masdifClient?.shouldAskForFeedback() && props.message.isLast && (
                 <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
             )}
         </MessageContainer>
@@ -231,11 +238,7 @@ function LoadingMessage() {
     );
 }
 
-type MessagesProps = {
-    askForFeedback?: boolean;
-};
-
-export default function Messages({ askForFeedback }: MessagesProps) {
+export default function Messages() {
     const [convoContext] = useConversationContext();
     const containerElement = useRef<HTMLDivElement>(null);
 
@@ -253,9 +256,8 @@ export default function Messages({ askForFeedback }: MessagesProps) {
                                 key={idx}
                                 message={message}
                                 lastMessage={
-                                    convoContext.messages.length - 1 === idx /* TODO: make available from context */
+                                    convoContext.messages.length - 1 === idx /* TODO: make available from context */ // TODO(Smári, STIFI-27): Eeeh?
                                 }
-                                askForFeedback={askForFeedback ? askForFeedback : false}
                             />
                         );
                     case 'user':

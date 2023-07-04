@@ -56,6 +56,12 @@ export type InfoData = {
     motd: string[];
 };
 
+export type FeedbackValue = {
+    thumbUp: string;
+    thumbDown: string;
+    untoggle: string;
+};
+
 export interface TMasdifClient {
     status(): Promise<boolean>;
 
@@ -68,6 +74,11 @@ export interface TMasdifClient {
 
     // TODO: Type this
     conversationHistory(): Promise<any>;
+
+    // Whether or not to ask for feedback.
+    shouldAskForFeedback(): boolean;
+
+    getFeedbackValues(): FeedbackValue;
 }
 
 export type MasdifClientOptions = {
