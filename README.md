@@ -129,7 +129,7 @@ const App = () => {
                     botAvatarImageURL: 'https://www.geeksvgs.com/files/a/19/Rubber-Duck.png',
                     feedbackButtonPositiveToggledColor: '#0000ff',
                     feedbackButtonNegativeToggledColor: '#ff8000',
-                    feedbackButtonSize: 1.35, // Scale value. Recommended maximum is 1.35.
+                    feedbackButtonSize: 1.35, // Scale value. Recommended maximum is 1.2.
                 }}
             />
         </div>

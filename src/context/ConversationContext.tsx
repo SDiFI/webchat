@@ -83,13 +83,14 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (
                     [action.messageId]: action.value,
                 },
             });
-        case 'REMOVE_RESPONSE_REACTION':
-            const { [action.messageId]: value, ...feedback } = state.feedback;
+        case 'REMOVE_RESPONSE_REACTION': {
+            const { [action.messageId]: _, ...feedback } = state.feedback;
             return Object.assign({}, state, {
                 feedback: {
                     ...feedback,
                 },
             });
+        }
         default:
             throw new Error('Unknown action type');
     }

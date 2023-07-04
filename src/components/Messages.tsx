@@ -52,28 +52,32 @@ UserMessageContainer.defaultProps = {
     theme: defaultTheme,
 };
 
-const BotMessageContainer = styled.div`
+const BotMessageContentContainer = styled.div`
     background-color: ${({ theme }) => theme.botMessageBgColor};
     color: ${({ theme }) => theme.botMessageFgColor};
     border-radius: 0 15px 15px 15px;
     padding: 11px 15px;
-    max-width: 215px;
     text-align: left;
-    max-width: 71%;
 
     img {
         max-width: ${({ theme }) => theme.botMessageMaxImageWidth};
     }
 `;
 
-BotMessageContainer.defaultProps = {
+BotMessageContentContainer.defaultProps = {
     theme: defaultTheme,
 };
 
-const BotMessageFeedbackContainer = styled.div`
+const BotMessageContainer = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    max-width: 85%;
+`;
+
+const BotMessageFeedbackContainer = styled.div`
+    display: flex;
+    align-self: flex-end;
+    margin-top: 7.5px;
 `;
 
 const BotMessageFeedbackButtonContainer = styled.div`
@@ -204,13 +208,15 @@ function BotMessage(props: BotMessageProps) {
         <MessageContainer>
             <BotAvatar />
             <BotMessageContainer>
-                <MessageText>{props.message.text}</MessageText>
-                <ReplyAttachments attachments={attachments || []} />
-                <ReplyButtons buttons={buttons || []} />
+                <BotMessageContentContainer>
+                    <MessageText>{props.message.text}</MessageText>
+                    <ReplyAttachments attachments={attachments || []} />
+                    <ReplyButtons buttons={buttons || []} />
+                </BotMessageContentContainer>
+                {masdifClient?.shouldAskForFeedback() && props.message.isLast && (
+                    <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
+                )}
             </BotMessageContainer>
-            {masdifClient?.shouldAskForFeedback() && props.message.isLast && (
-                <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
-            )}
         </MessageContainer>
     );
 }
@@ -253,9 +259,9 @@ function LoadingMessage() {
     return (
         <MessageContainer>
             <BotAvatar />
-            <BotMessageContainer>
+            <BotMessageContentContainer>
                 <Loading />
-            </BotMessageContainer>
+            </BotMessageContentContainer>
         </MessageContainer>
     );
 }
