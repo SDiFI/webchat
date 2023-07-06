@@ -85,4 +85,6 @@ export type MasdifClientOptions = {
     extraHeaders?: { [key: string]: string };
     disableTTS?: boolean;
     language?: string;
+    askForFeedback?: boolean;
+    feedbackValues?: FeedbackValue;
 };

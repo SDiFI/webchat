@@ -19,16 +19,13 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
 
     useEffect(() => {
         setMasdifClient(
-            new MasdifClient(
-                props.serverAddress,
-                {
-                    extraHeaders: props.extraHttpHeaders,
-                    disableTTS: settings.disableTTS,
-                    language: settings.language,
-                },
-                props.askForFeedback,
-                props.feedbackValues,
-            ),
+            new MasdifClient(props.serverAddress, {
+                extraHeaders: props.extraHttpHeaders,
+                disableTTS: settings.disableTTS,
+                language: settings.language,
+                askForFeedback: props.askForFeedback,
+                feedbackValues: props.feedbackValues,
+            }),
         );
     }, [props.serverAddress, settings.disableTTS, settings.language, props.askForFeedback, props.feedbackValues]);
 

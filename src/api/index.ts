@@ -24,12 +24,7 @@ export default class MasdifClient implements TMasdifClient {
     private askForFeedback: boolean;
     private feedbackValues: FeedbackValue;
 
-    constructor(
-        baseURL: string,
-        options: MasdifClientOptions | undefined,
-        askForFeedback?: boolean,
-        feedbackValues?: FeedbackValue,
-    ) {
+    constructor(baseURL: string, options: MasdifClientOptions | undefined) {
         this.http = axios.create({
             baseURL,
             headers: {
@@ -43,8 +38,8 @@ export default class MasdifClient implements TMasdifClient {
 
         this.disableTTS = options?.disableTTS || false;
         this.language = options?.language || undefined;
-        this.askForFeedback = askForFeedback || false;
-        this.feedbackValues = feedbackValues || {
+        this.askForFeedback = options?.askForFeedback || false;
+        this.feedbackValues = options?.feedbackValues || {
             thumbDown: 'negative',
             thumbUp: 'positive',
             untoggle: 'none',
