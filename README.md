@@ -176,6 +176,8 @@ the maximum duration of an utterance is 20 seconds.
 4. `cd example && yarn install && yarn start`
 5. Go look at http://localhost:1234 hot reload while editing the code
 
+To enable pre-commit hooks for linting you can run `yarn husky install`.
+
 To just build minified (and not minified) bundles do:
 
 ```

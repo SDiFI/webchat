@@ -29,11 +29,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
   "prettier": {
     "trailingComma": "all",
     "tabWidth": 4,
