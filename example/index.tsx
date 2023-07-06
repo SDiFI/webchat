@@ -6,14 +6,14 @@ const App = () => {
     return (
         <div>
             <ConnectedChat
-                serverAddress="http://localhost:8080"
-                title="Jóakim"
+                serverAddress='http://localhost:8080'
+                title='Jóakim'
                 hideSettings={true}
                 info={{
                     paragraphs: ['<b>First <button>a</button> paragraph</b>', 'Second', 'and <i>third</i>!'],
                     buttons: [
-                        {text: 'External URL button', action: 'https://google.com'},
-                        {text: 'Do something button', action: () => alert('HI!')},
+                        { text: 'External URL button', action: 'https://google.com' },
+                        { text: 'Do something button', action: () => alert('HI!') },
                     ],
                     footer: 'Custom <i>foo</i><b>ter</b>',
                 }}
@@ -22,6 +22,15 @@ const App = () => {
                     primaryBgColor: '#0f0',
                     botMessageBgColor: '#0aa',
                     botMessageFgColor: '#a00',
+                    feedbackButtonPositiveToggledColor: '#0000ff',
+                    feedbackButtonNegativeToggledColor: '#ff8000',
+                    feedbackButtonScale: 1.25,
+                }}
+                askForFeedback={true}
+                feedbackValues={{
+                    thumbUp: 'nice',
+                    thumbDown: 'not-nice',
+                    untoggle: 'neutral',
                 }}
             />
         </div>
@@ -29,4 +38,4 @@ const App = () => {
 };
 
 const root = createRoot(document.getElementById('root')!);
-root.render(<App />, );
+root.render(<App />);

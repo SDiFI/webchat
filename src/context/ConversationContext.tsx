@@ -1,16 +1,31 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { ConversationResponse, ConversationSentMessage } from '../api/types';
+import { ConversationResponse, ConversationSentMessage, TMasdifClient } from '../api/types';
+import { useMasdifClient } from '../context/MasdifClientContext';
 import useSessionStorage from '../hooks/useSessionStorage';
 import { useReducerWithMiddleware } from '../hooks/useReducerWithMiddleware';
 import { PlaybackState, useAudioPlayback } from './AudioPlaybackContext';
 
+type BotConversationMessageFeedback = {
+    [key: string]: string;
+};
+
+export type BotConversationMessage = {
+    actor?: 'bot';
+    isLast: boolean;
+} & ConversationResponse;
+
+export type UserConversationMessage = {
+    actor: 'user';
+} & ConversationSentMessage;
+
 export type ConversationState = {
     conversationId: string | null;
-    messages: (({ actor?: 'bot' } & ConversationResponse) | ({ actor: 'user' } & ConversationSentMessage))[];
+    messages: (BotConversationMessage | UserConversationMessage)[];
     speechHypothesis?: string;
     loading: boolean;
     userSpeaking: boolean;
     error: string | null;
+    feedback: BotConversationMessageFeedback;
 };
 
 const initialState: ConversationState = {
@@ -19,19 +34,21 @@ const initialState: ConversationState = {
     loading: false,
     userSpeaking: false,
     error: null,
+    feedback: {},
 };
 
 // TODO(rkjaran): Define this type in more detail
 export type ConversationAction =
     | ({ type: 'ADD_RESPONSE' } & ConversationResponse)
     | ({ type: 'ADD_SENT_TEXT' } & ConversationSentMessage)
-    | { type: 'SEND_ACTION' }
+    | { type: 'SEND_ACTION'; payload: string }
     | { type: 'SET_CONVERSATION_ID'; conversationId: string }
     | { type: 'START_USER_SPEECH' }
     | { type: 'END_USER_SPEECH' }
     | { type: 'SET_USER_SPEECH_PARTIAL'; hypothesis: string }
-    | { type: 'DELAY_MOTD_RESPONSE' };
-
+    | { type: 'DELAY_MOTD_RESPONSE' }
+    | { type: 'SET_RESPONSE_REACTION'; messageId: string; value: string }
+    | { type: 'REMOVE_RESPONSE_REACTION'; messageId: string; value: string };
 const reducer: React.Reducer<ConversationState, ConversationAction> = (
     state: ConversationState,
     action: ConversationAction,
@@ -59,6 +76,21 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (
             return Object.assign({}, state, { userSpeaking: true, speechHypothesis: action.hypothesis });
         case 'DELAY_MOTD_RESPONSE':
             return Object.assign({}, state, { loading: true });
+        case 'SET_RESPONSE_REACTION':
+            return Object.assign({}, state, {
+                feedback: {
+                    ...state.feedback,
+                    [action.messageId]: action.value,
+                },
+            });
+        case 'REMOVE_RESPONSE_REACTION': {
+            const { [action.messageId]: _, ...feedback } = state.feedback;
+            return Object.assign({}, state, {
+                feedback: {
+                    ...feedback,
+                },
+            });
+        }
         default:
             throw new Error('Unknown action type');
     }
@@ -79,6 +111,66 @@ const makePlaybackMiddleware = (setPlaybackFn: (playbackState: PlaybackState) =>
     }
 };
 
+const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) => (
+    action: ConversationAction,
+    state: ConversationState,
+    dispatch: React.Dispatch<ConversationAction>,
+) => {
+    const sendActionNames: Array<Partial<ConversationAction['type']>> = [
+        'ADD_SENT_TEXT',
+        'SEND_ACTION',
+        'SET_RESPONSE_REACTION',
+        'REMOVE_RESPONSE_REACTION',
+    ];
+    if (sendActionNames.includes(action.type)) {
+        if (
+            !masdifClient ||
+            !state.conversationId ||
+            (action.type === 'SET_RESPONSE_REACTION' && !action.messageId) ||
+            (action.type === 'REMOVE_RESPONSE_REACTION' && !action.messageId)
+        ) {
+            // TODO: If these are null, something is wrong... Do something about that.
+            console.error('No client, no conversation ID or no message ID. Something bad happened');
+            return;
+        }
+
+        const text: string =
+            action.type === 'ADD_SENT_TEXT'
+                ? action.text
+                : action.type === 'SEND_ACTION'
+                ? action.payload
+                : action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION'
+                ? `/feedback{"value":"${action.value}"}`
+                : '';
+        text.length === 0 && console.warn('Sending message with an empty text string.');
+
+        masdifClient!
+            .sendMessage(state.conversationId!, {
+                text,
+                metadata: {
+                    asr_generated: action.type === 'ADD_SENT_TEXT' ? action.metadata?.asr_generated : undefined,
+                },
+                ...((action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION') && {
+                    message_id: action.messageId,
+                }),
+            })
+            .then(responses => {
+                if (action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION') {
+                    // Don't do anything with feedback answers for now.
+                    return;
+                }
+                responses.forEach((response, i, responseArr) => {
+                    const message: BotConversationMessage = {
+                        ...response,
+                        actor: 'bot',
+                        isLast: i === responseArr.length - 1,
+                    };
+                    dispatch({ type: 'ADD_RESPONSE', ...message });
+                });
+            });
+    }
+};
+
 export type ConversationContextValue = [ConversationState, React.Dispatch<ConversationAction>];
 
 const ConversationContext = createContext<ConversationContextValue>([initialState, () => {}]);
@@ -88,10 +180,18 @@ export type Props = {
 };
 
 export function ConversationContextProvider(props: Props) {
+    const masdifClient = useMasdifClient();
     const [savedState, setSavedState] = useSessionStorage<ConversationState>('@sdifi:conversation', initialState);
     const [, setPlayback] = useAudioPlayback();
+
     const playbackMiddleware = makePlaybackMiddleware(setPlayback);
-    const [state, dispatch] = useReducerWithMiddleware(reducer, savedState, [playbackMiddleware], []);
+    const messageInteractionMiddleware = makeMessageInteractionMiddleware(masdifClient);
+    const [state, dispatch] = useReducerWithMiddleware(
+        reducer,
+        savedState,
+        [playbackMiddleware, messageInteractionMiddleware],
+        [],
+    );
 
     useEffect(() => {
         console.debug('saving state for session');

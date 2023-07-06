@@ -7,6 +7,7 @@ import { ConversationContextProvider } from '../context/ConversationContext';
 import { MasdifContextProvider } from '../context/MasdifClientContext';
 import { I18nProvider } from '../context/I18nContext';
 import { SettingsProvider } from '../context/SettingsContext';
+import { FeedbackValue } from '../api/types';
 
 export type ConnectedChatProps = {
     // Address of Masdif server backing the chat widget
@@ -40,6 +41,12 @@ export type ConnectedChatProps = {
 
     // Delay before displaying immediate responses and between multi message responses. Defaults to 1 sec.
     fakeResponseDelaySecs?: number;
+
+    // Whether bot should ask user for feedback for its answers.
+    askForFeedback?: boolean;
+
+    // Feedback values to be sent to backend.
+    feedbackValues?: FeedbackValue;
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -50,7 +57,11 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                 language: 'is-IS',
             }}
         >
-            <MasdifContextProvider serverAddress={props.serverAddress}>
+            <MasdifContextProvider
+                serverAddress={props.serverAddress}
+                askForFeedback={props.askForFeedback}
+                feedbackValues={props.feedbackValues}
+            >
                 <AudioPlaybackProvider>
                     <ConversationContextProvider>
                         <I18nProvider>

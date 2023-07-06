@@ -3,8 +3,6 @@ import styled, { css } from 'styled-components';
 import { Button as ButtonData, ConversationAttachment } from '../api/types';
 import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
-import { useMasdifClient } from '../context/MasdifClientContext';
-import { useSettings } from '../context/SettingsContext';
 
 const replyStyle = css`
     background-color: #ccc;
@@ -35,25 +33,13 @@ type ReplyActionProps = {
 };
 
 function ReplyAction(props: ReplyActionProps) {
-    const masdifClient = useMasdifClient();
-    const [convoState, convoDispatch] = useConversationContext();
-    const [settings] = useSettings();
-
+    const [, convoDispatch] = useConversationContext();
     const handlePostback = (_: React.MouseEvent) => {
-        // TODO: We should probably move this update logic somewhere else, since SendForm is doing the exact same action
-        convoDispatch({ type: 'SEND_ACTION' });
-        masdifClient
-            ?.sendMessage(convoState.conversationId!, {
-                text: props.payload,
-                metadata: { language: settings.language },
-            })
-            .then(responses => {
-                responses.forEach(response => {
-                    convoDispatch({ type: 'ADD_RESPONSE', ...response });
-                });
-            });
+        convoDispatch({
+            type: 'SEND_ACTION',
+            payload: props.payload,
+        });
     };
-
     return <ReplyButton onClick={handlePostback}>{props.title}</ReplyButton>;
 }
 
@@ -158,7 +144,6 @@ function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
 
 type ReplyAttachmentsProps = {
     attachments: ConversationAttachment[];
-    lastMessage?: boolean;
 };
 
 function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {

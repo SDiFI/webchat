@@ -35,5 +35,10 @@ declare module 'styled-components' {
         launcherCloseImageURL?: string;
         launcherImageSize: string;
         launcherShadow: boolean;
+
+        feedbackButtonUntoggledColor: string;
+        feedbackButtonPositiveToggledColor: string;
+        feedbackButtonNegativeToggledColor: string;
+        feedbackButtonScale: number;
     }
 }

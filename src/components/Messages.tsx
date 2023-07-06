@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { ConversationResponse, ConversationSentMessage } from '../api/types';
-import { useConversationContext } from '../context/ConversationContext';
+import intl from 'react-intl-universal';
+import { ConversationSentMessage, FeedbackValue } from '../api/types';
+import { BotConversationMessage, useConversationContext } from '../context/ConversationContext';
 import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
+import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
+import { useMasdifClient } from '../context/MasdifClientContext';
 
 // TODO: Make responsive
 const MessagesContainer = styled.div`
@@ -49,23 +52,54 @@ UserMessageContainer.defaultProps = {
     theme: defaultTheme,
 };
 
-const BotMessageContainer = styled.div`
+const BotMessageContentContainer = styled.div`
     background-color: ${({ theme }) => theme.botMessageBgColor};
     color: ${({ theme }) => theme.botMessageFgColor};
     border-radius: 0 15px 15px 15px;
     padding: 11px 15px;
-    max-width: 215px;
     text-align: left;
-    max-width: 85%;
 
     img {
         max-width: ${({ theme }) => theme.botMessageMaxImageWidth};
     }
 `;
 
-BotMessageContainer.defaultProps = {
+BotMessageContentContainer.defaultProps = {
     theme: defaultTheme,
 };
+
+const BotMessageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+`;
+
+const BotMessageFeedbackContainer = styled.div`
+    display: flex;
+    align-self: flex-end;
+    margin-top: 7.5px;
+`;
+
+const BotMessageFeedbackButtonContainer = styled.div`
+    display: flex;
+`;
+
+const Button = styled.button`
+    border: none;
+    background: unset;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:disabled {
+        cursor: auto;
+    }
+`;
+
+const Space = styled.div`
+    padding-right: 1px;
+`;
 
 function BotAvatar(_: {}) {
     const theme = useTheme();
@@ -74,12 +108,99 @@ function BotAvatar(_: {}) {
     return <img src={theme.botAvatarImageURL} style={{ height: theme.botAvatarImageSize }} alt='Bot avatar' />;
 }
 
+type BotMessageFeedbackButtonProps = {
+    up: boolean;
+    hoverMsg: string;
+    messageId: string;
+};
+
+function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
+    const masdifClient = useMasdifClient();
+    const [convoContext, convoDispatch] = useConversationContext();
+    const sendFeedback = (value: string, feedbackValues: FeedbackValue) => {
+        console.log(`Endurgjöf fyrir ${props.messageId}: ${value}`);
+        convoDispatch({
+            type: value === feedbackValues.untoggle ? 'REMOVE_RESPONSE_REACTION' : 'SET_RESPONSE_REACTION',
+            messageId: props.messageId,
+            value,
+        });
+    };
+
+    const determineFeedbackValue = (up: boolean, feedbackValues: FeedbackValue) => {
+        if (!Object.keys(convoContext.feedback).includes(props.messageId)) {
+            // No feedback record present for message.
+            return up ? feedbackValues.thumbUp : feedbackValues.thumbDown;
+        }
+        if (up && convoContext.feedback[props.messageId] === feedbackValues.thumbUp) {
+            // Up-thumb pressed, feedback record present and it's thumbUp value => Untoggle
+            return feedbackValues.untoggle;
+        }
+        if (up && convoContext.feedback[props.messageId] === feedbackValues.thumbDown) {
+            // Up-thumb pressed, feedback record present and it's thumbDown value => Switch value to thumbUp
+            return feedbackValues.thumbUp;
+        }
+        if (!up && convoContext.feedback[props.messageId] === feedbackValues.thumbDown) {
+            // Down-thumb pressed, feedback record present and it's thumbDown value => Untoggle
+            return feedbackValues.untoggle;
+        }
+        if (!up && convoContext.feedback[props.messageId] === feedbackValues.thumbUp) {
+            // Down-thumb pressed, feedback record present and it's thumbUp value => Switch value to thumbDown
+            return feedbackValues.thumbDown;
+        }
+
+        console.warn('Empty feedback value.');
+        return '';
+    };
+
+    const feedbackValues: FeedbackValue = masdifClient!.getFeedbackValues();
+    return (
+        <Button
+            title={props.hoverMsg}
+            onClick={() => sendFeedback(determineFeedbackValue(props.up, feedbackValues), feedbackValues)}
+        >
+            <BotMessageFeedbackThumbIcon
+                positive={props.up}
+                toggled={
+                    (props.up &&
+                        props.messageId in convoContext.feedback &&
+                        convoContext.feedback[props.messageId] === feedbackValues.thumbUp) ||
+                    (!props.up &&
+                        props.messageId in convoContext.feedback &&
+                        convoContext.feedback[props.messageId] === feedbackValues.thumbDown)
+                }
+            />
+        </Button>
+    );
+}
+
+type BotMessageFeedbackProps = {
+    messageId: string;
+    isPositive?: boolean | undefined;
+};
+
+function BotMessageFeedback({ messageId }: BotMessageFeedbackProps) {
+    return (
+        <BotMessageFeedbackContainer>
+            <BotMessageFeedbackButtonContainer>
+                <BotMessageFeedbackButton up messageId={messageId} hoverMsg={intl.get('FEEDBACK_TOOLTIP_POSITIVE')} />
+                <Space />
+                <BotMessageFeedbackButton
+                    up={false}
+                    messageId={messageId}
+                    hoverMsg={intl.get('FEEDBACK_TOOLTIP_NEGATIVE')}
+                />
+            </BotMessageFeedbackButtonContainer>
+        </BotMessageFeedbackContainer>
+    );
+}
+
 type BotMessageProps = {
-    message: ConversationResponse;
-    lastMessage?: boolean;
+    message: BotConversationMessage;
 };
 
 function BotMessage(props: BotMessageProps) {
+    const masdifClient = useMasdifClient();
+
     const buttons = props.message.buttons;
     const attachments = props.message.data?.attachment;
 
@@ -87,9 +208,14 @@ function BotMessage(props: BotMessageProps) {
         <MessageContainer>
             <BotAvatar />
             <BotMessageContainer>
-                <MessageText>{props.message.text}</MessageText>
-                <ReplyAttachments lastMessage={props.lastMessage} attachments={attachments || []} />
-                <ReplyButtons buttons={buttons || []} />
+                <BotMessageContentContainer>
+                    <MessageText>{props.message.text}</MessageText>
+                    <ReplyAttachments attachments={attachments || []} />
+                    <ReplyButtons buttons={buttons || []} />
+                </BotMessageContentContainer>
+                {masdifClient?.shouldAskForFeedback() && props.message.isLast && (
+                    <BotMessageFeedback messageId={props.message.message_id ? props.message.message_id : ''} />
+                )}
             </BotMessageContainer>
         </MessageContainer>
     );
@@ -133,21 +259,17 @@ function LoadingMessage() {
     return (
         <MessageContainer>
             <BotAvatar />
-            <BotMessageContainer>
+            <BotMessageContentContainer>
                 <Loading />
-            </BotMessageContainer>
+            </BotMessageContentContainer>
         </MessageContainer>
     );
 }
 
-type MessagesProps = {};
-
-export default function Messages(_: MessagesProps) {
-    // TODO(rkjaran): This component should probably not be getting messages as a prop, since it's already using
-    // ConversationContext.
+export default function Messages() {
     const [convoContext] = useConversationContext();
-
     const containerElement = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
     }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading]);
@@ -157,15 +279,7 @@ export default function Messages(_: MessagesProps) {
             {convoContext.messages.map((message, idx) => {
                 switch (message.actor) {
                     case 'bot':
-                        return (
-                            <BotMessage
-                                key={idx}
-                                message={message}
-                                lastMessage={
-                                    convoContext.messages.length - 1 === idx /* TODO: make available from context */
-                                }
-                            />
-                        );
+                        return <BotMessage key={idx} message={message} />;
                     case 'user':
                         return <UserMessage key={idx} message={message} />;
                     default:

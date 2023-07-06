@@ -10,6 +10,8 @@ export type ConversationSentMessage = {
         // Whether or not message was generated via ASR
         asr_generated?: boolean;
     };
+    // Optional message id for feedback messages.
+    message_id?: string;
 };
 
 export type ConversationAttachment =
@@ -31,6 +33,7 @@ export type ConversationData = {
 };
 
 export type ConversationResponse = {
+    message_id?: string;
     recipient_id?: string;
     text: string;
     buttons?: Button[];
@@ -53,6 +56,12 @@ export type InfoData = {
     motd: string[];
 };
 
+export type FeedbackValue = {
+    thumbUp: string;
+    thumbDown: string;
+    untoggle: string;
+};
+
 export interface TMasdifClient {
     status(): Promise<boolean>;
 
@@ -65,9 +74,17 @@ export interface TMasdifClient {
 
     // TODO: Type this
     conversationHistory(): Promise<any>;
+
+    // Whether or not to ask for feedback.
+    shouldAskForFeedback(): boolean;
+
+    getFeedbackValues(): FeedbackValue;
 }
 
 export type MasdifClientOptions = {
     extraHeaders?: { [key: string]: string };
     disableTTS?: boolean;
+    language?: string;
+    askForFeedback?: boolean;
+    feedbackValues?: FeedbackValue;
 };

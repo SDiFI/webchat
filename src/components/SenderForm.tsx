@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useConversationContext } from '../context/ConversationContext';
-import { useMasdifClient } from '../context/MasdifClientContext';
+import { ConversationAction, useConversationContext } from '../context/ConversationContext';
 import { Settings, useSettings } from '../context/SettingsContext';
 import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
@@ -46,7 +45,6 @@ export type SenderFormProps = {
 export default function SenderForm(props: SenderFormProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const [text, setText] = useState('');
-    const masdifClient = useMasdifClient();
     const [settings, setSettings] = useSettings();
 
     const sendText = () => {
@@ -84,7 +82,11 @@ export default function SenderForm(props: SenderFormProps) {
         if (text.startsWith('/debug settings ')) {
             const subcommand = text.substring(16);
             if (subcommand.startsWith('get')) {
-                convoDispatch({ type: 'ADD_RESPONSE', recipient_id: 'debug', text: JSON.stringify(settings) });
+                convoDispatch({
+                    type: 'ADD_RESPONSE',
+                    recipient_id: 'debug',
+                    text: JSON.stringify(settings),
+                });
             } else if (subcommand.startsWith('set ')) {
                 setSettings(JSON.parse(subcommand.substring(4)) as Partial<Settings>);
             }
@@ -92,25 +94,27 @@ export default function SenderForm(props: SenderFormProps) {
             return;
         }
 
-        convoDispatch({ type: 'ADD_SENT_TEXT', text });
-        setText('');
-
-        if (!masdifClient || !convoState.conversationId) {
-            // TODO: If these are null, something is wrong... Do something about that
-            console.error('No client or no conversation ID. Something bad happened');
+        if (text.startsWith('/debug multi')) {
+            const messages: string[] = [
+                'Afi minn fór á honum Rauð',
+                'Eitthvað suður á bæi,',
+                'að sækja bæði sykur og brauð,',
+                'sitt af hvoru tagi',
+            ];
+            messages.forEach((msg, i, arr) => {
+                convoDispatch({
+                    type: 'ADD_RESPONSE',
+                    recipient_id: 'debug',
+                    text: msg,
+                    isLast: i === arr.length - 1,
+                } as ConversationAction);
+            });
+            setText('');
             return;
         }
 
-        masdifClient
-            .sendMessage(convoState.conversationId, {
-                text: text,
-                metadata: { language: settings.language },
-            })
-            .then(responses => {
-                responses.forEach(response => {
-                    convoDispatch({ type: 'ADD_RESPONSE', ...response });
-                });
-            });
+        convoDispatch({ type: 'ADD_SENT_TEXT', text });
+        setText('');
     };
 
     const handleSubmit = (event: React.FormEvent) => {

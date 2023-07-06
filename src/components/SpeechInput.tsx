@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { performSingleUttSpeechRecognition } from '../api/speech';
 import { useConversationContext } from '../context/ConversationContext';
-import { useMasdifClient } from '../context/MasdifClientContext';
-import { useSettings } from '../context/SettingsContext';
 import SpeakIcon from './SpeakIcon';
 
 const Button = styled.button`
@@ -36,8 +34,6 @@ export type SpeechInputProps = {};
 
 export default function SpeechInput(_: SpeechInputProps) {
     const [convoState, convoDispatch] = useConversationContext();
-    const masdifClient = useMasdifClient();
-    const [settings] = useSettings();
 
     async function handleSpeak() {
         if (convoState.userSpeaking) {
@@ -50,23 +46,11 @@ export default function SpeechInput(_: SpeechInputProps) {
         await performSingleUttSpeechRecognition((transcript, metadata) => {
             if (metadata.isFinal && transcript.length > 0) {
                 // TODO: remove this once Masdif has integrated asr
-                convoDispatch({ type: 'ADD_SENT_TEXT', text: transcript });
-
-                // TODO: Responses should be handled globally, make this only send once we have that. Something the
-                //   useMasdifClient hook should take care of.
-                masdifClient!
-                    .sendMessage(convoState.conversationId!, {
-                        text: transcript,
-                        metadata: {
-                            asr_generated: true,
-                            language: settings.language,
-                        },
-                    })
-                    .then(responses => {
-                        responses.forEach(response => {
-                            convoDispatch({ type: 'ADD_RESPONSE', ...response });
-                        });
-                    });
+                convoDispatch({
+                    type: 'ADD_SENT_TEXT',
+                    text: transcript,
+                    metadata: { asr_generated: true },
+                });
             } else {
                 convoDispatch({ type: 'SET_USER_SPEECH_PARTIAL', hypothesis: transcript });
             }
