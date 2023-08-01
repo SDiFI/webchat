@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Button = styled.button`
+const Button = styled.button<{ $shake?: boolean }>`
     border: none;
     background: unset;
 
@@ -16,16 +16,48 @@ const Button = styled.button`
     &:disabled {
         cursor: auto;
     }
+
+    svg {
+        @keyframes shake {
+            0% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(5deg);
+            }
+            50% {
+                transform: rotate(0eg);
+            }
+            75% {
+                transform: rotate(-5deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        animation: ${props => (props.$shake ? 'shake 0.25s' : '')};
+    }
 `;
 
 export default function ClearConversationButton() {
+    const [shake, setShake] = React.useState(false);
     return (
         <Button
             onClick={() => {
                 console.log('Conversation deleted.');
+                setShake(true);
             }}
+            $shake={shake}
         >
-            <svg version='1.0' xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='300 300 750 750'>
+            <svg
+                version='1.0'
+                xmlns='http://www.w3.org/2000/svg'
+                width='20'
+                height='20'
+                viewBox='300 300 750 750'
+                onAnimationEnd={() => setShake(false)}
+            >
                 <g transform='translate(0.000000,1280.000000) scale(0.100000,-0.100000)' style={{ fill: '#FFFFFF' }}>
                     <path
                         strokeWidth='2%'
