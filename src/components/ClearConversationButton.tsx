@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
+import { useConversationContext } from '../context/ConversationContext';
 
 const Button = styled.button<{ $shake?: boolean }>`
     border: none;
@@ -42,11 +44,41 @@ const Button = styled.button<{ $shake?: boolean }>`
 
 export default function ClearConversationButton() {
     const [shake, setShake] = React.useState(false);
+    const masdifClient = useMasdifClient();
+    const masdifStatus = useMasdifStatus();
+    const [, convoDispatch] = useConversationContext();
+
+    const clearConversation = async () => {
+        if (masdifClient && masdifStatus) {
+            convoDispatch({ type: 'CLEAR_CONVERSATION' });
+
+            const conversationId = await masdifClient.createConversation();
+            convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
+
+            const info = await masdifClient.info(conversationId);
+            info.motd.reduce(
+                (p, text) =>
+                    p.then(
+                        () =>
+                            new Promise<void>(resolve => {
+                                convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
+                                window.setTimeout(() => {
+                                    convoDispatch({ type: 'ADD_RESPONSE', text });
+                                    resolve();
+                                }, (1 ?? 1) * 1000); /// ATH
+                            }),
+                    ),
+                Promise.resolve(),
+            );
+        }
+    };
+
     return (
         <Button
             onClick={() => {
-                console.log('Conversation deleted.');
+                clearConversation();
                 setShake(true);
+                console.log('Conversation deleted.');
             }}
             $shake={shake}
         >
