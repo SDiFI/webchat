@@ -47,6 +47,10 @@ export type ConnectedChatProps = {
 
     // Feedback values to be sent to backend.
     feedbackValues?: FeedbackValue;
+
+    // If set the widget will render regardless of backend status. If backend is having problems, an indicator of that will be rendered within widget.
+    // If not set, widget won't render if backend is having problems.
+    alwaysRender?: boolean;
 };
 
 export default function ConnectedChat(props: ConnectedChatProps) {
@@ -75,6 +79,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 startClosed={props.startClosed}
                                 themeOverrides={props.theme}
                                 fakeResponseDelaySecs={props.fakeResponseDelaySecs}
+                                alwaysRender={props.alwaysRender}
                             />
                         </I18nProvider>
                     </ConversationContextProvider>

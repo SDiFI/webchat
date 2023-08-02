@@ -70,6 +70,7 @@ export type ChatProps = {
     info?: SimpleInfoProps;
     themeOverrides?: Partial<DefaultTheme>;
     fakeResponseDelaySecs?: number;
+    alwaysRender?: boolean;
 };
 
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
@@ -117,7 +118,7 @@ export default function Chat(props: ChatProps) {
     return (
         <ThemeProvider theme={{ ...defaultTheme, ...props.themeOverrides }}>
             <ChatContainer>
-                {visible && masdifStatus && (
+                {((visible && props.alwaysRender) || (visible && masdifStatus)) && (
                     <ConversationContainer>
                         <Header>
                             <HeaderTitle>{props.title}</HeaderTitle>
@@ -159,7 +160,9 @@ export default function Chat(props: ChatProps) {
                                             paragraphs={
                                                 props.info?.paragraphs || [
                                                     intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_01'),
-                                                    intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_02', { name: props.title }),
+                                                    intl.get('CHAT_DEFAULT_INFO_PARAGRAPH_02', {
+                                                        name: props.title,
+                                                    }),
                                                 ]
                                             }
                                             buttons={props.info?.buttons}
@@ -181,7 +184,9 @@ export default function Chat(props: ChatProps) {
                         })()}
                     </ConversationContainer>
                 )}
-                {masdifStatus && <Launcher visible={visible} onClick={() => setVisible(!visible)} />}
+                {(props.alwaysRender || masdifStatus) && (
+                    <Launcher visible={visible} onClick={() => setVisible(!visible)} />
+                )}
             </ChatContainer>
         </ThemeProvider>
     );
