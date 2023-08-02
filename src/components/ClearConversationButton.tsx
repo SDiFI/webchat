@@ -50,11 +50,14 @@ export default function ClearConversationButton() {
 
     const clearConversation = async () => {
         if (masdifClient && masdifStatus) {
+            // Clear messages and message feedback info.
             convoDispatch({ type: 'CLEAR_CONVERSATION' });
 
+            // Current conversationId is overwritten.
             const conversationId = await masdifClient.createConversation();
             convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
+            // New conversation is started with MOTD.
             const info = await masdifClient.info(conversationId);
             info.motd.reduce(
                 (p, text) =>
@@ -65,7 +68,7 @@ export default function ClearConversationButton() {
                                 window.setTimeout(() => {
                                     convoDispatch({ type: 'ADD_RESPONSE', text });
                                     resolve();
-                                }, (1 ?? 1) * 1000); /// ATH
+                                }, 1000);
                             }),
                     ),
                 Promise.resolve(),
