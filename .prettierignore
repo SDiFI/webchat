@@ -1,1 +1,4 @@
 src/proto/**
+example/dist/**
+dist/**
+docs/**
