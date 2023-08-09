@@ -70,7 +70,6 @@ export type ChatProps = {
     info?: SimpleInfoProps;
     themeOverrides?: Partial<DefaultTheme>;
     fakeResponseDelaySecs?: number;
-    alwaysRender?: boolean;
 };
 
 // The Chat component expects to be wrapped in both MasdifClientContextProvider and ConversationContextProvider
@@ -118,7 +117,7 @@ export default function Chat(props: ChatProps) {
     return (
         <ThemeProvider theme={{ ...defaultTheme, ...props.themeOverrides }}>
             <ChatContainer>
-                {((visible && props.alwaysRender) || (visible && masdifStatus)) && (
+                {((visible && settings.alwaysRender) || (visible && masdifStatus)) && (
                     <ConversationContainer>
                         <Header>
                             <HeaderTitle>{props.title}</HeaderTitle>
@@ -184,7 +183,7 @@ export default function Chat(props: ChatProps) {
                         })()}
                     </ConversationContainer>
                 )}
-                {(props.alwaysRender || masdifStatus) && (
+                {(settings.alwaysRender || masdifStatus) && (
                     <Launcher visible={visible} onClick={() => setVisible(!visible)} />
                 )}
             </ChatContainer>
