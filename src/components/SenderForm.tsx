@@ -6,6 +6,7 @@ import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 import { useMasdifStatus } from '../context/MasdifClientContext';
+import intl from 'react-intl-universal';
 
 const Form = styled.form<{ $disabled: boolean }>`
     align-items: center;
@@ -136,8 +137,9 @@ export default function SenderForm(props: SenderFormProps) {
         }
     };
 
+    const disabled = settings.alwaysRender && !masdifStatus;
     return (
-        <Form onSubmit={handleSubmit} $disabled={settings.alwaysRender && !masdifStatus}>
+        <Form title={disabled ? intl.get('CHAT_SERVER_DOWN_TOOLTIP') : ''} onSubmit={handleSubmit} $disabled={disabled}>
             <SpeechInput />
             <Textarea
                 disabled={convoState.userSpeaking}

@@ -5,6 +5,7 @@
     "CHAT_DEFAULT_INFO_PARAGRAPH_02": "<b>{name}</b>, the chatbot, might not know much, but he can answer questions about Duckburg.",
     "CHAT_DEFAULT_INFO_FOOTER": "<a href=\"https://github.com/sdifi\" target=\"_blank\">SDiFI</a>",
     "CHAT_HEADERBUTTON_TOGGLE_TTS": "Turn TTS {option, plural, =0 {off} other {on}}.",
+    "CHAT_SERVER_DOWN_TOOLTIP": "Trying to connect service...",
     "SETTINGS_DESCRIPTION_DISABLE_TTS": "Turn off TTS",
     "SETTINGS_DESCRIPTION_LANGUAGE": "Language",
     "SETTINGS_DESCRIPTION_CLEAR_CONVERSATION": "Clear chat",
