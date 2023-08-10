@@ -5,13 +5,19 @@ import { Settings, useSettings } from '../context/SettingsContext';
 import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
-const Form = styled.form`
+const Form = styled.form<{ $disabled: boolean }>`
     align-items: center;
     display: flex;
     background-color: ${({ theme }) => theme.formBgColor};
     height: ${({ theme }) => theme.formHeight};
     padding: 15px 5px;
+    opacity: ${props => (props.$disabled ? '0.5' : '1')};
+    cursor: ${props => (props.$disabled ? 'wait' : 'auto')};
+    > * {
+        pointer-events: ${props => (props.$disabled ? 'none' : 'auto')};
+    }
 `;
 
 Form.defaultProps = {
@@ -46,6 +52,7 @@ export default function SenderForm(props: SenderFormProps) {
     const [convoState, convoDispatch] = useConversationContext();
     const [text, setText] = useState('');
     const [settings, setSettings] = useSettings();
+    const masdifStatus = useMasdifStatus();
 
     const sendText = () => {
         if (!text) return;
@@ -130,7 +137,7 @@ export default function SenderForm(props: SenderFormProps) {
     };
 
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} $disabled={settings.alwaysRender && !masdifStatus}>
             <SpeechInput />
             <Textarea
                 disabled={convoState.userSpeaking}

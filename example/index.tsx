@@ -32,6 +32,7 @@ const App = () => {
                     thumbDown: 'not-nice',
                     untoggle: 'neutral',
                 }}
+                alwaysRender={true}
             />
         </div>
     );
