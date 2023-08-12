@@ -48,7 +48,8 @@ export type ConversationAction =
     | { type: 'SET_USER_SPEECH_PARTIAL'; hypothesis: string }
     | { type: 'DELAY_MOTD_RESPONSE' }
     | { type: 'SET_RESPONSE_REACTION'; messageId: string; value: string }
-    | { type: 'REMOVE_RESPONSE_REACTION'; messageId: string; value: string };
+    | { type: 'REMOVE_RESPONSE_REACTION'; messageId: string; value: string }
+    | { type: 'CLEAR_CONVERSATION' };
 const reducer: React.Reducer<ConversationState, ConversationAction> = (
     state: ConversationState,
     action: ConversationAction,
@@ -91,6 +92,8 @@ const reducer: React.Reducer<ConversationState, ConversationAction> = (
                 },
             });
         }
+        case 'CLEAR_CONVERSATION':
+            return Object.assign({}, state, { messages: [], feedback: {} });
         default:
             throw new Error('Unknown action type');
     }

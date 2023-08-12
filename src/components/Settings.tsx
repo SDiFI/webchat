@@ -4,6 +4,7 @@ import { Settings as SettingsValue, useSettings } from '../context/SettingsConte
 import intl from 'react-intl-universal';
 import AltContainer from './AltContainer';
 import { useI18n } from '../context/I18nContext';
+import ClearConversationButton from './ClearConversationButton';
 
 const InputGroup = styled.div`
     display: inline-block;
@@ -86,6 +87,25 @@ const InputGroup = styled.div`
   option {
     font-size: 14px;
   }
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    margin-top: 8px;
+
+    button {
+        height: 17px;
+        width: 17px;
+        padding-left: 0px;
+        margin-right: 8px;
+    }
+
+    label {
+        text-align: left;
+        &:hover {
+            cursor: pointer;
+        }
+    }
 `;
 
 const SettingsContainer = styled.div`
@@ -180,6 +200,12 @@ export default function Settings(_: SettingsProps) {
                             return null;
                     }
                 })}
+                <ButtonContainer key={'clear-convo-group'}>
+                    <ClearConversationButton key={'clear-convo-btn'} />
+                    <label key={'clear-convo-label'} htmlFor='clear-convo'>
+                        {intl.get('SETTINGS_DESCRIPTION_CLEAR_CONVERSATION')}
+                    </label>
+                </ButtonContainer>
             </SettingsContainer>
         </AltContainer>
     );

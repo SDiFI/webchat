@@ -92,7 +92,8 @@ export default function Chat(props: ChatProps) {
                 convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
                 // TODO(rkjaran): Perhaps this should be a separate action for motd and a middleware that adds the
-                //   responses with a delay.
+                //   responses with a delay. NOTE: This code is repeated in ClearConversationButton component. Bear
+                //   that in mind when refactoring.
                 const info = await masdifClient.info(conversationId);
                 info.motd.reduce(
                     (p, text) =>
