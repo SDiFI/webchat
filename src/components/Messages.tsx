@@ -10,13 +10,28 @@ import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
 import { useMasdifClient } from '../context/MasdifClientContext';
 
 // TODO: Make responsive
-const MessagesContainer = styled.div`
+const MessagesContainer = styled.div<{ $disabled: boolean }>`
     height: 510px;
     max-height: 50vh;
 
     background-color: ${({ theme }) => theme.primaryBgColor};
-    overflow-y: auto;
+    overflow-y: ${props => (props.$disabled ? 'hidden' : 'auto')};
     padding-top: 10px;
+
+    cursor: ${props => (props.$disabled ? 'wait' : 'auto')};
+    > * {
+        /* For bot-generated buttons and feedback buttons */
+        pointer-events: ${props => (props.$disabled ? 'none' : 'auto')};
+        opacity: ${props => (props.$disabled ? '0.25' : '1')};
+    }
+
+    h4 {
+        opacity: 1;
+        position: fixed;
+        left: 30px;
+        top: 45%;
+        z-index: 1;
+    }
 `;
 
 MessagesContainer.defaultProps = {
@@ -266,7 +281,11 @@ function LoadingMessage() {
     );
 }
 
-export default function Messages() {
+type MessagesProps = {
+    disabled: boolean;
+};
+
+export default function Messages({ disabled }: MessagesProps) {
     const [convoContext] = useConversationContext();
     const containerElement = useRef<HTMLDivElement>(null);
 
@@ -275,7 +294,8 @@ export default function Messages() {
     }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading]);
 
     return (
-        <MessagesContainer ref={containerElement}>
+        <MessagesContainer ref={containerElement} $disabled={disabled}>
+            {disabled && <h4>{intl.get('CHAT_SERVER_DOWN_MESSAGE')}</h4>}
             {convoContext.messages.map((message, idx) => {
                 switch (message.actor) {
                     case 'bot':
