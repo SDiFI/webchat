@@ -59,7 +59,6 @@ export default function ConnectedChat(props: ConnectedChatProps) {
             defaultValue={{
                 disableTTS: !!props.disableTTS,
                 language: 'is-IS',
-                alwaysRender: !!props.alwaysRender,
             }}
         >
             <MasdifContextProvider
@@ -80,6 +79,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
                                 startClosed={props.startClosed}
                                 themeOverrides={props.theme}
                                 fakeResponseDelaySecs={props.fakeResponseDelaySecs}
+                                alwaysRender={!!props.alwaysRender}
                             />
                         </I18nProvider>
                     </ConversationContextProvider>
