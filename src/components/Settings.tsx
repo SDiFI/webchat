@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import AltContainer from './AltContainer';
 import { useI18n } from '../context/I18nContext';
 import ClearConversationButton from './ClearConversationButton';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
 const InputGroup = styled.div`
     display: inline-block;
@@ -89,7 +90,7 @@ const InputGroup = styled.div`
   }
 `;
 
-const ButtonContainer = styled.div`
+const ButtonContainer = styled.div<{ $disabled?: boolean }>`
     display: flex;
     margin-top: 8px;
 
@@ -103,8 +104,9 @@ const ButtonContainer = styled.div`
     label {
         text-align: left;
         &:hover {
-            cursor: pointer;
+            cursor: ${props => (props.$disabled ? 'wait' : 'pointer')};
         }
+        opacity: ${props => (props.$disabled ? '0.25' : '1')};
     }
 `;
 
@@ -127,6 +129,7 @@ const getSettingsDescription = (setting: keyof SettingsValue) => {
 export type SettingsProps = {};
 
 export default function Settings(_: SettingsProps) {
+    const masdifStatus = useMasdifStatus();
     const [settings, setSettings] = useSettings();
     const [i18n, setI18n] = useI18n();
     return (
@@ -200,7 +203,11 @@ export default function Settings(_: SettingsProps) {
                             return null;
                     }
                 })}
-                <ButtonContainer key={'clear-convo-group'}>
+                <ButtonContainer
+                    title={intl.get('CHAT_SERVER_DOWN_TOOLTIP')}
+                    key={'clear-convo-group'}
+                    $disabled={!masdifStatus}
+                >
                     <ClearConversationButton key={'clear-convo-btn'} />
                     <label key={'clear-convo-label'} htmlFor='clear-convo'>
                         {intl.get('SETTINGS_DESCRIPTION_CLEAR_CONVERSATION')}

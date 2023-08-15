@@ -3,15 +3,16 @@ import styled from 'styled-components';
 import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
 import { useConversationContext } from '../context/ConversationContext';
 
-const Button = styled.button<{ $shake?: boolean }>`
+const Button = styled.button<{ $shake?: boolean; $disabled?: boolean }>`
     border: none;
     background: unset;
+    opacity: ${props => (!props.$disabled ? '1' : '0.25')};
 
     &:hover {
-        cursor: pointer;
+        cursor: ${props => (!props.$disabled ? 'pointer' : 'wait')};
 
         svg {
-            filter: drop-shadow(0px 0px 2px rgb(0 0 0 / 0.8));
+            filter: ${props => (!props.$disabled ? 'drop-shadow(0px 0px 2px rgb(0 0 0 / 0.8))' : '')};
         }
     }
 
@@ -38,7 +39,7 @@ const Button = styled.button<{ $shake?: boolean }>`
             }
         }
 
-        animation: ${props => (props.$shake ? 'shake 0.25s' : '')};
+        animation: ${props => (props.$shake && !props.$disabled ? 'shake 0.25s' : '')};
     }
 `;
 
@@ -73,6 +74,7 @@ export default function ClearConversationButton() {
                     ),
                 Promise.resolve(),
             );
+            console.log('Conversation deleted.');
         }
     };
 
@@ -81,9 +83,9 @@ export default function ClearConversationButton() {
             onClick={() => {
                 clearConversation();
                 setShake(true);
-                console.log('Conversation deleted.');
             }}
             $shake={shake}
+            $disabled={!masdifStatus}
         >
             <svg
                 version='1.0'

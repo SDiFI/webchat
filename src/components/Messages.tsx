@@ -131,8 +131,13 @@ type BotMessageFeedbackButtonProps = {
 
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     const masdifClient = useMasdifClient();
+    const masdifStatus = useMasdifStatus();
     const [convoContext, convoDispatch] = useConversationContext();
     const sendFeedback = (value: string, feedbackValues: FeedbackValue) => {
+        if (!masdifStatus) {
+            console.debug('Service unreachable. Feedback not sent.');
+            return;
+        }
         console.log(`Endurgjöf fyrir ${props.messageId}: ${value}`);
         convoDispatch({
             type: value === feedbackValues.untoggle ? 'REMOVE_RESPONSE_REACTION' : 'SET_RESPONSE_REACTION',

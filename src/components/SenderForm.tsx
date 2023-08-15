@@ -145,7 +145,7 @@ export default function SenderForm(props: SenderFormProps) {
         >
             <SpeechInput />
             <Textarea
-                disabled={convoState.userSpeaking}
+                disabled={convoState.userSpeaking || !masdifStatus}
                 placeholder={convoState.speechHypothesis || props.placeholder}
                 value={text}
                 onChange={({ target }) => setText(target.value)}
