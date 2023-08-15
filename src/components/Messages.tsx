@@ -7,7 +7,7 @@ import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
 import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
-import { useMasdifClient } from '../context/MasdifClientContext';
+import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
 
 // TODO: Make responsive
 const MessagesContainer = styled.div<{ $disabled: boolean }>`
@@ -281,11 +281,8 @@ function LoadingMessage() {
     );
 }
 
-type MessagesProps = {
-    disabled: boolean;
-};
-
-export default function Messages({ disabled }: MessagesProps) {
+export default function Messages() {
+    const masdifStatus = useMasdifStatus();
     const [convoContext] = useConversationContext();
     const containerElement = useRef<HTMLDivElement>(null);
 
@@ -294,8 +291,8 @@ export default function Messages({ disabled }: MessagesProps) {
     }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading]);
 
     return (
-        <MessagesContainer ref={containerElement} $disabled={disabled}>
-            {disabled && <h4>{intl.get('CHAT_SERVER_DOWN_MESSAGE')}</h4>}
+        <MessagesContainer ref={containerElement} $disabled={!masdifStatus}>
+            {!masdifStatus && <h4>{intl.get('CHAT_SERVER_DOWN_MESSAGE')}</h4>}
             {convoContext.messages.map((message, idx) => {
                 switch (message.actor) {
                     case 'bot':

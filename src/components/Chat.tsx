@@ -174,10 +174,9 @@ export default function Chat(props: ChatProps) {
                                 default:
                                     return (
                                         <>
-                                            <Messages disabled={!!props.alwaysRender && !masdifStatus} />
+                                            <Messages />
                                             <SenderForm
                                                 placeholder={props.placeholder || intl.get('CHAT_DEFAULT_PLACEHOLDER')}
-                                                disabled={!!props.alwaysRender && !masdifStatus}
                                             />
                                         </>
                                     );

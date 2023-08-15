@@ -6,6 +6,7 @@ import { defaultTheme } from '../theme';
 import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 import intl from 'react-intl-universal';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
 const Form = styled.form<{ $disabled: boolean }>`
     align-items: center;
@@ -46,10 +47,10 @@ Textarea.defaultProps = {
 
 export type SenderFormProps = {
     placeholder: string;
-    disabled: boolean;
 };
 
 export default function SenderForm(props: SenderFormProps) {
+    const masdifStatus = useMasdifStatus();
     const [convoState, convoDispatch] = useConversationContext();
     const [text, setText] = useState('');
     const [settings, setSettings] = useSettings();
@@ -138,9 +139,9 @@ export default function SenderForm(props: SenderFormProps) {
 
     return (
         <Form
-            title={props.disabled ? intl.get('CHAT_SERVER_DOWN_TOOLTIP') : ''}
+            title={!masdifStatus ? intl.get('CHAT_SERVER_DOWN_TOOLTIP') : ''}
             onSubmit={handleSubmit}
-            $disabled={props.disabled}
+            $disabled={!masdifStatus}
         >
             <SpeechInput />
             <Textarea
