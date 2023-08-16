@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
-import { useConversationContext } from '../context/ConversationContext';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
 const Button = styled.button<{ $shake?: boolean; $disabled?: boolean }>`
     border: none;
@@ -43,45 +42,18 @@ const Button = styled.button<{ $shake?: boolean; $disabled?: boolean }>`
     }
 `;
 
-export default function ClearConversationButton() {
+type ClearConversationButtonProps = {
+    onClick: () => void;
+};
+
+export default function ClearConversationButton({ onClick }: ClearConversationButtonProps) {
     const [shake, setShake] = React.useState(false);
-    const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
-    const [, convoDispatch] = useConversationContext();
-
-    const clearConversation = async () => {
-        if (masdifClient && masdifStatus) {
-            // Clear messages and message feedback info.
-            convoDispatch({ type: 'CLEAR_CONVERSATION' });
-
-            // Current conversationId is overwritten.
-            const conversationId = await masdifClient.createConversation();
-            convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
-
-            // New conversation is started with MOTD.
-            const info = await masdifClient.info(conversationId);
-            info.motd.reduce(
-                (p, text) =>
-                    p.then(
-                        () =>
-                            new Promise<void>(resolve => {
-                                convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
-                                window.setTimeout(() => {
-                                    convoDispatch({ type: 'ADD_RESPONSE', text });
-                                    resolve();
-                                }, 1000);
-                            }),
-                    ),
-                Promise.resolve(),
-            );
-            console.log('Conversation deleted.');
-        }
-    };
 
     return (
         <Button
             onClick={() => {
-                clearConversation();
+                onClick();
                 setShake(true);
             }}
             $shake={shake}
