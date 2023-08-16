@@ -5,7 +5,7 @@
     "CHAT_DEFAULT_INFO_PARAGRAPH_02": "Snjallmennið <b>{name}</b> veit ekkert voða mikið, en getur svarað spurningum um Andabæ.",
     "CHAT_DEFAULT_INFO_FOOTER": "<a href=\"https://github.com/sdifi\" target=\"_blank\">SDiFI</a>",
     "CHAT_HEADERBUTTON_TOGGLE_TTS": "{option, plural, =0 {Slökkva} other {Kveikja}} á talgervingu.",
-    "CHAT_SERVER_DOWN_MESSAGE": "Samband við þjónustu rofnaði. Reyni að tengjast á ný...",
+    "CHAT_SERVER_DOWN_MESSAGE": "Tengist þjónustu...",
     "CHAT_SERVER_DOWN_TOOLTIP": "Reyni að tengjast þjónustu...",
     "SETTINGS_DESCRIPTION_DISABLE_TTS": "Sleppa talgervingu",
     "SETTINGS_DESCRIPTION_LANGUAGE": "Tungumál",

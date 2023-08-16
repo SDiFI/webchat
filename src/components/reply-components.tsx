@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import { Button as ButtonData, ConversationAttachment } from '../api/types';
 import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
 const replyStyle = css`
     background-color: #ccc;
@@ -86,9 +87,15 @@ type ReplyAudioProps = {
 };
 
 const ReplyAudio = styled(function ReplyAudio(props: ReplyAudioProps & { className?: string }) {
-    const src = props.src;
+    const masdifStatus = useMasdifStatus();
     const [playback, setPlayback] = useAudioPlayback();
+
+    const src = props.src;
     const handleClick = () => {
+        if (!masdifStatus) {
+            return;
+        }
+
         if (playback.playing && playback.src === src) {
             setPlayback({ playing: false });
         } else {

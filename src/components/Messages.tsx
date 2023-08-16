@@ -28,7 +28,7 @@ const MessagesContainer = styled.div<{ $disabled: boolean }>`
     h4 {
         opacity: 1;
         position: fixed;
-        left: 30px;
+        left: 100px;
         top: 45%;
         z-index: 1;
     }
