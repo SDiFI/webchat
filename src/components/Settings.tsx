@@ -106,8 +106,8 @@ const ButtonContainer = styled.div<{ $disabled?: boolean }>`
         text-align: left;
         &:hover {
             cursor: ${props => (props.$disabled ? 'wait' : 'pointer')};
+            filter: ${props => (!props.$disabled ? 'drop-shadow(0px 0px 2px rgb(0 0 0 / 0.8))' : '')};
         }
-        opacity: ${props => (props.$disabled ? '0.25' : '1')};
     }
 `;
 

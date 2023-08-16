@@ -5,7 +5,6 @@ import { useMasdifStatus } from '../context/MasdifClientContext';
 const Button = styled.button<{ $shake?: boolean; $disabled?: boolean }>`
     border: none;
     background: unset;
-    opacity: ${props => (!props.$disabled ? '1' : '0.25')};
 
     &:hover {
         cursor: ${props => (!props.$disabled ? 'pointer' : 'wait')};
