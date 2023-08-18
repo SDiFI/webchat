@@ -125,12 +125,15 @@ const ReplyAudio = styled(function ReplyAudio(props: ReplyAudioProps & { classNa
     }
 `;
 
-type ReplyImageProps = {
+type MediaProps = {
     src?: string;
-    alt?: string;
     title?: string;
     // Image is a link if present
     link?: string;
+};
+
+type ReplyImageProps = MediaProps & {
+    alt?: string;
 };
 
 function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
@@ -147,6 +150,22 @@ function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
     }
 
     return image;
+}
+
+function ReplyVideo({ title, link, src }: MediaProps) {
+    if (!src) return null;
+
+    const video = <iframe src={src} title={title} />;
+
+    if (link) {
+        return (
+            <a href={link} target='_blank' rel='noreferrer'>
+                {video}
+            </a>
+        );
+    }
+
+    return video;
 }
 
 type ReplyAttachmentsProps = {
@@ -168,8 +187,16 @@ function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
                                 link={attachmentData.payload.link}
                             />
                         );
+                    case 'video':
+                        return (
+                            <ReplyVideo
+                                key={attachmentData.payload.src}
+                                title={attachmentData.payload.title}
+                                link={attachmentData.payload.link}
+                                src={attachmentData.payload.src}
+                            />
+                        );
                     default:
-                        console.warn(`Ignoring '${attachmentData.type}' attachment`);
                         return null;
                 }
             })}

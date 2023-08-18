@@ -77,6 +77,10 @@ const BotMessageContentContainer = styled.div`
     img {
         max-width: ${({ theme }) => theme.botMessageMaxImageWidth};
     }
+
+    iframe {
+        max-width: 100%;
+    }
 `;
 
 BotMessageContentContainer.defaultProps = {
