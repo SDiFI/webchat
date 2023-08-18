@@ -65,7 +65,7 @@ export default function SenderForm(props: SenderFormProps) {
                 type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta er mynd',
-                data: { attachment: [{ type: 'image', payload: { src: duckUrl } }] },
+                data: { attachment: [{ type: 'image', payload: { src: duckUrl, title: 'Quack!' } }] },
             });
 
             setText('');

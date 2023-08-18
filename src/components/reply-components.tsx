@@ -130,42 +130,29 @@ type MediaProps = {
     title?: string;
     // Image is a link if present
     link?: string;
-};
-
-type ReplyImageProps = MediaProps & {
     alt?: string;
+    type: 'image' | 'video';
 };
 
-function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
-    if (!src) return null;
+function ReplyMedia(props: MediaProps) {
+    if (!props.src) return null;
 
-    const image = <img src={src} alt={alt} title={title} />;
+    const media =
+        props.type === 'image' ? (
+            <img src={props.src} alt={props.alt} title={props.title} />
+        ) : (
+            <iframe src={props.src} title={props.title} />
+        );
 
-    if (link) {
+    if (props.link) {
         return (
-            <a href={link} target='_blank' rel='noreferrer'>
-                {image}
+            <a href={props.link} target='_blank' rel='noreferrer'>
+                {media}
             </a>
         );
     }
 
-    return image;
-}
-
-function ReplyVideo({ title, link, src }: MediaProps) {
-    if (!src) return null;
-
-    const video = <iframe src={src} title={title} />;
-
-    if (link) {
-        return (
-            <a href={link} target='_blank' rel='noreferrer'>
-                {video}
-            </a>
-        );
-    }
-
-    return video;
+    return media;
 }
 
 type ReplyAttachmentsProps = {
@@ -180,20 +167,14 @@ function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
                     case 'audio':
                         return <ReplyAudio key={attachmentData.payload.src} src={attachmentData.payload.src} />;
                     case 'image':
-                        return (
-                            <ReplyImage
-                                key={attachmentData.payload.src}
-                                src={attachmentData.payload.src}
-                                link={attachmentData.payload.link}
-                            />
-                        );
                     case 'video':
                         return (
-                            <ReplyVideo
+                            <ReplyMedia
                                 key={attachmentData.payload.src}
                                 title={attachmentData.payload.title}
                                 link={attachmentData.payload.link}
                                 src={attachmentData.payload.src}
+                                type={attachmentData.type}
                             />
                         );
                     default:
