@@ -79,7 +79,7 @@ const BotMessageContentContainer = styled.div`
     }
 
     iframe {
-        max-width: 100%;
+        max-width: ${({ theme }) => theme.botMessageMaxVideoWidth};
     }
 `;
 
