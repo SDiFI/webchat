@@ -121,6 +121,21 @@ export default function SenderForm(props: SenderFormProps) {
             return;
         }
 
+        if (text.startsWith('/debug video')) {
+            const videoUrl: string = 'https://www.youtube.com/embed/FPWj6W5dgNM';
+            const link: string = 'https://www.youtube.com/watch?v=FPWj6W5dgNM';
+            const title: string = 'YouTube video player';
+            convoDispatch({
+                type: 'ADD_RESPONSE',
+                recipient_id: 'debug',
+                text: 'Þetta er myndskeið',
+                data: { attachment: [{ type: 'video', payload: { src: videoUrl, title: title, link: link } }] },
+            });
+
+            setText('');
+            return;
+        }
+
         convoDispatch({ type: 'ADD_SENT_TEXT', text });
         setText('');
     };
