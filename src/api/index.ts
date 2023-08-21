@@ -6,6 +6,7 @@ import {
     MasdifClientOptions,
     InfoData,
     FeedbackValue,
+    isStatusData,
 } from './types';
 
 // Example usage of MasdifClient:
@@ -49,6 +50,10 @@ export default class MasdifClient implements TMasdifClient {
     async status() {
         try {
             const response = await this.http.get('/health');
+            if (!isStatusData(response.data)) {
+                console.error('Got unexpected response structure from server.');
+                return false;
+            }
             if (response.status === 503) {
                 console.warn('Server not fully healthy.');
                 return (

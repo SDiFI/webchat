@@ -48,6 +48,26 @@ export type LanguageData = {
     explanation: string;
 };
 
+type StatusData = {
+    tts: string;
+    database: string;
+    dialog_system: string;
+    sidekiq: string;
+    masdif: string;
+};
+
+export function isStatusData(data: any): data is StatusData {
+    // A typeguard function for StatusData.
+    return (
+        typeof data === 'object' &&
+        typeof data.tts === 'string' &&
+        typeof data.database === 'string' &&
+        typeof data.dialog_system === 'string' &&
+        typeof data.sidekiq === 'string' &&
+        typeof data.masdif === 'string'
+    );
+}
+
 export type InfoData = {
     // Languages supported by server
     supported_languages: LanguageData[];
