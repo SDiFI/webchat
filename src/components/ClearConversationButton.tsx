@@ -1,17 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
-import { useConversationContext } from '../context/ConversationContext';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
-const Button = styled.button<{ $shake?: boolean }>`
+const Button = styled.button<{ $shake?: boolean; $disabled?: boolean }>`
     border: none;
     background: unset;
 
     &:hover {
-        cursor: pointer;
+        cursor: ${props => (!props.$disabled ? 'pointer' : 'wait')};
 
         svg {
-            filter: drop-shadow(0px 0px 2px rgb(0 0 0 / 0.8));
+            filter: ${props => (!props.$disabled ? 'drop-shadow(0px 0px 2px rgb(0 0 0 / 0.8))' : '')};
         }
     }
 
@@ -38,52 +37,26 @@ const Button = styled.button<{ $shake?: boolean }>`
             }
         }
 
-        animation: ${props => (props.$shake ? 'shake 0.25s' : '')};
+        animation: ${props => (props.$shake && !props.$disabled ? 'shake 0.25s' : '')};
     }
 `;
 
-export default function ClearConversationButton() {
+type ClearConversationButtonProps = {
+    onClick: () => void;
+};
+
+export default function ClearConversationButton({ onClick }: ClearConversationButtonProps) {
     const [shake, setShake] = React.useState(false);
-    const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
-    const [, convoDispatch] = useConversationContext();
-
-    const clearConversation = async () => {
-        if (masdifClient && masdifStatus) {
-            // Clear messages and message feedback info.
-            convoDispatch({ type: 'CLEAR_CONVERSATION' });
-
-            // Current conversationId is overwritten.
-            const conversationId = await masdifClient.createConversation();
-            convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
-
-            // New conversation is started with MOTD.
-            const info = await masdifClient.info(conversationId);
-            info.motd.reduce(
-                (p, text) =>
-                    p.then(
-                        () =>
-                            new Promise<void>(resolve => {
-                                convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
-                                window.setTimeout(() => {
-                                    convoDispatch({ type: 'ADD_RESPONSE', text });
-                                    resolve();
-                                }, 1000);
-                            }),
-                    ),
-                Promise.resolve(),
-            );
-        }
-    };
 
     return (
         <Button
             onClick={() => {
-                clearConversation();
+                onClick();
                 setShake(true);
-                console.log('Conversation deleted.');
             }}
             $shake={shake}
+            $disabled={!masdifStatus}
         >
             <svg
                 version='1.0'

@@ -5,6 +5,8 @@ import intl from 'react-intl-universal';
 import AltContainer from './AltContainer';
 import { useI18n } from '../context/I18nContext';
 import ClearConversationButton from './ClearConversationButton';
+import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
+import { useConversationContext } from '../context/ConversationContext';
 
 const InputGroup = styled.div`
     display: inline-block;
@@ -89,7 +91,7 @@ const InputGroup = styled.div`
   }
 `;
 
-const ButtonContainer = styled.div`
+const ButtonContainer = styled.div<{ $disabled?: boolean }>`
     display: flex;
     margin-top: 8px;
 
@@ -103,7 +105,8 @@ const ButtonContainer = styled.div`
     label {
         text-align: left;
         &:hover {
-            cursor: pointer;
+            cursor: ${props => (props.$disabled ? 'wait' : 'pointer')};
+            filter: ${props => (!props.$disabled ? 'drop-shadow(0px 0px 2px rgb(0 0 0 / 0.8))' : '')};
         }
     }
 `;
@@ -127,8 +130,41 @@ const getSettingsDescription = (setting: keyof SettingsValue) => {
 export type SettingsProps = {};
 
 export default function Settings(_: SettingsProps) {
+    const masdifClient = useMasdifClient();
+    const masdifStatus = useMasdifStatus();
+    const [, convoDispatch] = useConversationContext();
     const [settings, setSettings] = useSettings();
     const [i18n, setI18n] = useI18n();
+
+    const clearConversation = async () => {
+        if (masdifClient && masdifStatus) {
+            // Clear messages and message feedback info.
+            convoDispatch({ type: 'CLEAR_CONVERSATION' });
+
+            // Current conversationId is overwritten.
+            const conversationId = await masdifClient.createConversation();
+            convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
+
+            // New conversation is started with MOTD.
+            const info = await masdifClient.info(conversationId);
+            info.motd.reduce(
+                (p, text) =>
+                    p.then(
+                        () =>
+                            new Promise<void>(resolve => {
+                                convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
+                                window.setTimeout(() => {
+                                    convoDispatch({ type: 'ADD_RESPONSE', text });
+                                    resolve();
+                                }, 1000);
+                            }),
+                    ),
+                Promise.resolve(),
+            );
+            console.log('Conversation deleted.');
+        }
+    };
+
     return (
         <AltContainer>
             <SettingsContainer>
@@ -200,9 +236,13 @@ export default function Settings(_: SettingsProps) {
                             return null;
                     }
                 })}
-                <ButtonContainer key={'clear-convo-group'}>
-                    <ClearConversationButton key={'clear-convo-btn'} />
-                    <label key={'clear-convo-label'} htmlFor='clear-convo'>
+                <ButtonContainer
+                    title={!masdifStatus ? intl.get('CHAT_SERVER_DOWN_TOOLTIP') : ''}
+                    key={'clear-convo-group'}
+                    $disabled={!masdifStatus}
+                >
+                    <ClearConversationButton key={'clear-convo-btn'} onClick={clearConversation} />
+                    <label key={'clear-convo-label'} htmlFor='clear-convo' onClick={clearConversation}>
                         {intl.get('SETTINGS_DESCRIPTION_CLEAR_CONVERSATION')}
                     </label>
                 </ButtonContainer>

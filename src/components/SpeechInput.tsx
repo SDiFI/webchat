@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { performSingleUttSpeechRecognition } from '../api/speech';
 import { useConversationContext } from '../context/ConversationContext';
 import SpeakIcon from './SpeakIcon';
+import { useMasdifStatus } from '../context/MasdifClientContext';
 
 const Button = styled.button`
     border: none;
@@ -30,14 +31,13 @@ function SpeakButton(props: SpeakButtonProps) {
     );
 }
 
-export type SpeechInputProps = {};
-
-export default function SpeechInput(_: SpeechInputProps) {
+export default function SpeechInput() {
+    const masdifStatus = useMasdifStatus();
     const [convoState, convoDispatch] = useConversationContext();
 
     async function handleSpeak() {
-        if (convoState.userSpeaking) {
-            console.debug('User already speaking, ignoring...');
+        if (convoState.userSpeaking || !masdifStatus) {
+            console.debug(`${!masdifStatus ? 'Button disabled' : 'User already speaking'}, ignoring...`);
             return;
         }
 

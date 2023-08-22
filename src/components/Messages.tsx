@@ -7,16 +7,31 @@ import { defaultTheme } from '../theme';
 import Loading from './Loading';
 import { ReplyAttachments, ReplyButtons } from './reply-components';
 import BotMessageFeedbackThumbIcon from './BotMessageFeedbackThumbIcon';
-import { useMasdifClient } from '../context/MasdifClientContext';
+import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
 
 // TODO: Make responsive
-const MessagesContainer = styled.div`
+const MessagesContainer = styled.div<{ $disabled: boolean }>`
     height: 510px;
     max-height: 50vh;
 
     background-color: ${({ theme }) => theme.primaryBgColor};
-    overflow-y: auto;
+    overflow-y: ${props => (props.$disabled ? 'hidden' : 'auto')};
     padding-top: 10px;
+
+    cursor: ${props => (props.$disabled ? 'wait' : 'auto')};
+    > * {
+        /* For bot-generated buttons and feedback buttons */
+        pointer-events: ${props => (props.$disabled ? 'none' : 'auto')};
+        opacity: ${props => (props.$disabled ? '0.25' : '1')};
+    }
+
+    h4 {
+        opacity: 1;
+        position: fixed;
+        left: 100px;
+        top: 45%;
+        z-index: 1;
+    }
 `;
 
 MessagesContainer.defaultProps = {
@@ -116,8 +131,13 @@ type BotMessageFeedbackButtonProps = {
 
 function BotMessageFeedbackButton(props: BotMessageFeedbackButtonProps) {
     const masdifClient = useMasdifClient();
+    const masdifStatus = useMasdifStatus();
     const [convoContext, convoDispatch] = useConversationContext();
     const sendFeedback = (value: string, feedbackValues: FeedbackValue) => {
+        if (!masdifStatus) {
+            console.debug('Service unreachable. Feedback not sent.');
+            return;
+        }
         console.log(`Endurgjöf fyrir ${props.messageId}: ${value}`);
         convoDispatch({
             type: value === feedbackValues.untoggle ? 'REMOVE_RESPONSE_REACTION' : 'SET_RESPONSE_REACTION',
@@ -267,6 +287,7 @@ function LoadingMessage() {
 }
 
 export default function Messages() {
+    const masdifStatus = useMasdifStatus();
     const [convoContext] = useConversationContext();
     const containerElement = useRef<HTMLDivElement>(null);
 
@@ -275,7 +296,8 @@ export default function Messages() {
     }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading]);
 
     return (
-        <MessagesContainer ref={containerElement}>
+        <MessagesContainer ref={containerElement} $disabled={!masdifStatus}>
+            {!masdifStatus && <h4>{intl.get('CHAT_SERVER_DOWN_MESSAGE')}</h4>}
             {convoContext.messages.map((message, idx) => {
                 switch (message.actor) {
                     case 'bot':
