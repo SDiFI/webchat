@@ -96,6 +96,10 @@ export default function Chat(props: ChatProps) {
                 //   responses with a delay. NOTE: This code is repeated in ClearConversationButton component. Bear
                 //   that in mind when refactoring.
                 const info = await masdifClient.info(conversationId);
+                if (!info) {
+                    console.error('Could not fetch info.');
+                    return;
+                }
                 info.motd.reduce(
                     (p, text) =>
                         p.then(

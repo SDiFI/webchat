@@ -48,6 +48,11 @@ export type LanguageData = {
     explanation: string;
 };
 
+function isLanguageData(data: any) {
+    // A typeguard function for LanguageData.
+    return typeof data === 'object' && typeof data.lang === 'string' && typeof data.explanation === 'string';
+}
+
 type StatusData = {
     tts: string;
     database: string;
@@ -76,6 +81,31 @@ export type InfoData = {
     motd: string[];
 };
 
+export function isInfoData(data: any): data is InfoData {
+    // A typeguard function for InfoData.
+    if (typeof data !== 'object') return false;
+    if (!Array.isArray(data.supported_languages)) return false;
+    if (!Array.isArray(data.motd)) return false;
+
+    let correctType = true;
+    data.motd.forEach((m: string) => {
+        if (typeof m !== 'string') {
+            correctType = false;
+            return;
+        }
+    });
+    if (!correctType) return false;
+
+    correctType = true;
+    data.supported_languages.forEach((l: LanguageData) => {
+        if (!isLanguageData(l)) {
+            correctType = false;
+            return;
+        }
+    });
+    return correctType;
+}
+
 export type FeedbackValue = {
     thumbUp: string;
     thumbDown: string;
@@ -85,7 +115,7 @@ export type FeedbackValue = {
 export interface TMasdifClient {
     status(): Promise<boolean>;
 
-    info(conversationId: string): Promise<InfoData>;
+    info(conversationId: string): Promise<InfoData | undefined>;
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
     createConversation(): Promise<string>;

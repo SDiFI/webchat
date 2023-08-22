@@ -7,6 +7,7 @@ import {
     InfoData,
     FeedbackValue,
     isStatusData,
+    isInfoData,
 } from './types';
 
 // Example usage of MasdifClient:
@@ -72,8 +73,14 @@ export default class MasdifClient implements TMasdifClient {
     }
 
     async info(conversationId: string) {
-        const response = await this.http.get<InfoData>(`/info?id=${conversationId}`);
-        return response.data;
+        try {
+            const response = await this.http.get<InfoData>(`/info?id=${conversationId}`);
+            if (!isInfoData(response.data)) throw new Error('Got unexpected response structure from server.');
+            return response.data;
+        } catch (e) {
+            console.error(e);
+            return;
+        }
     }
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.

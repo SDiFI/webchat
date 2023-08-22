@@ -48,6 +48,39 @@ type ClearConversationButtonProps = {
 export default function ClearConversationButton({ onClick }: ClearConversationButtonProps) {
     const [shake, setShake] = React.useState(false);
     const masdifStatus = useMasdifStatus();
+    const [, convoDispatch] = useConversationContext();
+
+    const clearConversation = async () => {
+        if (masdifClient && masdifStatus) {
+            // Clear messages and message feedback info.
+            convoDispatch({ type: 'CLEAR_CONVERSATION' });
+
+            // Current conversationId is overwritten.
+            const conversationId = await masdifClient.createConversation();
+            convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
+
+            // New conversation is started with MOTD.
+            const info = await masdifClient.info(conversationId);
+            if (!info) {
+                console.error('Could not fetch info.');
+                return;
+            }
+            info.motd.reduce(
+                (p, text) =>
+                    p.then(
+                        () =>
+                            new Promise<void>(resolve => {
+                                convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
+                                window.setTimeout(() => {
+                                    convoDispatch({ type: 'ADD_RESPONSE', text });
+                                    resolve();
+                                }, 1000);
+                            }),
+                    ),
+                Promise.resolve(),
+            );
+        }
+    };
 
     return (
         <Button

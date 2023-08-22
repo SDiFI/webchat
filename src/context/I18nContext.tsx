@@ -61,7 +61,7 @@ export function I18nProvider(props: { defaultValue?: Partial<I18n>; children: Re
             if (masdifClient && masdifStatus) {
                 const info = await masdifClient.info(convoState.conversationId);
                 if (!info) {
-                    console.warn(`${msg} Unable to fetch data.`);
+                    console.error(msg);
                     return [];
                 }
                 return info.supported_languages;
