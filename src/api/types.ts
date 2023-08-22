@@ -118,7 +118,7 @@ export interface TMasdifClient {
     info(conversationId: string): Promise<InfoData | undefined>;
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
-    createConversation(): Promise<string>;
+    createConversation(): Promise<string | undefined>;
 
     sendMessage(conversationId: string, message: ConversationSentMessage): Promise<ConversationResponse[]>;
 

@@ -57,6 +57,10 @@ export default function ClearConversationButton({ onClick }: ClearConversationBu
 
             // Current conversationId is overwritten.
             const conversationId = await masdifClient.createConversation();
+            if (!conversationId) {
+                console.error('Could not fetch new convoId');
+                return;
+            }
             convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
             // New conversation is started with MOTD.

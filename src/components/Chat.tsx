@@ -90,6 +90,10 @@ export default function Chat(props: ChatProps) {
             if (masdifClient && masdifStatus && !convoState.conversationId) {
                 console.debug('getting convo id');
                 const conversationId = await masdifClient.createConversation();
+                if (!conversationId) {
+                    console.error('Could not fetch convoId');
+                    return;
+                }
                 convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
                 // TODO(rkjaran): Perhaps this should be a separate action for motd and a middleware that adds the

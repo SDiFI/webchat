@@ -85,11 +85,19 @@ export default class MasdifClient implements TMasdifClient {
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
     async createConversation() {
-        const response = await this.http.post<{ conversation_id: string }>('/conversations');
-        if (response.status !== 200) {
-            throw new Error('Could not create a new conversation');
+        try {
+            const response = await this.http.post<{ conversation_id: string }>('/conversations');
+            if (response.status !== 200) {
+                throw new Error('Could not create a new conversation');
+            }
+            if (typeof response.data !== 'object' || typeof response.data.conversation_id !== 'string') {
+                throw new Error('Got unexpected response structure from server.');
+            }
+            return response.data.conversation_id;
+        } catch (e) {
+            console.error(e);
+            return;
         }
-        return response.data.conversation_id;
     }
 
     async sendMessage(conversationId: string, message: ConversationSentMessage) {
