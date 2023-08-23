@@ -111,7 +111,7 @@ function isConversationData(data: any) {
 export type ConversationResponse = {
     message_id?: string;
     recipient_id?: string;
-    text: string;
+    text?: string; // Some responses may lack text, e.g. responses to feedback messages.
     buttons?: Button[];
     data?: ConversationData;
 };
@@ -136,9 +136,11 @@ export function isConversationResponseArray(data: any) {
                 return;
             }
         }
-        if (typeof convoResp.text !== 'string') {
-            correctType = false;
-            return;
+        if (convoResp.text) {
+            if (typeof convoResp.text !== 'string') {
+                correctType = false;
+                return;
+            }
         }
         if (convoResp.buttons) {
             if (typeof convoResp.buttons !== 'object') {
