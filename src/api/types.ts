@@ -116,7 +116,9 @@ export type ConversationResponse = {
     data?: ConversationData;
 };
 
-export function isConversationResponse(data: any) {
+export function isConversationResponseArray(data: any) {
+    // A typeguard function for ConversationResponse[].
+
     if (typeof data !== 'object') return false;
     if (!Array.isArray(data)) return false;
 
@@ -248,7 +250,7 @@ export interface TMasdifClient {
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
     createConversation(): Promise<string | undefined>;
 
-    sendMessage(conversationId: string, message: ConversationSentMessage): Promise<ConversationResponse[]>;
+    sendMessage(conversationId: string, message: ConversationSentMessage): Promise<ConversationResponse[] | undefined>;
 
     // TODO: Type this
     conversationHistory(): Promise<any>;

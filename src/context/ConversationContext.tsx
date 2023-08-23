@@ -158,6 +158,9 @@ const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) =>
                 }),
             })
             .then(responses => {
+                // This check is to handle cases when responses is undefined, e.g. if runtime typecheck fails.
+                if (!responses) return;
+
                 if (action.type === 'SET_RESPONSE_REACTION' || action.type === 'REMOVE_RESPONSE_REACTION') {
                     // Don't do anything with feedback answers for now.
                     return;

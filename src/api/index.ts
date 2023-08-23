@@ -8,6 +8,7 @@ import {
     FeedbackValue,
     isStatusData,
     isInfoData,
+    isConversationResponseArray,
 } from './types';
 
 // Example usage of MasdifClient:
@@ -113,11 +114,19 @@ export default class MasdifClient implements TMasdifClient {
             ...(message.message_id && { message_id: message.message_id }),
         };
 
-        const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
-        if (response.status !== 200) {
-            throw new Error('Could not send message to server.');
+        try {
+            const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
+            if (response.status !== 200) {
+                throw new Error('Could not send message to server.');
+            }
+            if (!isConversationResponseArray(response.data)) {
+                throw new Error('Got unexpected response structure from server.');
+            }
+            return response.data;
+        } catch (e) {
+            console.error(e);
+            return;
         }
-        return response.data;
     }
 
     async conversationHistory() {
