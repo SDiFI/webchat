@@ -143,10 +143,18 @@ export default function Settings(_: SettingsProps) {
 
             // Current conversationId is overwritten.
             const conversationId = await masdifClient.createConversation();
+            if (!conversationId) {
+                console.error('Could not fetch new convoId');
+                return;
+            }
             convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
             // New conversation is started with MOTD.
             const info = await masdifClient.info(conversationId);
+            if (!info) {
+                console.error('Could not fetch info.');
+                return;
+            }
             info.motd.reduce(
                 (p, text) =>
                     p.then(
