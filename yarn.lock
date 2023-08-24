@@ -6862,10 +6862,10 @@ nice-grpc-common@^2.0.2:
   dependencies:
     ts-error "^1.0.6"
 
-nice-grpc-web@^3.2.0:
-  version "3.2.3"
-  resolved "https://registry.npmjs.org/nice-grpc-web/-/nice-grpc-web-3.2.3.tgz"
-  integrity sha512-oNuCBhCffmpED/dTtbQycKkMkJ6DCaPeyi/W/hbLaGIZfiwSFg+kmWSKmTdI07XqMQ1POKxn//bdldXZsE1ZUg==
+nice-grpc-web@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/nice-grpc-web/-/nice-grpc-web-3.3.1.tgz#cbb3fac325d7b5a4682b42540c6ddd5f08c06e32"
+  integrity sha512-KXListAFLjJ7L/GsrRW5YWT+2oZDaF8Lu19ms7+HMykDGtIksqvZwR6+EzVmunFJciiNDShJ4EXr1W6eaiZoDQ==
   dependencies:
     abort-controller-x "^0.4.0"
     isomorphic-ws "^5.0.0"
