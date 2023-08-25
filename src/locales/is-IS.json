@@ -7,6 +7,7 @@
     "CHAT_HEADERBUTTON_TOGGLE_TTS": "{option, plural, =0 {Slökkva} other {Kveikja}} á talgervingu.",
     "CHAT_SERVER_DOWN_MESSAGE": "Tengist þjónustu...",
     "CHAT_SERVER_DOWN_TOOLTIP": "Reyni að tengjast þjónustu...",
+    "MESSAGE_VIDEO_TAG_UNSUPPORTED_MESSAGE": "Vafrinn þinn styður ekki birtingu þessa myndskeiðs.",
     "SETTINGS_DESCRIPTION_DISABLE_TTS": "Sleppa talgervingu",
     "SETTINGS_DESCRIPTION_LANGUAGE": "Tungumál",
     "SETTINGS_DESCRIPTION_CLEAR_CONVERSATION": "Hreinsa spjallborð",

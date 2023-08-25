@@ -24,6 +24,7 @@ declare module 'styled-components' {
         botMessageBgColor: string;
         botMessageFgColor: string;
         botMessageMaxImageWidth: string;
+        botMessageMaxVideoWidth: string;
 
         formFgColor: string;
         formBgColor: string;

@@ -1,9 +1,12 @@
 import React from 'react';
+import intl from 'react-intl-universal';
 import styled, { css } from 'styled-components';
 import { Button as ButtonData, ConversationAttachment } from '../api/types';
 import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifStatus } from '../context/MasdifClientContext';
+import { VIDEO_ATTACHMENT_HEIGHT, VIDEO_ATTACHMENT_WIDTH } from '../constants';
+import { determineVideoSrc, setUrlHWQueryParams } from '../utils/url';
 
 const replyStyle = css`
     background-color: #ccc;
@@ -125,28 +128,66 @@ const ReplyAudio = styled(function ReplyAudio(props: ReplyAudioProps & { classNa
     }
 `;
 
-type ReplyImageProps = {
-    src?: string;
-    alt?: string;
+const VideoAttachmentIFrame = styled.iframe`
+    max-width: ${({ theme }) => theme.botMessageMaxVideoWidth};
+    border: none;
+`;
+
+type ReplyMediaProps = {
+    src: string;
     title?: string;
     // Image is a link if present
     link?: string;
+    alt?: string;
+    type: 'image' | 'video';
 };
 
-function ReplyImage({ src, alt, title, link }: ReplyImageProps) {
-    if (!src) return null;
+function ReplyMedia(props: ReplyMediaProps) {
+    if (!props.src) return null;
 
-    const image = <img src={src} alt={alt} title={title} />;
+    let media: JSX.Element | undefined;
+    if (props.type === 'image') {
+        media = <img src={props.src} alt={props.alt} title={props.title} />;
+    } else {
+        switch (determineVideoSrc(props.src)) {
+            case 'FACEBOOK':
+                media = (
+                    <VideoAttachmentIFrame
+                        src={setUrlHWQueryParams(props.src)}
+                        height={VIDEO_ATTACHMENT_HEIGHT}
+                        width={VIDEO_ATTACHMENT_WIDTH}
+                    />
+                );
+                break;
+            case 'YOUTUBE':
+            case 'VIMEO':
+                media = (
+                    <VideoAttachmentIFrame
+                        src={props.src}
+                        height={VIDEO_ATTACHMENT_HEIGHT}
+                        width={VIDEO_ATTACHMENT_WIDTH}
+                    />
+                );
+                break;
+            case 'FILE':
+                media = (
+                    <video height={VIDEO_ATTACHMENT_HEIGHT} width={VIDEO_ATTACHMENT_WIDTH} controls>
+                        <source src={props.src} />
+                        {intl.get('MESSAGE_VIDEO_TAG_UNSUPPORTED_MESSAGE')}
+                    </video>
+                );
+        }
+    }
 
-    if (link) {
+    if (props.type === 'image' && props.link) {
         return (
-            <a href={link} target='_blank' rel='noreferrer'>
-                {image}
+            <a href={props.link} target='_blank' rel='noreferrer'>
+                {media}
             </a>
         );
     }
 
-    return image;
+    return media;
 }
 
 type ReplyAttachmentsProps = {
@@ -162,14 +203,23 @@ function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
                         return <ReplyAudio key={attachmentData.payload.src} src={attachmentData.payload.src} />;
                     case 'image':
                         return (
-                            <ReplyImage
+                            <ReplyMedia
+                                key={attachmentData.payload.src}
+                                title={attachmentData.payload.title}
+                                link={attachmentData.payload.link}
+                                src={attachmentData.payload.src}
+                                type={attachmentData.type}
+                            />
+                        );
+                    case 'video':
+                        return (
+                            <ReplyMedia
                                 key={attachmentData.payload.src}
                                 src={attachmentData.payload.src}
-                                link={attachmentData.payload.link}
+                                type={attachmentData.type}
                             />
                         );
                     default:
-                        console.warn(`Ignoring '${attachmentData.type}' attachment`);
                         return null;
                 }
             })}

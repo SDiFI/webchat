@@ -22,6 +22,7 @@ export const defaultTheme: DefaultTheme = {
     botMessageBgColor: '#f4f7f9',
     botMessageFgColor: '#000',
     botMessageMaxImageWidth: '100%',
+    botMessageMaxVideoWidth: '100%',
 
     formFgColor: '#000',
     formBgColor: '#f4f7f9',

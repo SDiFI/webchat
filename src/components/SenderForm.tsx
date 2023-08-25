@@ -65,7 +65,7 @@ export default function SenderForm(props: SenderFormProps) {
                 type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta er mynd',
-                data: { attachment: [{ type: 'image', payload: { src: duckUrl } }] },
+                data: { attachment: [{ type: 'image', payload: { src: duckUrl, title: 'Quack!' } }] },
             });
 
             setText('');
@@ -117,6 +117,42 @@ export default function SenderForm(props: SenderFormProps) {
                     isLast: i === arr.length - 1,
                 } as ConversationAction);
             });
+            setText('');
+            return;
+        }
+
+        if (text.startsWith('/debug video')) {
+            const msgParts: string[] = text.split(' ');
+
+            let videoSrc: string = '';
+            let descText: string = 'Þetta er myndskeið';
+            switch (msgParts[2]) {
+                case 'youtube':
+                    videoSrc = 'https://www.youtube.com/embed/FPWj6W5dgNM';
+                    descText = `${descText} af YouTube`;
+                    break;
+                case 'vimeo':
+                    videoSrc = 'https://player.vimeo.com/video/295233741?h=9aa727fe41';
+                    descText = `${descText} af Vimeo`;
+                    break;
+                case 'facebook':
+                    videoSrc =
+                        'https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fofficialhpc%2Fvideos%2F1190669514972266%2F&show_text=false&width=476&t=0';
+                    descText = `${descText} af Facebook`;
+                    break;
+                case 'file':
+                default:
+                    videoSrc =
+                        'https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-for-Testing.mp4';
+                    descText = `${descText} úr skrá`;
+            }
+            convoDispatch({
+                type: 'ADD_RESPONSE',
+                recipient_id: 'debug',
+                text: descText,
+                data: { attachment: [{ type: 'video', payload: { src: videoSrc } }] },
+            });
+
             setText('');
             return;
         }
