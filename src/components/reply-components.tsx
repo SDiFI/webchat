@@ -4,6 +4,7 @@ import { Button as ButtonData, ConversationAttachment } from '../api/types';
 import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifStatus } from '../context/MasdifClientContext';
+import { VIDEO_ATTACHMENT_HEIGHT, VIDEO_ATTACHMENT_WIDTH } from '../constants';
 
 const replyStyle = css`
     background-color: #ccc;
@@ -125,6 +126,11 @@ const ReplyAudio = styled(function ReplyAudio(props: ReplyAudioProps & { classNa
     }
 `;
 
+const VideoAttachmentIFrame = styled.iframe`
+    max-width: ${({ theme }) => theme.botMessageMaxVideoWidth};
+    border: none;
+`;
+
 type MediaProps = {
     src?: string;
     title?: string;
@@ -141,10 +147,11 @@ function ReplyMedia(props: MediaProps) {
         props.type === 'image' ? (
             <img src={props.src} alt={props.alt} title={props.title} />
         ) : (
-            <iframe src={props.src} title={props.title} />
+            <VideoAttachmentIFrame src={props.src} height={VIDEO_ATTACHMENT_HEIGHT} width={VIDEO_ATTACHMENT_WIDTH} />
         );
 
-    if (props.link) {
+    // TODO(Smári, STIFI-62): Fjarlægja link fyrir video. Og title?.
+    if (props.type === 'image' && props.link) {
         return (
             <a href={props.link} target='_blank' rel='noreferrer'>
                 {media}
