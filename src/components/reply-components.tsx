@@ -1,10 +1,12 @@
 import React from 'react';
+import intl from 'react-intl-universal';
 import styled, { css } from 'styled-components';
 import { Button as ButtonData, ConversationAttachment } from '../api/types';
 import { useAudioPlayback } from '../context/AudioPlaybackContext';
 import { useConversationContext } from '../context/ConversationContext';
 import { useMasdifStatus } from '../context/MasdifClientContext';
 import { VIDEO_ATTACHMENT_HEIGHT, VIDEO_ATTACHMENT_WIDTH } from '../constants';
+import { determineVideoSrc, setUrlHWQueryParams } from '../utils/url';
 
 const replyStyle = css`
     background-color: #ccc;
@@ -143,12 +145,39 @@ type ReplyMediaProps = {
 function ReplyMedia(props: ReplyMediaProps) {
     if (!props.src) return null;
 
-    const media =
-        props.type === 'image' ? (
-            <img src={props.src} alt={props.alt} title={props.title} />
-        ) : (
-            <VideoAttachmentIFrame src={props.src} height={VIDEO_ATTACHMENT_HEIGHT} width={VIDEO_ATTACHMENT_WIDTH} />
-        );
+    let media: JSX.Element | undefined;
+    if (props.type === 'image') {
+        media = <img src={props.src} alt={props.alt} title={props.title} />;
+    } else {
+        switch (determineVideoSrc(props.src)) {
+            case 'FACEBOOK':
+                media = (
+                    <VideoAttachmentIFrame
+                        src={setUrlHWQueryParams(props.src)}
+                        height={VIDEO_ATTACHMENT_HEIGHT}
+                        width={VIDEO_ATTACHMENT_WIDTH}
+                    />
+                );
+                break;
+            case 'YOUTUBE':
+            case 'VIMEO':
+                media = (
+                    <VideoAttachmentIFrame
+                        src={props.src}
+                        height={VIDEO_ATTACHMENT_HEIGHT}
+                        width={VIDEO_ATTACHMENT_WIDTH}
+                    />
+                );
+                break;
+            case 'FILE':
+                media = (
+                    <video height={VIDEO_ATTACHMENT_HEIGHT} width={VIDEO_ATTACHMENT_WIDTH} controls>
+                        <source src={props.src} />
+                        {intl.get('MESSAGE_VIDEO_TAG_UNSUPPORTED_MESSAGE')}
+                    </video>
+                );
+        }
+    }
 
     if (props.type === 'image' && props.link) {
         return (

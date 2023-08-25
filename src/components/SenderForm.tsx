@@ -7,7 +7,6 @@ import SendButton from './SendButton';
 import SpeechInput from './SpeechInput';
 import intl from 'react-intl-universal';
 import { useMasdifStatus } from '../context/MasdifClientContext';
-import { setUrlHWQueryParams } from '../utils/url';
 
 const Form = styled.form<{ $disabled: boolean }>`
     align-items: center;
@@ -125,31 +124,33 @@ export default function SenderForm(props: SenderFormProps) {
         if (text.startsWith('/debug video')) {
             const msgParts: string[] = text.split(' ');
 
-            let videoUrl: string = '';
+            let videoSrc: string = '';
+            let descText: string = 'Þetta er myndskeið';
             switch (msgParts[2]) {
                 case 'youtube':
-                    videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
+                    videoSrc = 'https://www.youtube.com/embed/FPWj6W5dgNM';
+                    descText = `${descText} af YouTube`;
                     break;
                 case 'vimeo':
-                    videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
+                    videoSrc = 'https://player.vimeo.com/video/295233741?h=9aa727fe41';
+                    descText = `${descText} af Vimeo`;
                     break;
                 case 'facebook':
-                    videoUrl = setUrlHWQueryParams(
-                        'https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2FProjectNightfall%2Fvideos%2F822218666173728%2F&show_text=false&width=380&t=0',
-                    );
+                    videoSrc =
+                        'https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fofficialhpc%2Fvideos%2F1190669514972266%2F&show_text=false&width=476&t=0';
+                    descText = `${descText} af Facebook`;
                     break;
                 case 'file':
-                    videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
-                    break;
                 default:
-                    videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
-                    break;
+                    videoSrc =
+                        'https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-for-Testing.mp4';
+                    descText = `${descText} úr skrá`;
             }
             convoDispatch({
                 type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
-                text: 'Þetta er myndskeið',
-                data: { attachment: [{ type: 'video', payload: { src: videoUrl } }] },
+                text: descText,
+                data: { attachment: [{ type: 'video', payload: { src: videoSrc } }] },
             });
 
             setText('');

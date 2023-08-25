@@ -7,6 +7,7 @@
     "CHAT_HEADERBUTTON_TOGGLE_TTS": "Turn TTS {option, plural, =0 {off} other {on}}.",
     "CHAT_SERVER_DOWN_MESSAGE": "Connecting to service...",
     "CHAT_SERVER_DOWN_TOOLTIP": "Trying to connect to service...",
+    "MESSAGE_VIDEO_TAG_UNSUPPORTED_MESSAGE": "Your browser is unable to render this video.",
     "SETTINGS_DESCRIPTION_DISABLE_TTS": "Turn off TTS",
     "SETTINGS_DESCRIPTION_LANGUAGE": "Language",
     "SETTINGS_DESCRIPTION_CLEAR_CONVERSATION": "Clear chat",
