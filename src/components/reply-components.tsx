@@ -131,8 +131,8 @@ const VideoAttachmentIFrame = styled.iframe`
     border: none;
 `;
 
-type MediaProps = {
-    src?: string;
+type ReplyMediaProps = {
+    src: string;
     title?: string;
     // Image is a link if present
     link?: string;
@@ -140,7 +140,7 @@ type MediaProps = {
     type: 'image' | 'video';
 };
 
-function ReplyMedia(props: MediaProps) {
+function ReplyMedia(props: ReplyMediaProps) {
     if (!props.src) return null;
 
     const media =
@@ -150,7 +150,6 @@ function ReplyMedia(props: MediaProps) {
             <VideoAttachmentIFrame src={props.src} height={VIDEO_ATTACHMENT_HEIGHT} width={VIDEO_ATTACHMENT_WIDTH} />
         );
 
-    // TODO(Smári, STIFI-62): Fjarlægja link fyrir video. Og title?.
     if (props.type === 'image' && props.link) {
         return (
             <a href={props.link} target='_blank' rel='noreferrer'>
@@ -174,12 +173,19 @@ function ReplyAttachments({ attachments }: ReplyAttachmentsProps) {
                     case 'audio':
                         return <ReplyAudio key={attachmentData.payload.src} src={attachmentData.payload.src} />;
                     case 'image':
-                    case 'video':
                         return (
                             <ReplyMedia
                                 key={attachmentData.payload.src}
                                 title={attachmentData.payload.title}
                                 link={attachmentData.payload.link}
+                                src={attachmentData.payload.src}
+                                type={attachmentData.type}
+                            />
+                        );
+                    case 'video':
+                        return (
+                            <ReplyMedia
+                                key={attachmentData.payload.src}
                                 src={attachmentData.payload.src}
                                 type={attachmentData.type}
                             />

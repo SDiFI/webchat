@@ -126,41 +126,30 @@ export default function SenderForm(props: SenderFormProps) {
             const msgParts: string[] = text.split(' ');
 
             let videoUrl: string = '';
-            let link: string = '';
-            let title: string = '';
             switch (msgParts[2]) {
                 case 'youtube':
                     videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
-                    link = 'https://www.youtube.com/watch?v=FPWj6W5dgNM';
-                    title = 'YouTube video player';
                     break;
                 case 'vimeo':
                     videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
-                    link = 'https://www.youtube.com/watch?v=FPWj6W5dgNM';
-                    title = 'YouTube video player';
                     break;
                 case 'facebook':
                     videoUrl = setUrlHWQueryParams(
                         'https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2FProjectNightfall%2Fvideos%2F822218666173728%2F&show_text=false&width=380&t=0',
                     );
-                    console.log(videoUrl);
                     break;
                 case 'file':
                     videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
-                    link = 'https://www.youtube.com/watch?v=FPWj6W5dgNM';
-                    title = 'YouTube video player';
                     break;
                 default:
                     videoUrl = 'https://www.youtube.com/embed/FPWj6W5dgNM';
-                    link = 'https://www.youtube.com/watch?v=FPWj6W5dgNM';
-                    title = 'YouTube video player';
                     break;
             }
             convoDispatch({
                 type: 'ADD_RESPONSE',
                 recipient_id: 'debug',
                 text: 'Þetta er myndskeið',
-                data: { attachment: [{ type: 'video', payload: { src: videoUrl, title: title, link: link } }] },
+                data: { attachment: [{ type: 'video', payload: { src: videoUrl } }] },
             });
 
             setText('');
