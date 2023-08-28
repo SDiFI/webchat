@@ -7482,10 +7482,10 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
-react-intl-universal@^2.6.15:
-  version "2.6.15"
-  resolved "https://registry.yarnpkg.com/react-intl-universal/-/react-intl-universal-2.6.15.tgz#99c3df529e8cd4f419cadd34c08ea3d0854b6cd5"
-  integrity sha512-xUXEh2xynkrv1JShdsraVAN1jbIIlXqF6jzk9fU71GJ5zw5DFuQkh21hpTrkbc1sNySqXST+uqZAKQ8SOMC9Yw==
+react-intl-universal@^2.6.21:
+  version "2.6.21"
+  resolved "https://registry.yarnpkg.com/react-intl-universal/-/react-intl-universal-2.6.21.tgz#547ec0e537489b6614a34d9b4f7ed5c9deeb3bf2"
+  integrity sha512-JJqZMzdB6jd4f0NfGRc9XM/pZElxtrDCWC9pE2yIesDO70SL+jQgaFAucQmstPwYqCcjvLpCgOrjP7cIo4kJnw==
   dependencies:
     cookie "^0.3.1"
     escape-html "^1.0.3"
