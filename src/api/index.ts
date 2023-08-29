@@ -6,6 +6,9 @@ import {
     MasdifClientOptions,
     InfoData,
     FeedbackValue,
+    isStatusData,
+    isInfoData,
+    isConversationResponseArray,
 } from './types';
 
 // Example usage of MasdifClient:
@@ -49,6 +52,10 @@ export default class MasdifClient implements TMasdifClient {
     async status() {
         try {
             const response = await this.http.get('/health');
+            if (!isStatusData(response.data)) {
+                console.error('Got unexpected response structure from server.');
+                return false;
+            }
             if (response.status === 503) {
                 console.warn('Server not fully healthy.');
                 return (
@@ -68,6 +75,7 @@ export default class MasdifClient implements TMasdifClient {
 
     async info(conversationId: string) {
         const response = await this.http.get<InfoData>(`/info?id=${conversationId}`);
+        if (!isInfoData(response.data)) throw new Error('Got unexpected response structure from server.');
         return response.data;
     }
 
@@ -76,6 +84,9 @@ export default class MasdifClient implements TMasdifClient {
         const response = await this.http.post<{ conversation_id: string }>('/conversations');
         if (response.status !== 200) {
             throw new Error('Could not create a new conversation');
+        }
+        if (typeof response.data !== 'object' || typeof response.data.conversation_id !== 'string') {
+            throw new Error('Got unexpected response structure from server.');
         }
         return response.data.conversation_id;
     }
@@ -96,6 +107,9 @@ export default class MasdifClient implements TMasdifClient {
         const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
         if (response.status !== 200) {
             throw new Error('Could not send message to server.');
+        }
+        if (!isConversationResponseArray(response.data)) {
+            throw new Error('Got unexpected response structure from server.');
         }
         return response.data;
     }

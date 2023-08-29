@@ -88,28 +88,32 @@ export default function Chat(props: ChatProps) {
     useEffect(() => {
         const fetchId = async () => {
             if (masdifClient && masdifStatus && !convoState.conversationId) {
-                console.debug('getting convo id');
-                const conversationId = await masdifClient.createConversation();
-                convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
-
                 // TODO(rkjaran): Perhaps this should be a separate action for motd and a middleware that adds the
                 //   responses with a delay. NOTE: This code is repeated in ClearConversationButton component. Bear
                 //   that in mind when refactoring.
-                const info = await masdifClient.info(conversationId);
-                info.motd.reduce(
-                    (p, text) =>
-                        p.then(
-                            () =>
-                                new Promise<void>(resolve => {
-                                    convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
-                                    window.setTimeout(() => {
-                                        convoDispatch({ type: 'ADD_RESPONSE', text });
-                                        resolve();
-                                    }, (props.fakeResponseDelaySecs ?? 1) * 1000);
-                                }),
-                        ),
-                    Promise.resolve(),
-                );
+                try {
+                    console.debug('getting convo id');
+                    const conversationId = await masdifClient.createConversation();
+                    convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
+
+                    const info = await masdifClient.info(conversationId);
+                    info.motd.reduce(
+                        (p, text) =>
+                            p.then(
+                                () =>
+                                    new Promise<void>(resolve => {
+                                        convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
+                                        window.setTimeout(() => {
+                                            convoDispatch({ type: 'ADD_RESPONSE', text });
+                                            resolve();
+                                        }, (props.fakeResponseDelaySecs ?? 1) * 1000);
+                                    }),
+                            ),
+                        Promise.resolve(),
+                    );
+                } catch (e) {
+                    console.error(e);
+                }
             }
         };
         fetchId();

@@ -170,7 +170,8 @@ const makeMessageInteractionMiddleware = (masdifClient: TMasdifClient | null) =>
                     };
                     dispatch({ type: 'ADD_RESPONSE', ...message });
                 });
-            });
+            })
+            .catch(e => console.error(e));
     }
 };
 
