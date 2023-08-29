@@ -74,31 +74,21 @@ export default class MasdifClient implements TMasdifClient {
     }
 
     async info(conversationId: string) {
-        try {
-            const response = await this.http.get<InfoData>(`/info?id=${conversationId}`);
-            if (!isInfoData(response.data)) throw new Error('Got unexpected response structure from server.');
-            return response.data;
-        } catch (e) {
-            console.error(e);
-            return;
-        }
+        const response = await this.http.get<InfoData>(`/info?id=${conversationId}`);
+        if (!isInfoData(response.data)) throw new Error('Got unexpected response structure from server.');
+        return response.data;
     }
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
     async createConversation() {
-        try {
-            const response = await this.http.post<{ conversation_id: string }>('/conversations');
-            if (response.status !== 200) {
-                throw new Error('Could not create a new conversation');
-            }
-            if (typeof response.data !== 'object' || typeof response.data.conversation_id !== 'string') {
-                throw new Error('Got unexpected response structure from server.');
-            }
-            return response.data.conversation_id;
-        } catch (e) {
-            console.error(e);
-            return;
+        const response = await this.http.post<{ conversation_id: string }>('/conversations');
+        if (response.status !== 200) {
+            throw new Error('Could not create a new conversation');
         }
+        if (typeof response.data !== 'object' || typeof response.data.conversation_id !== 'string') {
+            throw new Error('Got unexpected response structure from server.');
+        }
+        return response.data.conversation_id;
     }
 
     async sendMessage(conversationId: string, message: ConversationSentMessage) {
@@ -114,19 +104,14 @@ export default class MasdifClient implements TMasdifClient {
             ...(message.message_id && { message_id: message.message_id }),
         };
 
-        try {
-            const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
-            if (response.status !== 200) {
-                throw new Error('Could not send message to server.');
-            }
-            if (!isConversationResponseArray(response.data)) {
-                throw new Error('Got unexpected response structure from server.');
-            }
-            return response.data;
-        } catch (e) {
-            console.error(e);
-            return;
+        const response = await this.http.put<ConversationResponse[]>(`/conversations/${conversationId}`, payload);
+        if (response.status !== 200) {
+            throw new Error('Could not send message to server.');
         }
+        if (!isConversationResponseArray(response.data)) {
+            throw new Error('Got unexpected response structure from server.');
+        }
+        return response.data;
     }
 
     async conversationHistory() {

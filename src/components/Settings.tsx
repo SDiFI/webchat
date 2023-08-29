@@ -140,36 +140,31 @@ export default function Settings(_: SettingsProps) {
         if (masdifClient && masdifStatus) {
             // Clear messages and message feedback info.
             convoDispatch({ type: 'CLEAR_CONVERSATION' });
+            try {
+                // Current conversationId is overwritten.
+                const conversationId = await masdifClient.createConversation();
+                convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
 
-            // Current conversationId is overwritten.
-            const conversationId = await masdifClient.createConversation();
-            if (!conversationId) {
-                console.error('Could not fetch new convoId');
-                return;
+                // New conversation is started with MOTD.
+                const info = await masdifClient.info(conversationId);
+                info.motd.reduce(
+                    (p, text) =>
+                        p.then(
+                            () =>
+                                new Promise<void>(resolve => {
+                                    convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
+                                    window.setTimeout(() => {
+                                        convoDispatch({ type: 'ADD_RESPONSE', text });
+                                        resolve();
+                                    }, 1000);
+                                }),
+                        ),
+                    Promise.resolve(),
+                );
+                console.log('Conversation deleted.');
+            } catch (e) {
+                console.error(e);
             }
-            convoDispatch({ type: 'SET_CONVERSATION_ID', conversationId });
-
-            // New conversation is started with MOTD.
-            const info = await masdifClient.info(conversationId);
-            if (!info) {
-                console.error('Could not fetch info.');
-                return;
-            }
-            info.motd.reduce(
-                (p, text) =>
-                    p.then(
-                        () =>
-                            new Promise<void>(resolve => {
-                                convoDispatch({ type: 'DELAY_MOTD_RESPONSE' });
-                                window.setTimeout(() => {
-                                    convoDispatch({ type: 'ADD_RESPONSE', text });
-                                    resolve();
-                                }, 1000);
-                            }),
-                    ),
-                Promise.resolve(),
-            );
-            console.log('Conversation deleted.');
         }
     };
 

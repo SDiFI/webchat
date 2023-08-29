@@ -247,12 +247,12 @@ export type FeedbackValue = {
 export interface TMasdifClient {
     status(): Promise<boolean>;
 
-    info(conversationId: string): Promise<InfoData | undefined>;
+    info(conversationId: string): Promise<InfoData>;
 
     // Create a new conversation and return its conversation ID, which the caller should use for other calls.
-    createConversation(): Promise<string | undefined>;
+    createConversation(): Promise<string>;
 
-    sendMessage(conversationId: string, message: ConversationSentMessage): Promise<ConversationResponse[] | undefined>;
+    sendMessage(conversationId: string, message: ConversationSentMessage): Promise<ConversationResponse[]>;
 
     // TODO: Type this
     conversationHistory(): Promise<any>;
