@@ -2146,11 +2146,6 @@
   resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
-"@types/long@^4.0.1":
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/@types/long/-/long-4.0.2.tgz"
-  integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
-
 "@types/node@*", "@types/node@>=13.7.0":
   version "18.15.11"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.15.11.tgz"
@@ -2160,11 +2155,6 @@
   version "2.4.1"
   resolved "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz"
   integrity sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==
-
-"@types/object-hash@^1.3.0":
-  version "1.3.4"
-  resolved "https://registry.npmjs.org/@types/object-hash/-/object-hash-1.3.4.tgz"
-  integrity sha512-xFdpkAkikBgqBdG9vIlsqffDV8GpvnPEzs0IUtr1v3BEB97ijsFQ4RXVbUZwjFThhB4MDSTUfvmxUD5PGx0wXA==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -3132,10 +3122,10 @@ capture-exit@^2.0.0:
   dependencies:
     rsvp "^4.8.4"
 
-case-anything@^2.1.10:
-  version "2.1.10"
-  resolved "https://registry.npmjs.org/case-anything/-/case-anything-2.1.10.tgz"
-  integrity sha512-JczJwVrCP0jPKh05McyVsuOg6AYosrB9XWZKbQzXeDAm2ClE/PJE/BcrrQrVyGYH7Jg8V/LDupmyL4kFlVsVFQ==
+case-anything@^2.1.13:
+  version "2.1.13"
+  resolved "https://registry.yarnpkg.com/case-anything/-/case-anything-2.1.13.tgz#0cdc16278cb29a7fcdeb072400da3f342ba329e9"
+  integrity sha512-zlOQ80VrQ2Ue+ymH5OuM/DlDq64mEm+B9UTdHULv5osUMD6HalNTblf2b1u/m6QecjsnOkBpqVZ+XPwIVsy7Ng==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -3478,11 +3468,6 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
-
-dataloader@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/dataloader/-/dataloader-1.4.0.tgz"
-  integrity sha512-68s5jYdlvasItOJnCuI2Q9s4q98g0pCyL3HrcKJu8KNugUl8ahgmZYg38ysLTgQjjXX3H8CJLkAvWrclWfcalw==
 
 debug@4, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"
@@ -6600,15 +6585,15 @@ lolex@^5.0.0:
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-long@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/long/-/long-4.0.0.tgz"
-  integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
-
 long@^5.0.0, long@^5.2.1:
   version "5.2.1"
   resolved "https://registry.npmjs.org/long/-/long-5.2.1.tgz"
   integrity sha512-GKSNGeNAtw8IryjjkhZxuKB3JzlcLTwjtiQCHKvqQet81I93kXslhDQruGI/QsddO83mcDToBVy7GqGS/zYf/A==
+
+long@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/long/-/long-5.2.3.tgz#a3ba97f3877cf1d778eccbcb048525ebb77499e1"
+  integrity sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
@@ -7010,11 +6995,6 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
-object-hash@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.npmjs.org/object-hash/-/object-hash-1.3.1.tgz"
-  integrity sha512-OSuu/pU4ENM9kmREg0BdNrUDIl1heYa4mBZacJc+vVWz4GtAwu7jO8s4AIt2aGRUTqxykpWzI3Oqnsm13tTMDA==
-
 object-inspect@^1.12.3, object-inspect@^1.9.0:
   version "1.12.3"
   resolved "https://registry.npmjs.org/object-inspect/-/object-inspect-1.12.3.tgz"
@@ -7394,25 +7374,6 @@ prop-types@^15.8.1:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.13.1"
-
-protobufjs@^6.11.3, protobufjs@^6.8.8:
-  version "6.11.3"
-  resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.11.3.tgz"
-  integrity sha512-xL96WDdCZYdU7Slin569tFX712BxsxslWwAfAhCYjQKGTq7dAU91Lomy6nLLhh/dyGhk/YH4TwTSRxTzhuHyZg==
-  dependencies:
-    "@protobufjs/aspromise" "^1.1.2"
-    "@protobufjs/base64" "^1.1.2"
-    "@protobufjs/codegen" "^2.0.4"
-    "@protobufjs/eventemitter" "^1.1.0"
-    "@protobufjs/fetch" "^1.1.0"
-    "@protobufjs/float" "^1.0.2"
-    "@protobufjs/inquire" "^1.1.0"
-    "@protobufjs/path" "^1.1.2"
-    "@protobufjs/pool" "^1.1.0"
-    "@protobufjs/utf8" "^1.1.0"
-    "@types/long" "^4.0.1"
-    "@types/node" ">=13.7.0"
-    long "^4.0.0"
 
 protobufjs@^7.2.4:
   version "7.2.5"
@@ -8655,33 +8616,30 @@ ts-jest@^26.0.0:
     semver "7.x"
     yargs-parser "20.x"
 
-ts-poet@^6.4.1:
-  version "6.4.1"
-  resolved "https://registry.npmjs.org/ts-poet/-/ts-poet-6.4.1.tgz"
-  integrity sha512-AjZEs4h2w4sDfwpHMxQKHrTlNh2wRbM5NRXmLz0RiH+yPGtSQFbe9hBpNocU8vqVNgfh0BIOiXR80xDz3kKxUQ==
+ts-poet@^6.5.0:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/ts-poet/-/ts-poet-6.6.0.tgz#cea8a278bcccf7092f4856c46b556a833a119a96"
+  integrity sha512-4vEH/wkhcjRPFOdBwIh9ItO6jOoumVLRF4aABDX5JSNEubSqwOulihxQPqai+OkuygJm3WYMInxXQX4QwVNMuw==
   dependencies:
     dprint-node "^1.0.7"
 
-ts-proto-descriptors@1.8.0:
-  version "1.8.0"
-  resolved "https://registry.npmjs.org/ts-proto-descriptors/-/ts-proto-descriptors-1.8.0.tgz"
-  integrity sha512-iV20plcI8+GRkeZIAygxOOH0p2xpOsKfw9kI1W20NCwawi1/4bG/YRd9rQY9XSJP+lD9j7XbSy3tFFuikfsljw==
+ts-proto-descriptors@1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/ts-proto-descriptors/-/ts-proto-descriptors-1.15.0.tgz#e859e3a2887da2d954c552524719b80bdb6ee355"
+  integrity sha512-TYyJ7+H+7Jsqawdv+mfsEpZPTIj9siDHS6EMCzG/z3b/PZiphsX+mWtqFfFVe5/N0Th6V3elK9lQqjnrgTOfrg==
   dependencies:
-    long "^4.0.0"
-    protobufjs "^6.8.8"
+    long "^5.2.3"
+    protobufjs "^7.2.4"
 
-ts-proto@^1.144.1:
-  version "1.146.0"
-  resolved "https://registry.npmjs.org/ts-proto/-/ts-proto-1.146.0.tgz"
-  integrity sha512-OyBZRjmqqw+aatLEUbRooWO6VKTtOLJQyaQFMciigEZPNgTsWtApqHpQDtqDMQFWEXhIARqEV+B7ZJx8cljhZA==
+ts-proto@^1.157.1:
+  version "1.157.1"
+  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.157.1.tgz#c35c31c3fc471bd884f1690fab631bd7435d3416"
+  integrity sha512-HgBaVkfT8O7260+IA/LI31bahrIIUgEjjW9Jh69ITN0dmlYevKX5pFteUkB/tS664B/c3uLHm0AyjFOyfyjNYg==
   dependencies:
-    "@types/object-hash" "^1.3.0"
-    case-anything "^2.1.10"
-    dataloader "^1.4.0"
-    object-hash "^1.3.1"
-    protobufjs "^6.11.3"
-    ts-poet "^6.4.1"
-    ts-proto-descriptors "1.8.0"
+    case-anything "^2.1.13"
+    protobufjs "^7.2.4"
+    ts-poet "^6.5.0"
+    ts-proto-descriptors "1.15.0"
 
 tsconfig-paths@^3.14.1:
   version "3.14.2"
