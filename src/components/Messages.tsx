@@ -292,7 +292,16 @@ export default function Messages() {
     const containerElement = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight });
+        const scroller = () => {
+            containerElement.current?.scrollTo({ top: containerElement.current.scrollHeight, behavior: 'smooth' });
+        };
+        scroller();
+        // Instead of trying to detect when assets in messages have been loaded to get the correct scroll height, we
+        // just wait for a "reasonable" time and scroll
+        const timer = window.setTimeout(scroller, 1000);
+        return function cleanup() {
+            window.clearTimeout(timer);
+        };
     }, [convoContext.messages.length, convoContext.speechHypothesis, convoContext.loading]);
 
     return (
