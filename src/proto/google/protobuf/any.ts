@@ -28,8 +28,12 @@ export const protobufPackage = "google.protobuf";
  *     if (any.is(Foo.class)) {
  *       foo = any.unpack(Foo.class);
  *     }
+ *     // or ...
+ *     if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+ *       foo = any.unpack(Foo.getDefaultInstance());
+ *     }
  *
- *  Example 3: Pack and unpack a message in Python.
+ * Example 3: Pack and unpack a message in Python.
  *
  *     foo = Foo(...)
  *     any = Any()
@@ -39,7 +43,7 @@ export const protobufPackage = "google.protobuf";
  *       any.Unpack(foo)
  *       ...
  *
- *  Example 4: Pack and unpack a message in Go
+ * Example 4: Pack and unpack a message in Go
  *
  *      foo := &pb.Foo{...}
  *      any, err := anypb.New(foo)
@@ -59,7 +63,7 @@ export const protobufPackage = "google.protobuf";
  * name "y.z".
  *
  * JSON
- * ====
+ *
  * The JSON representation of an `Any` value uses the regular
  * representation of the deserialized, embedded message, with an
  * additional field `@type` which contains the type URL. Example:
@@ -122,7 +126,7 @@ export interface Any {
 }
 
 function createBaseAny(): Any {
-  return { typeUrl: "", value: new Uint8Array() };
+  return { typeUrl: "", value: new Uint8Array(0) };
 }
 
 export const Any = {
@@ -144,21 +148,21 @@ export const Any = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 10) {
+          if (tag !== 10) {
             break;
           }
 
           message.typeUrl = reader.string();
           continue;
         case 2:
-          if (tag != 18) {
+          if (tag !== 18) {
             break;
           }
 
           message.value = reader.bytes();
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -169,11 +173,10 @@ export const Any = {
   create(base?: DeepPartial<Any>): Any {
     return Any.fromPartial(base ?? {});
   },
-
   fromPartial(object: DeepPartial<Any>): Any {
     const message = createBaseAny();
     message.typeUrl = object.typeUrl ?? "";
-    message.value = object.value ?? new Uint8Array();
+    message.value = object.value ?? new Uint8Array(0);
     return message;
   },
 };

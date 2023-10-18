@@ -4,20 +4,7 @@ import _m0 from "protobufjs/minimal";
 import { Duration } from "../../../google/protobuf/duration";
 import { Status } from "../../../google/rpc/status";
 
-export const protobufPackage = "tiro.speech.v1alpha";
-
-/** The top-level message sent by the client for the `Recognize` method. */
-export interface RecognizeRequest {
-  /**
-   * Required. Provides information to the recognizer that specifies how to
-   * process the request.
-   */
-  config:
-    | RecognitionConfig
-    | undefined;
-  /** Required. The audio data to be recognized. */
-  audio: RecognitionAudio | undefined;
-}
+export const protobufPackage = "sdifi.speech.v1alpha";
 
 /**
  * The top-level message sent by the client for the `StreamingRecognize` method.
@@ -42,8 +29,7 @@ export interface StreamingRecognizeRequest {
    * and all subsequent `StreamingRecognizeRequest` messages must contain
    * `audio_content` data. The audio bytes must be encoded as specified in
    * `RecognitionConfig`. Note: as with all bytes fields, proto buffers use a
-   * pure binary representation (not base64). See
-   * [content limits](https://cloud.google.com/speech-to-text/quotas#content).
+   * pure binary representation (not base64).
    */
   audioContent?: Uint8Array | undefined;
 }
@@ -81,6 +67,8 @@ export interface StreamingRecognitionConfig {
    * If `false` or omitted, only `is_final=true` result(s) are returned.
    */
   interimResults: boolean;
+  /** Identifier for which conversation this speech stream belongs to */
+  conversation: string;
 }
 
 /**
@@ -88,12 +76,7 @@ export interface StreamingRecognitionConfig {
  * request.
  */
 export interface RecognitionConfig {
-  /**
-   * Encoding of audio data sent in all `RecognitionAudio` messages.
-   * This field is optional for `FLAC` and `WAV` audio files and required
-   * for all other audio formats. For details, see
-   * [AudioEncoding][tiro.speech.v1alpha.RecognitionConfig.AudioEncoding].
-   */
+  /** Encoding of audio data sent in all `RecognitionAudio` messages. */
   encoding: RecognitionConfig_AudioEncoding;
   /**
    * Sample rate in Hertz of the audio data sent in all
@@ -101,7 +84,7 @@ export interface RecognitionConfig {
    * 16000 is optimal. For best results, set the sampling rate of the audio
    * source to 16000 Hz. If that's not possible, use the native sample rate of
    * the audio source (instead of re-sampling).
-   * [AudioEncoding][tiro.speech.v1alpha.RecognitionConfig.AudioEncoding].
+   * [AudioEncoding][sdifi.speech.v1alpha.RecognitionConfig.AudioEncoding].
    */
   sampleRateHertz: number;
   /**
@@ -126,23 +109,14 @@ export interface RecognitionConfig {
    * `false`.
    */
   enableWordTimeOffsets: boolean;
-  /** Metadata regarding this request. */
-  metadata:
-    | RecognitionMetadata
-    | undefined;
   /** If 'true', adds punctuation to recognition result hypotheses. */
   enableAutomaticPunctuation: boolean;
-  diarizationConfig: SpeakerDiarizationConfig | undefined;
 }
 
 /**
  * The encoding of the audio data sent in the request.
  *
  * All encodings support only 1 channel (mono) audio
- *
- * For best results, the audio source should be captured and transmitted using
- * a lossless encoding (`FLAC` or `LINEAR16`). The accuracy of the speech
- * recognition can be reduced if lossy codecs are used to capture or transmit
  * audio.
  */
 export enum RecognitionConfig_AudioEncoding {
@@ -150,206 +124,7 @@ export enum RecognitionConfig_AudioEncoding {
   ENCODING_UNSPECIFIED = 0,
   /** LINEAR16 - Uncompressed 16-bit signed little-endian samples (Linear PCM). */
   LINEAR16 = 1,
-  /**
-   * FLAC - `FLAC` (Free Lossless Audio
-   * Codec) is the recommended encoding because it is
-   * lossless--therefore recognition is not compromised--and
-   * requires only about half the bandwidth of `LINEAR16`. `FLAC` stream
-   * encoding supports 16-bit and 24-bit samples, however, not all fields in
-   * `STREAMINFO` are supported.
-   */
-  FLAC = 2,
-  /**
-   * MP3 - MP3 audio. Support all standard MP3 bitrates (which range from 32-320
-   * kbps). When using this encoding, `sample_rate_hertz` has to match the
-   * sample rate of the file being used.
-   */
-  MP3 = 8,
   UNRECOGNIZED = -1,
-}
-
-/** Config to enable speaker diarization. */
-export interface SpeakerDiarizationConfig {
-  /**
-   * If 'true', enables speaker detection for each recognized word in
-   * the top alternative of the recognition result using a speaker_tag provided
-   * in the WordInfo.
-   */
-  enableSpeakerDiarization: boolean;
-  /**
-   * Minimum number of speakers in the conversation. This range gives you more
-   * flexibility by allowing the system to automatically determine the correct
-   * number of speakers. If not set, the default value is 2.
-   */
-  minSpeakerCount: number;
-  /**
-   * Maximum number of speakers in the conversation. This range gives you more
-   * flexibility by allowing the system to automatically determine the correct
-   * number of speakers. If not set, the default value is 6.
-   */
-  maxSpeakerCount: number;
-}
-
-/** Description of audio data to be recognized. */
-export interface RecognitionMetadata {
-  /** The use case most closely describing the audio content to be recognized. */
-  interactionType: RecognitionMetadata_InteractionType;
-  /**
-   * The industry vertical to which this speech recognition request most
-   * closely applies. This is most indicative of the topics contained
-   * in the audio.  Use the 6-digit NAICS code to identify the industry
-   * vertical - see https://www.naics.com/search/.
-   */
-  industryNaicsCodeOfAudio: number;
-  /** The audio type that most closely describes the audio being recognized. */
-  microphoneDistance: RecognitionMetadata_MicrophoneDistance;
-  /** The original media the speech was recorded on. */
-  originalMediaType: RecognitionMetadata_OriginalMediaType;
-  /** The type of device the speech was recorded with. */
-  recordingDeviceType: RecognitionMetadata_RecordingDeviceType;
-  /**
-   * The device used to make the recording.  Examples 'Nexus 5X' or
-   * 'Polycom SoundStation IP 6000' or 'POTS' or 'VoIP' or
-   * 'Cardioid Microphone'.
-   */
-  recordingDeviceName: string;
-  /**
-   * Mime type of the original audio file.  For example `audio/m4a`,
-   * `audio/x-alaw-basic`, `audio/mp3`, `audio/3gpp`.
-   * A list of possible audio mime types is maintained at
-   * http://www.iana.org/assignments/media-types/media-types.xhtml#audio
-   */
-  originalMimeType: string;
-  /**
-   * Description of the content. Eg. "Recordings of federal supreme court
-   * hearings from 2012".
-   */
-  audioTopic: string;
-}
-
-/**
- * Use case categories that the audio recognition request can be described
- * by.
- */
-export enum RecognitionMetadata_InteractionType {
-  /**
-   * INTERACTION_TYPE_UNSPECIFIED - Use case is either unknown or is something other than one of the other
-   * values below.
-   */
-  INTERACTION_TYPE_UNSPECIFIED = 0,
-  /**
-   * DISCUSSION - Multiple people in a conversation or discussion. For example in a
-   * meeting with two or more people actively participating. Typically
-   * all the primary people speaking would be in the same room (if not,
-   * see PHONE_CALL)
-   */
-  DISCUSSION = 1,
-  /**
-   * PRESENTATION - One or more persons lecturing or presenting to others, mostly
-   * uninterrupted.
-   */
-  PRESENTATION = 2,
-  /**
-   * PHONE_CALL - A phone-call or video-conference in which two or more people, who are
-   * not in the same room, are actively participating.
-   */
-  PHONE_CALL = 3,
-  /** VOICEMAIL - A recorded message intended for another person to listen to. */
-  VOICEMAIL = 4,
-  /** PROFESSIONALLY_PRODUCED - Professionally produced audio (eg. TV Show, Podcast). */
-  PROFESSIONALLY_PRODUCED = 5,
-  /** VOICE_SEARCH - Transcribe spoken questions and queries into text. */
-  VOICE_SEARCH = 6,
-  /** VOICE_COMMAND - Transcribe voice commands, such as for controlling a device. */
-  VOICE_COMMAND = 7,
-  /**
-   * DICTATION - Transcribe speech to text to create a written document, such as a
-   * text-message, email or report.
-   */
-  DICTATION = 8,
-  UNRECOGNIZED = -1,
-}
-
-/** Enumerates the types of capture settings describing an audio file. */
-export enum RecognitionMetadata_MicrophoneDistance {
-  /** MICROPHONE_DISTANCE_UNSPECIFIED - Audio type is not known. */
-  MICROPHONE_DISTANCE_UNSPECIFIED = 0,
-  /**
-   * NEARFIELD - The audio was captured from a closely placed microphone. Eg. phone,
-   * dictaphone, or handheld microphone. Generally if there speaker is within
-   * 1 meter of the microphone.
-   */
-  NEARFIELD = 1,
-  /** MIDFIELD - The speaker if within 3 meters of the microphone. */
-  MIDFIELD = 2,
-  /** FARFIELD - The speaker is more than 3 meters away from the microphone. */
-  FARFIELD = 3,
-  UNRECOGNIZED = -1,
-}
-
-/** The original media the speech was recorded on. */
-export enum RecognitionMetadata_OriginalMediaType {
-  /** ORIGINAL_MEDIA_TYPE_UNSPECIFIED - Unknown original media type. */
-  ORIGINAL_MEDIA_TYPE_UNSPECIFIED = 0,
-  /** AUDIO - The speech data is an audio recording. */
-  AUDIO = 1,
-  /** VIDEO - The speech data originally recorded on a video. */
-  VIDEO = 2,
-  UNRECOGNIZED = -1,
-}
-
-/** The type of device the speech was recorded with. */
-export enum RecognitionMetadata_RecordingDeviceType {
-  /** RECORDING_DEVICE_TYPE_UNSPECIFIED - The recording device is unknown. */
-  RECORDING_DEVICE_TYPE_UNSPECIFIED = 0,
-  /** SMARTPHONE - Speech was recorded on a smartphone. */
-  SMARTPHONE = 1,
-  /** PC - Speech was recorded using a personal computer or tablet. */
-  PC = 2,
-  /** PHONE_LINE - Speech was recorded over a phone line. */
-  PHONE_LINE = 3,
-  /** VEHICLE - Speech was recorded in a vehicle. */
-  VEHICLE = 4,
-  /** OTHER_OUTDOOR_DEVICE - Speech was recorded outdoors. */
-  OTHER_OUTDOOR_DEVICE = 5,
-  /** OTHER_INDOOR_DEVICE - Speech was recorded indoors. */
-  OTHER_INDOOR_DEVICE = 6,
-  UNRECOGNIZED = -1,
-}
-
-/**
- * Contains audio data in the encoding specified in the `RecognitionConfig`.
- * Either `content` or `uri` must be supplied. Supplying both or neither
- * returns [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT].
- * See [content limits](https://cloud.google.com/speech-to-text/quotas#content).
- */
-export interface RecognitionAudio {
-  /**
-   * The audio data bytes encoded as specified in
-   * `RecognitionConfig`. Note: as with all bytes fields, proto buffers use a
-   * pure binary representation, whereas JSON representations use base64.
-   */
-  content?:
-    | Uint8Array
-    | undefined;
-  /**
-   * URI that points to a file that contains audio data bytes as specified in
-   * `RecognitionConfig`. The file must not be compressed (for example, gzip).
-   */
-  uri?: string | undefined;
-}
-
-/**
- * The only message returned to the client by the `Recognize` method. It
- * contains the result as zero or more sequential `SpeechRecognitionResult`
- * messages.
- */
-export interface RecognizeResponse {
-  /**
-   * Sequential list of transcription results corresponding to
-   * sequential portions of audio.
-   */
-  results: SpeechRecognitionResult[];
 }
 
 /**
@@ -436,6 +211,10 @@ export enum StreamingRecognizeResponse_SpeechEventType {
    * `single_utterance` was set to `true`, and is not used otherwise.
    */
   END_OF_SINGLE_UTTERANCE = 1,
+  /** START_OF_SPEECH - Speech has been detected in the audio stream. */
+  START_OF_SPEECH = 2,
+  /** END_OF_SPEECH - Speech has ceased to be detected in the audio stream. */
+  END_OF_SPEECH = 3,
   UNRECOGNIZED = -1,
 }
 
@@ -459,25 +238,6 @@ export interface StreamingRecognitionResult {
    * the transcript and corresponding audio.
    */
   isFinal: boolean;
-  /**
-   * An estimate of the likelihood that the recognizer will not
-   * change its guess about this interim result. Values range from 0.0
-   * (completely unstable) to 1.0 (completely stable).
-   * This field is only provided for interim results (`is_final=false`).
-   * The default of 0.0 is a sentinel value indicating `stability` was not set.
-   */
-  stability: number;
-}
-
-/** A speech recognition result corresponding to a portion of the audio. */
-export interface SpeechRecognitionResult {
-  /**
-   * May contain one or more recognition hypotheses (up to the
-   * maximum specified in `max_alternatives`).
-   * These alternatives are ordered in terms of accuracy, with the top (first)
-   * alternative being the most probable, as ranked by the recognizer.
-   */
-  alternatives: SpeechRecognitionAlternative[];
 }
 
 /** Alternative hypotheses (a.k.a. n-best list). */
@@ -534,75 +294,7 @@ export interface WordInfo {
    * The default of 0.0 is a sentinel value indicating `confidence` was not set.
    */
   confidence: number;
-  /**
-   * A distinct integer value is assigned for every speaker within
-   * the audio. This field specifies which one of those speakers was detected to
-   * have spoken this word. Value ranges from '1' to diarization_speaker_count.
-   * speaker_tag is set if enable_speaker_diarization = 'true' and only in the
-   * top alternative.
-   */
-  speakerTag: number;
 }
-
-function createBaseRecognizeRequest(): RecognizeRequest {
-  return { config: undefined, audio: undefined };
-}
-
-export const RecognizeRequest = {
-  encode(message: RecognizeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.config !== undefined) {
-      RecognitionConfig.encode(message.config, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.audio !== undefined) {
-      RecognitionAudio.encode(message.audio, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): RecognizeRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRecognizeRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.config = RecognitionConfig.decode(reader, reader.uint32());
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.audio = RecognitionAudio.decode(reader, reader.uint32());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<RecognizeRequest>): RecognizeRequest {
-    return RecognizeRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<RecognizeRequest>): RecognizeRequest {
-    const message = createBaseRecognizeRequest();
-    message.config = (object.config !== undefined && object.config !== null)
-      ? RecognitionConfig.fromPartial(object.config)
-      : undefined;
-    message.audio = (object.audio !== undefined && object.audio !== null)
-      ? RecognitionAudio.fromPartial(object.audio)
-      : undefined;
-    return message;
-  },
-};
 
 function createBaseStreamingRecognizeRequest(): StreamingRecognizeRequest {
   return { streamingConfig: undefined, audioContent: undefined };
@@ -663,7 +355,7 @@ export const StreamingRecognizeRequest = {
 };
 
 function createBaseStreamingRecognitionConfig(): StreamingRecognitionConfig {
-  return { config: undefined, singleUtterance: false, interimResults: false };
+  return { config: undefined, singleUtterance: false, interimResults: false, conversation: "" };
 }
 
 export const StreamingRecognitionConfig = {
@@ -676,6 +368,9 @@ export const StreamingRecognitionConfig = {
     }
     if (message.interimResults === true) {
       writer.uint32(24).bool(message.interimResults);
+    }
+    if (message.conversation !== "") {
+      writer.uint32(34).string(message.conversation);
     }
     return writer;
   },
@@ -708,6 +403,13 @@ export const StreamingRecognitionConfig = {
 
           message.interimResults = reader.bool();
           continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.conversation = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -727,6 +429,7 @@ export const StreamingRecognitionConfig = {
       : undefined;
     message.singleUtterance = object.singleUtterance ?? false;
     message.interimResults = object.interimResults ?? false;
+    message.conversation = object.conversation ?? "";
     return message;
   },
 };
@@ -738,9 +441,7 @@ function createBaseRecognitionConfig(): RecognitionConfig {
     languageCode: "",
     maxAlternatives: 0,
     enableWordTimeOffsets: false,
-    metadata: undefined,
     enableAutomaticPunctuation: false,
-    diarizationConfig: undefined,
   };
 }
 
@@ -761,14 +462,8 @@ export const RecognitionConfig = {
     if (message.enableWordTimeOffsets === true) {
       writer.uint32(64).bool(message.enableWordTimeOffsets);
     }
-    if (message.metadata !== undefined) {
-      RecognitionMetadata.encode(message.metadata, writer.uint32(74).fork()).ldelim();
-    }
     if (message.enableAutomaticPunctuation === true) {
       writer.uint32(88).bool(message.enableAutomaticPunctuation);
-    }
-    if (message.diarizationConfig !== undefined) {
-      SpeakerDiarizationConfig.encode(message.diarizationConfig, writer.uint32(154).fork()).ldelim();
     }
     return writer;
   },
@@ -815,26 +510,12 @@ export const RecognitionConfig = {
 
           message.enableWordTimeOffsets = reader.bool();
           continue;
-        case 9:
-          if (tag !== 74) {
-            break;
-          }
-
-          message.metadata = RecognitionMetadata.decode(reader, reader.uint32());
-          continue;
         case 11:
           if (tag !== 88) {
             break;
           }
 
           message.enableAutomaticPunctuation = reader.bool();
-          continue;
-        case 19:
-          if (tag !== 154) {
-            break;
-          }
-
-          message.diarizationConfig = SpeakerDiarizationConfig.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -855,312 +536,7 @@ export const RecognitionConfig = {
     message.languageCode = object.languageCode ?? "";
     message.maxAlternatives = object.maxAlternatives ?? 0;
     message.enableWordTimeOffsets = object.enableWordTimeOffsets ?? false;
-    message.metadata = (object.metadata !== undefined && object.metadata !== null)
-      ? RecognitionMetadata.fromPartial(object.metadata)
-      : undefined;
     message.enableAutomaticPunctuation = object.enableAutomaticPunctuation ?? false;
-    message.diarizationConfig = (object.diarizationConfig !== undefined && object.diarizationConfig !== null)
-      ? SpeakerDiarizationConfig.fromPartial(object.diarizationConfig)
-      : undefined;
-    return message;
-  },
-};
-
-function createBaseSpeakerDiarizationConfig(): SpeakerDiarizationConfig {
-  return { enableSpeakerDiarization: false, minSpeakerCount: 0, maxSpeakerCount: 0 };
-}
-
-export const SpeakerDiarizationConfig = {
-  encode(message: SpeakerDiarizationConfig, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.enableSpeakerDiarization === true) {
-      writer.uint32(8).bool(message.enableSpeakerDiarization);
-    }
-    if (message.minSpeakerCount !== 0) {
-      writer.uint32(16).int32(message.minSpeakerCount);
-    }
-    if (message.maxSpeakerCount !== 0) {
-      writer.uint32(24).int32(message.maxSpeakerCount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SpeakerDiarizationConfig {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSpeakerDiarizationConfig();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.enableSpeakerDiarization = reader.bool();
-          continue;
-        case 2:
-          if (tag !== 16) {
-            break;
-          }
-
-          message.minSpeakerCount = reader.int32();
-          continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.maxSpeakerCount = reader.int32();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<SpeakerDiarizationConfig>): SpeakerDiarizationConfig {
-    return SpeakerDiarizationConfig.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SpeakerDiarizationConfig>): SpeakerDiarizationConfig {
-    const message = createBaseSpeakerDiarizationConfig();
-    message.enableSpeakerDiarization = object.enableSpeakerDiarization ?? false;
-    message.minSpeakerCount = object.minSpeakerCount ?? 0;
-    message.maxSpeakerCount = object.maxSpeakerCount ?? 0;
-    return message;
-  },
-};
-
-function createBaseRecognitionMetadata(): RecognitionMetadata {
-  return {
-    interactionType: 0,
-    industryNaicsCodeOfAudio: 0,
-    microphoneDistance: 0,
-    originalMediaType: 0,
-    recordingDeviceType: 0,
-    recordingDeviceName: "",
-    originalMimeType: "",
-    audioTopic: "",
-  };
-}
-
-export const RecognitionMetadata = {
-  encode(message: RecognitionMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.interactionType !== 0) {
-      writer.uint32(8).int32(message.interactionType);
-    }
-    if (message.industryNaicsCodeOfAudio !== 0) {
-      writer.uint32(24).uint32(message.industryNaicsCodeOfAudio);
-    }
-    if (message.microphoneDistance !== 0) {
-      writer.uint32(32).int32(message.microphoneDistance);
-    }
-    if (message.originalMediaType !== 0) {
-      writer.uint32(40).int32(message.originalMediaType);
-    }
-    if (message.recordingDeviceType !== 0) {
-      writer.uint32(48).int32(message.recordingDeviceType);
-    }
-    if (message.recordingDeviceName !== "") {
-      writer.uint32(58).string(message.recordingDeviceName);
-    }
-    if (message.originalMimeType !== "") {
-      writer.uint32(66).string(message.originalMimeType);
-    }
-    if (message.audioTopic !== "") {
-      writer.uint32(82).string(message.audioTopic);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): RecognitionMetadata {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRecognitionMetadata();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.interactionType = reader.int32() as any;
-          continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.industryNaicsCodeOfAudio = reader.uint32();
-          continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.microphoneDistance = reader.int32() as any;
-          continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.originalMediaType = reader.int32() as any;
-          continue;
-        case 6:
-          if (tag !== 48) {
-            break;
-          }
-
-          message.recordingDeviceType = reader.int32() as any;
-          continue;
-        case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.recordingDeviceName = reader.string();
-          continue;
-        case 8:
-          if (tag !== 66) {
-            break;
-          }
-
-          message.originalMimeType = reader.string();
-          continue;
-        case 10:
-          if (tag !== 82) {
-            break;
-          }
-
-          message.audioTopic = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<RecognitionMetadata>): RecognitionMetadata {
-    return RecognitionMetadata.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<RecognitionMetadata>): RecognitionMetadata {
-    const message = createBaseRecognitionMetadata();
-    message.interactionType = object.interactionType ?? 0;
-    message.industryNaicsCodeOfAudio = object.industryNaicsCodeOfAudio ?? 0;
-    message.microphoneDistance = object.microphoneDistance ?? 0;
-    message.originalMediaType = object.originalMediaType ?? 0;
-    message.recordingDeviceType = object.recordingDeviceType ?? 0;
-    message.recordingDeviceName = object.recordingDeviceName ?? "";
-    message.originalMimeType = object.originalMimeType ?? "";
-    message.audioTopic = object.audioTopic ?? "";
-    return message;
-  },
-};
-
-function createBaseRecognitionAudio(): RecognitionAudio {
-  return { content: undefined, uri: undefined };
-}
-
-export const RecognitionAudio = {
-  encode(message: RecognitionAudio, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.content !== undefined) {
-      writer.uint32(10).bytes(message.content);
-    }
-    if (message.uri !== undefined) {
-      writer.uint32(18).string(message.uri);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): RecognitionAudio {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRecognitionAudio();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.content = reader.bytes();
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.uri = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<RecognitionAudio>): RecognitionAudio {
-    return RecognitionAudio.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<RecognitionAudio>): RecognitionAudio {
-    const message = createBaseRecognitionAudio();
-    message.content = object.content ?? undefined;
-    message.uri = object.uri ?? undefined;
-    return message;
-  },
-};
-
-function createBaseRecognizeResponse(): RecognizeResponse {
-  return { results: [] };
-}
-
-export const RecognizeResponse = {
-  encode(message: RecognizeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.results) {
-      SpeechRecognitionResult.encode(v!, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): RecognizeResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseRecognizeResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.results.push(SpeechRecognitionResult.decode(reader, reader.uint32()));
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<RecognizeResponse>): RecognizeResponse {
-    return RecognizeResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<RecognizeResponse>): RecognizeResponse {
-    const message = createBaseRecognizeResponse();
-    message.results = object.results?.map((e) => SpeechRecognitionResult.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1235,7 +611,7 @@ export const StreamingRecognizeResponse = {
 };
 
 function createBaseStreamingRecognitionResult(): StreamingRecognitionResult {
-  return { alternatives: [], isFinal: false, stability: 0 };
+  return { alternatives: [], isFinal: false };
 }
 
 export const StreamingRecognitionResult = {
@@ -1245,9 +621,6 @@ export const StreamingRecognitionResult = {
     }
     if (message.isFinal === true) {
       writer.uint32(16).bool(message.isFinal);
-    }
-    if (message.stability !== 0) {
-      writer.uint32(29).float(message.stability);
     }
     return writer;
   },
@@ -1273,13 +646,6 @@ export const StreamingRecognitionResult = {
 
           message.isFinal = reader.bool();
           continue;
-        case 3:
-          if (tag !== 29) {
-            break;
-          }
-
-          message.stability = reader.float();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1296,52 +662,6 @@ export const StreamingRecognitionResult = {
     const message = createBaseStreamingRecognitionResult();
     message.alternatives = object.alternatives?.map((e) => SpeechRecognitionAlternative.fromPartial(e)) || [];
     message.isFinal = object.isFinal ?? false;
-    message.stability = object.stability ?? 0;
-    return message;
-  },
-};
-
-function createBaseSpeechRecognitionResult(): SpeechRecognitionResult {
-  return { alternatives: [] };
-}
-
-export const SpeechRecognitionResult = {
-  encode(message: SpeechRecognitionResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.alternatives) {
-      SpeechRecognitionAlternative.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SpeechRecognitionResult {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSpeechRecognitionResult();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.alternatives.push(SpeechRecognitionAlternative.decode(reader, reader.uint32()));
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<SpeechRecognitionResult>): SpeechRecognitionResult {
-    return SpeechRecognitionResult.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SpeechRecognitionResult>): SpeechRecognitionResult {
-    const message = createBaseSpeechRecognitionResult();
-    message.alternatives = object.alternatives?.map((e) => SpeechRecognitionAlternative.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1414,7 +734,7 @@ export const SpeechRecognitionAlternative = {
 };
 
 function createBaseWordInfo(): WordInfo {
-  return { startTime: undefined, endTime: undefined, word: "", confidence: 0, speakerTag: 0 };
+  return { startTime: undefined, endTime: undefined, word: "", confidence: 0 };
 }
 
 export const WordInfo = {
@@ -1430,9 +750,6 @@ export const WordInfo = {
     }
     if (message.confidence !== 0) {
       writer.uint32(37).float(message.confidence);
-    }
-    if (message.speakerTag !== 0) {
-      writer.uint32(40).int32(message.speakerTag);
     }
     return writer;
   },
@@ -1472,13 +789,6 @@ export const WordInfo = {
 
           message.confidence = reader.float();
           continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.speakerTag = reader.int32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1501,71 +811,18 @@ export const WordInfo = {
       : undefined;
     message.word = object.word ?? "";
     message.confidence = object.confidence ?? 0;
-    message.speakerTag = object.speakerTag ?? 0;
     return message;
   },
 };
 
-/** Service that implements Google Cloud Speech API. */
-export type SpeechDefinition = typeof SpeechDefinition;
-export const SpeechDefinition = {
-  name: "Speech",
-  fullName: "tiro.speech.v1alpha.Speech",
+export type SpeechServiceDefinition = typeof SpeechServiceDefinition;
+export const SpeechServiceDefinition = {
+  name: "SpeechService",
+  fullName: "sdifi.speech.v1alpha.SpeechService",
   methods: {
     /**
-     * Performs synchronous speech recognition: receive results after all audio
-     * has been sent and processed.
-     */
-    recognize: {
-      name: "Recognize",
-      requestType: RecognizeRequest,
-      requestStream: false,
-      responseType: RecognizeResponse,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([12, 99, 111, 110, 102, 105, 103, 44, 97, 117, 100, 105, 111])],
-          578365826: [
-            new Uint8Array([
-              30,
-              58,
-              1,
-              42,
-              34,
-              25,
-              47,
-              118,
-              49,
-              97,
-              108,
-              112,
-              104,
-              97,
-              47,
-              115,
-              112,
-              101,
-              101,
-              99,
-              104,
-              58,
-              114,
-              101,
-              99,
-              111,
-              103,
-              110,
-              105,
-              122,
-              101,
-            ]),
-          ],
-        },
-      },
-    },
-    /**
      * Performs bidirectional streaming speech recognition: receive results while
-     * sending audio. This method is only available via the gRPC API (not REST).
+     * sending audio.
      */
     streamingRecognize: {
       name: "StreamingRecognize",
@@ -1580,13 +837,8 @@ export const SpeechDefinition = {
 
 export interface SpeechServiceImplementation<CallContextExt = {}> {
   /**
-   * Performs synchronous speech recognition: receive results after all audio
-   * has been sent and processed.
-   */
-  recognize(request: RecognizeRequest, context: CallContext & CallContextExt): Promise<DeepPartial<RecognizeResponse>>;
-  /**
    * Performs bidirectional streaming speech recognition: receive results while
-   * sending audio. This method is only available via the gRPC API (not REST).
+   * sending audio.
    */
   streamingRecognize(
     request: AsyncIterable<StreamingRecognizeRequest>,
@@ -1594,15 +846,10 @@ export interface SpeechServiceImplementation<CallContextExt = {}> {
   ): ServerStreamingMethodResult<DeepPartial<StreamingRecognizeResponse>>;
 }
 
-export interface SpeechClient<CallOptionsExt = {}> {
-  /**
-   * Performs synchronous speech recognition: receive results after all audio
-   * has been sent and processed.
-   */
-  recognize(request: DeepPartial<RecognizeRequest>, options?: CallOptions & CallOptionsExt): Promise<RecognizeResponse>;
+export interface SpeechServiceClient<CallOptionsExt = {}> {
   /**
    * Performs bidirectional streaming speech recognition: receive results while
-   * sending audio. This method is only available via the gRPC API (not REST).
+   * sending audio.
    */
   streamingRecognize(
     request: AsyncIterable<DeepPartial<StreamingRecognizeRequest>>,

@@ -1217,6 +1217,48 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bufbuild/buf-darwin-arm64@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf-darwin-arm64/-/buf-darwin-arm64-1.27.1.tgz#fc15bdad60298791b2d475431f2b28d951c10635"
+  integrity sha512-TpaRqvhcR0AgwoG93L3jv8oZtV0YHZx8j2Oj/CqHwqK910VZ2hF6JBy9FSIYqrzOj4JbHnBb6CENlDHUR5WJPw==
+
+"@bufbuild/buf-darwin-x64@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf-darwin-x64/-/buf-darwin-x64-1.27.1.tgz#0c51a40c35fdeb45f4fc42f9b833e1ca9ba2be50"
+  integrity sha512-aQAVHm53B2PlzMO4sAlXspsGvCl0IGGSG9xRdDa2uEvvvYlSwZeYCJZSy9l5T1W35rz1AN6Y/u9sV+ylHcmi2A==
+
+"@bufbuild/buf-linux-aarch64@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf-linux-aarch64/-/buf-linux-aarch64-1.27.1.tgz#7329ffa8709b8aea8bb0424d1fdf49339319e624"
+  integrity sha512-p4hX0VasF8Yd4+yAkiV5uUTaleEMWdnzDFWmBxwSjpORAXqp/By1JPH8flr2tPRGN+uIGbtXl3T2sOEsqS2gfA==
+
+"@bufbuild/buf-linux-x64@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf-linux-x64/-/buf-linux-x64-1.27.1.tgz#1f7abdd2b5421bb4128bfba004b7fd3bae9b4a15"
+  integrity sha512-NizPSsd/Q9pfOnR9yEDKIwyYCpG1uRWixJSdraAuO6NfyiPwjZ8+F0shIWfLNptANqM7GPBC7HNc5wX380OHCA==
+
+"@bufbuild/buf-win32-arm64@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf-win32-arm64/-/buf-win32-arm64-1.27.1.tgz#bc184940d0e4b26e481c47b80eb1f461bc4c29a9"
+  integrity sha512-WoH2cF8cQ7e2qeeoQDuvmfzW13n3blo0LdX59BFU+zUehKYBfEy7fcmuF8NmAOKhgzOXCh7mimukXpRE7kfyYw==
+
+"@bufbuild/buf-win32-x64@1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf-win32-x64/-/buf-win32-x64-1.27.1.tgz#047e1e04cd62b4cf02b530ef26f8291cd400f27f"
+  integrity sha512-x3x7l+hfT71sf8bwxKME7NXPBNT+R8gObFpcEaTk6xTGPfOlbX8Y4M9C4kX2cH0oSFgkafIe+TUReCYrP3cGvA==
+
+"@bufbuild/buf@^1.27.1":
+  version "1.27.1"
+  resolved "https://registry.yarnpkg.com/@bufbuild/buf/-/buf-1.27.1.tgz#e4837a3ec23435e6b73c0dde7465376d348b0b04"
+  integrity sha512-PtMIFojz77V5BYmC4OR+y6IqsI3jc1b2qysPJ7vaR1jx5K94C9prGvtWEJeEI06xaffVD97VsTt0VR6gTNk+HA==
+  optionalDependencies:
+    "@bufbuild/buf-darwin-arm64" "1.27.1"
+    "@bufbuild/buf-darwin-x64" "1.27.1"
+    "@bufbuild/buf-linux-aarch64" "1.27.1"
+    "@bufbuild/buf-linux-x64" "1.27.1"
+    "@bufbuild/buf-win32-arm64" "1.27.1"
+    "@bufbuild/buf-win32-x64" "1.27.1"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@cnakazawa/watch/-/watch-1.0.4.tgz"

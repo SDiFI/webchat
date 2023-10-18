@@ -1,43 +1,16 @@
 #!/usr/bin/env bash
 set -ex -o pipefail
 
+BUF="$(command -v ./node_modules/@bufbuild/buf/bin/buf)" || {
+  echo "buf not found... Please install Buf (buf.build)."
+  exit 1
+}
+
 TIRO_SPEECH_CORE_COMMIT=${TIRO_SPEECH_CORE_COMMIT:-3d403e5}
-OUT_DIR=src/proto
-PROTOC=${PROTOC:-./node_modules/.bin/grpc_tools_node_protoc}
-FLAGS=(
-  "--plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto"
-  "--ts_proto_out=$OUT_DIR"
-  "--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,esModuleInterop=true"
-)
+TIRO_SPEECH_CORE_REPO=${TIRO_SPEECH_CORE_REPO:-"https://github.com/tiro-is/tiro-speech-core.git#ref=${TIRO_SPEECH_CORE_COMMIT},subdir=proto"}
 
-if [ -z "$TIRO_PROTOS_DIR" ]; then
-  tmpdir=$(mktemp -d "${TMP:-/tmp}/webchat.XXXX")
-  trap 'rm -rf $tmpdir' EXIT
+SDIFI_PROTOS_COMMIT=${SDIFI_PROTOS_COMMIT:-611a09a}
+SDIFI_PROTOS_REPO=${SDIFI_PROTOS_REPO:-"https://github.com/sdifi/protos.git#ref=${SDIFI_PROTOS_COMMIT}"}
 
-  url="https://github.com/tiro-is/tiro-speech-core/archive/${TIRO_SPEECH_CORE_COMMIT}.tar.gz"
-
-  { curl -L "$url" -o - || wget "$url" -O - ; } \
-    | tar --strip-components=2 --wildcards \
-          -C "$tmpdir" -zxvf - '*/proto/**/*.proto'
-
-  TIRO_PROTOS_DIR="$tmpdir"
-fi
-
-mkdir -p $OUT_DIR
-
-$PROTOC \
-  "${FLAGS[@]}" "-I${TIRO_PROTOS_DIR}" \
-  tiro/speech/v1alpha/speech.proto
-
-GOOGLE_PROTOS=(
-  google/rpc/status.proto
-  google/api/http.proto
-  google/api/client.proto
-  google/api/annotations.proto
-  google/api/field_behavior.proto
-)
-
-# TODO(rkjaran): don't generate services for these
-$PROTOC \
-  "${FLAGS[@]}" "-I${TIRO_PROTOS_DIR}" \
-  "${GOOGLE_PROTOS[@]}"
+"$BUF" generate "${TIRO_SPEECH_CORE_REPO}"
+"$BUF" generate "${SDIFI_PROTOS_REPO}" --include-imports
