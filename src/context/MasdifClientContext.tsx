@@ -34,9 +34,15 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
 
 export const useMasdifClient = () => useContext(MasdifClientContext);
 
-export function useMasdifStatus() {
-    const [status, setStatus] = useState<boolean>(false);
+const MasdifStatusContext = createContext<boolean>(false);
+
+type MasdifStatusContextProviderProps = {
+    children?: React.ReactNode;
+};
+
+export function MasdifStatusProvider(props: MasdifStatusContextProviderProps) {
     const masdifClient = useMasdifClient();
+    const [status, setStatus] = useState<boolean>(false);
 
     useEffect(() => {
         let handler: number | null = null;
@@ -44,8 +50,8 @@ export function useMasdifStatus() {
         const fetchStatus = async () => {
             if (masdifClient) {
                 setStatus(await masdifClient?.status());
-                handler = window.setTimeout(fetchStatus, 30000);
             }
+            handler = window.setTimeout(fetchStatus, 30000);
         };
 
         fetchStatus();
@@ -57,5 +63,7 @@ export function useMasdifStatus() {
         };
     }, [masdifClient]);
 
-    return status;
+    return <MasdifStatusContext.Provider value={status}>{props.children}</MasdifStatusContext.Provider>;
 }
+
+export const useMasdifStatus = () => useContext(MasdifStatusContext);
