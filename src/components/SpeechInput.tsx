@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { performSingleUttSpeechRecognition } from '../api/speech';
 import { useConversationContext } from '../context/ConversationContext';
 import SpeakIcon from './SpeakIcon';
-import { useMasdifStatus } from '../context/MasdifClientContext';
+import { useMasdifClient, useMasdifStatus } from '../context/MasdifClientContext';
 
 const Button = styled.button`
     border: none;
@@ -32,6 +32,7 @@ function SpeakButton(props: SpeakButtonProps) {
 }
 
 export default function SpeechInput() {
+    const masdifClient = useMasdifClient();
     const masdifStatus = useMasdifStatus();
     const [convoState, convoDispatch] = useConversationContext();
 
@@ -43,18 +44,34 @@ export default function SpeechInput() {
 
         convoDispatch({ type: 'START_USER_SPEECH' });
 
-        await performSingleUttSpeechRecognition((transcript, metadata) => {
-            if (metadata.isFinal && transcript.length > 0) {
-                // TODO: remove this once Masdif has integrated asr
-                convoDispatch({
-                    type: 'ADD_SENT_TEXT',
-                    text: transcript,
-                    metadata: { asr_generated: true },
-                });
-            } else {
-                convoDispatch({ type: 'SET_USER_SPEECH_PARTIAL', hypothesis: transcript });
-            }
-        });
+        const channel = masdifClient?.channel();
+
+        if (!channel) {
+            return;
+        }
+
+        const isTiro = channel.address.includes('speech.tiro.is');
+
+        await performSingleUttSpeechRecognition(
+            channel,
+            (transcript, metadata) => {
+                if (metadata.isFinal && transcript.length > 0) {
+                    // TODO: remove this once Masdif has integrated asr
+                    convoDispatch({
+                        type: 'ADD_SENT_TEXT',
+                        text: transcript,
+                        metadata: { asr_generated: true },
+                    });
+                } else {
+                    convoDispatch({ type: 'SET_USER_SPEECH_PARTIAL', hypothesis: transcript });
+                }
+            },
+            !isTiro && convoState.conversationId
+                ? {
+                      conversationId: convoState.conversationId,
+                  }
+                : {},
+        );
 
         convoDispatch({ type: 'END_USER_SPEECH' });
     }

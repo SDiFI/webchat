@@ -7,6 +7,7 @@ const MasdifClientContext = createContext<TMasdifClient | null>(null);
 
 export type MasdifClientContextProviderProps = {
     serverAddress: string;
+    axyAddress?: string;
     extraHttpHeaders?: { [key: string]: string };
     askForFeedback?: boolean;
     feedbackValues?: FeedbackValue;
@@ -20,6 +21,7 @@ export function MasdifContextProvider(props: MasdifClientContextProviderProps) {
     useEffect(() => {
         setMasdifClient(
             new MasdifClient(props.serverAddress, {
+                axyAddress: props.axyAddress,
                 extraHeaders: props.extraHttpHeaders,
                 disableTTS: settings.disableTTS,
                 language: settings.language,

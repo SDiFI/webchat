@@ -13,6 +13,9 @@ export type ConnectedChatProps = {
     // Address of Masdif server backing the chat widget
     serverAddress: string;
 
+    // Address of either an Axy server or a Tiro Speech server.
+    axyAddress?: string;
+
     // The title is displayed at top of the header. A default one will be used if not provided.
     title?: string;
 
@@ -63,6 +66,7 @@ export default function ConnectedChat(props: ConnectedChatProps) {
         >
             <MasdifContextProvider
                 serverAddress={props.serverAddress}
+                axyAddress={props.axyAddress}
                 askForFeedback={props.askForFeedback}
                 feedbackValues={props.feedbackValues}
             >

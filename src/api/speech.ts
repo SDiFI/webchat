@@ -1,4 +1,4 @@
-import { createChannel, createClient, WebsocketTransport, ClientError } from 'nice-grpc-web';
+import { createClient, ClientError, Channel } from 'nice-grpc-web';
 import {
     DeepPartial,
     SpeechClient,
@@ -7,6 +7,13 @@ import {
     RecognitionConfig_AudioEncoding,
     StreamingRecognizeResponse_SpeechEventType,
 } from '../proto/tiro/speech/v1alpha/speech';
+import {
+    SpeechServiceDefinition as AxySpeechDefinition,
+    SpeechServiceClient as AxySpeechClient,
+    StreamingRecognizeRequest as AxyStreamingRecognizeRequest,
+    StreamingRecognizeResponse_SpeechEventType as AxySpeechEventType,
+    RecognitionConfig_AudioEncoding as AxyRecognitionConfig_AudioEncoding,
+} from '../proto/sdifi/speech/v1alpha/speech';
 
 const floatTo16BitPCM = (output: ArrayBuffer, input: Float32Array, offset?: number) => {
     const outView = new DataView(output);
@@ -17,77 +24,87 @@ const floatTo16BitPCM = (output: ArrayBuffer, input: Float32Array, offset?: numb
     }
 };
 
-export async function* createAudioContentRequests(
-    audioCtx: AudioContext,
-    signal: AbortSignal,
-): AsyncIterable<DeepPartial<StreamingRecognizeRequest>> {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    const audioNode = audioCtx.createMediaStreamSource(stream);
-    const processingNode = audioCtx.createScriptProcessor(8192, 1, 1);
-
-    async function* audioprocess(signal: AbortSignal): AsyncIterable<AudioProcessingEvent> {
-        while (true) {
-            const opts = { signal };
-            yield await new Promise(rs =>
-                processingNode.addEventListener('audioprocess', rs, opts as AddEventListenerOptions),
-            );
-        }
-    }
-
-    audioNode.connect(processingNode).connect(audioCtx.destination);
-
-    for await (const e of audioprocess(signal)) {
-        if (signal.aborted) {
-            break;
-        }
-
-        if (!e.inputBuffer.getChannelData(0).every(elem => elem === 0)) {
-            const content = new Uint8Array(e.inputBuffer.getChannelData(0).length * 2);
-            floatTo16BitPCM(content.buffer, e.inputBuffer.getChannelData(0));
-            yield { audioContent: content };
-        }
-    }
-}
-
 export type SingleUttSpeechRecognitionOptions = {
     enableAutomaticPunctuation?: boolean;
 
     // BCP-46 language code, defaults to 'is-IS'
     languageCode?: string;
 
-    serverAddress?: string;
+    conversationId?: string;
 };
 
 // This opens a channel and creates a client on each invocation
 export async function performSingleUttSpeechRecognition(
+    channel: Channel,
     handleTranscript: (transcript: string, metadata: { isFinal: boolean }) => void,
     options?: SingleUttSpeechRecognitionOptions,
 ): Promise<void> {
     const audioCtx = new AudioContext();
 
-    const { languageCode, enableAutomaticPunctuation, serverAddress } = {
+    const { languageCode, enableAutomaticPunctuation } = {
         languageCode: 'is-IS',
         enableAutomaticPunctuation: true,
-        serverAddress: 'speech.tiro.is:443',
         ...(options || {}),
     };
 
-    const channel = createChannel(`wss://${serverAddress}`, WebsocketTransport());
-    const client: SpeechClient = createClient(SpeechDefinition, channel);
+    const backendIsAxy = !!options?.conversationId;
 
-    async function* generateRequests(signal: AbortSignal): AsyncIterable<DeepPartial<StreamingRecognizeRequest>> {
-        yield {
+    const client: AxySpeechClient | SpeechClient = createClient(
+        backendIsAxy ? AxySpeechDefinition : SpeechDefinition,
+        channel,
+    );
+
+    async function* createAudioContentRequests<T = StreamingRecognizeRequest | AxyStreamingRecognizeRequest>(
+        audioCtx: AudioContext,
+        signal: AbortSignal,
+    ): AsyncIterable<DeepPartial<T>> {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        const audioNode = audioCtx.createMediaStreamSource(stream);
+        const processingNode = audioCtx.createScriptProcessor(8192, 1, 1);
+
+        async function* audioprocess(signal: AbortSignal): AsyncIterable<AudioProcessingEvent> {
+            while (true) {
+                const opts = { signal };
+                yield await new Promise(rs =>
+                    processingNode.addEventListener('audioprocess', rs, opts as AddEventListenerOptions),
+                );
+            }
+        }
+
+        audioNode.connect(processingNode).connect(audioCtx.destination);
+
+        for await (const e of audioprocess(signal)) {
+            if (signal.aborted) {
+                break;
+            }
+
+            if (!e.inputBuffer.getChannelData(0).every(elem => elem === 0)) {
+                const content = new Uint8Array(e.inputBuffer.getChannelData(0).length * 2);
+                floatTo16BitPCM(content.buffer, e.inputBuffer.getChannelData(0));
+                yield ({ audioContent: content } as unknown) as DeepPartial<T>;
+            }
+        }
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+    async function* generateRequests<T = StreamingRecognizeRequest | AxyStreamingRecognizeRequest>(
+        signal: AbortSignal,
+    ): AsyncIterable<DeepPartial<T>> {
+        yield ({
             streamingConfig: {
+                conversation: options?.conversationId,
                 singleUtterance: true,
                 interimResults: true,
                 config: {
                     enableAutomaticPunctuation,
                     languageCode,
                     sampleRateHertz: audioCtx.sampleRate,
-                    encoding: RecognitionConfig_AudioEncoding.LINEAR16,
+                    encoding: backendIsAxy
+                        ? AxyRecognitionConfig_AudioEncoding.LINEAR16
+                        : RecognitionConfig_AudioEncoding.LINEAR16,
                 },
             },
-        };
+        } as unknown) as DeepPartial<T>;
 
         return yield* createAudioContentRequests(audioCtx, signal);
     }
@@ -96,7 +113,21 @@ export async function performSingleUttSpeechRecognition(
     const signal = abortcontroller.signal;
 
     try {
-        for await (const response of client.streamingRecognize(generateRequests(signal), { signal })) {
+        const stream = (() => {
+            if (backendIsAxy) {
+                return (client as AxySpeechClient).streamingRecognize(
+                    generateRequests<AxyStreamingRecognizeRequest>(signal),
+                    { signal },
+                );
+            } else {
+                return (client as SpeechClient).streamingRecognize(
+                    generateRequests<StreamingRecognizeRequest>(signal),
+                    { signal },
+                );
+            }
+        })();
+
+        for await (const response of stream) {
             if (response.results.length > 0) {
                 const result = response.results[0];
 
@@ -110,6 +141,7 @@ export async function performSingleUttSpeechRecognition(
                     handleTranscript(transcript, { isFinal: result.isFinal });
                 }
             } else if (
+                (backendIsAxy && response.speechEventType === AxySpeechEventType.END_OF_SINGLE_UTTERANCE) ||
                 response.speechEventType === StreamingRecognizeResponse_SpeechEventType.END_OF_SINGLE_UTTERANCE
             ) {
                 handleTranscript('', { isFinal: true });
@@ -122,6 +154,8 @@ export async function performSingleUttSpeechRecognition(
             throw error;
         }
     }
+
+    audioCtx.close();
 
     return;
 }

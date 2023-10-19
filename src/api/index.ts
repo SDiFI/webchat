@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { Channel, createChannel, WebsocketTransport } from 'nice-grpc-web';
 import {
     ConversationSentMessage,
     ConversationResponse,
@@ -26,6 +27,7 @@ export default class MasdifClient implements TMasdifClient {
     private language?: string;
     private askForFeedback: boolean;
     private feedbackValues: FeedbackValue;
+    private axyChannel: Channel;
 
     constructor(baseURL: string, options: MasdifClientOptions | undefined) {
         this.http = axios.create({
@@ -47,6 +49,7 @@ export default class MasdifClient implements TMasdifClient {
             thumbUp: 'positive',
             untoggle: 'none',
         };
+        this.axyChannel = createChannel(options?.axyAddress ?? 'wss://speech.tiro.is:443', WebsocketTransport());
     }
 
     async status() {
@@ -124,5 +127,9 @@ export default class MasdifClient implements TMasdifClient {
 
     getFeedbackValues() {
         return this.feedbackValues;
+    }
+
+    channel() {
+        return this.axyChannel;
     }
 }
