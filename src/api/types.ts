@@ -1,3 +1,5 @@
+import { Channel } from 'nice-grpc-web';
+
 export type ConversationSentMessage = {
     text: string;
     metadata?: {
@@ -261,9 +263,12 @@ export interface TMasdifClient {
     shouldAskForFeedback(): boolean;
 
     getFeedbackValues(): FeedbackValue;
+
+    channel(): Channel;
 }
 
 export type MasdifClientOptions = {
+    axyAddress?: string;
     extraHeaders?: { [key: string]: string };
     disableTTS?: boolean;
     language?: string;

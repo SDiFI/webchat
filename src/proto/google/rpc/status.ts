@@ -14,12 +14,16 @@ export const protobufPackage = "google.rpc";
  * [API Design Guide](https://cloud.google.com/apis/design/errors).
  */
 export interface Status {
-  /** The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code]. */
+  /**
+   * The status code, which should be an enum value of
+   * [google.rpc.Code][google.rpc.Code].
+   */
   code: number;
   /**
    * A developer-facing error message, which should be in English. Any
    * user-facing error message should be localized and sent in the
-   * [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+   * [google.rpc.Status.details][google.rpc.Status.details] field, or localized
+   * by the client.
    */
   message: string;
   /**
@@ -55,28 +59,28 @@ export const Status = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag != 8) {
+          if (tag !== 8) {
             break;
           }
 
           message.code = reader.int32();
           continue;
         case 2:
-          if (tag != 18) {
+          if (tag !== 18) {
             break;
           }
 
           message.message = reader.string();
           continue;
         case 3:
-          if (tag != 26) {
+          if (tag !== 26) {
             break;
           }
 
           message.details.push(Any.decode(reader, reader.uint32()));
           continue;
       }
-      if ((tag & 7) == 4 || tag == 0) {
+      if ((tag & 7) === 4 || tag === 0) {
         break;
       }
       reader.skipType(tag & 7);
@@ -87,7 +91,6 @@ export const Status = {
   create(base?: DeepPartial<Status>): Status {
     return Status.fromPartial(base ?? {});
   },
-
   fromPartial(object: DeepPartial<Status>): Status {
     const message = createBaseStatus();
     message.code = object.code ?? 0;

@@ -4,7 +4,7 @@ import Chat from '../components/Chat';
 import { SimpleInfoProps } from '../components/Info';
 import { AudioPlaybackProvider } from '../context/AudioPlaybackContext';
 import { ConversationContextProvider } from '../context/ConversationContext';
-import { MasdifContextProvider } from '../context/MasdifClientContext';
+import { MasdifContextProvider, MasdifStatusProvider } from '../context/MasdifClientContext';
 import { I18nProvider } from '../context/I18nContext';
 import { SettingsProvider } from '../context/SettingsContext';
 import { FeedbackValue } from '../api/types';
@@ -12,6 +12,9 @@ import { FeedbackValue } from '../api/types';
 export type ConnectedChatProps = {
     // Address of Masdif server backing the chat widget
     serverAddress: string;
+
+    // Address of either an Axy server or a Tiro Speech server.
+    axyAddress?: string;
 
     // The title is displayed at top of the header. A default one will be used if not provided.
     title?: string;
@@ -63,27 +66,30 @@ export default function ConnectedChat(props: ConnectedChatProps) {
         >
             <MasdifContextProvider
                 serverAddress={props.serverAddress}
+                axyAddress={props.axyAddress}
                 askForFeedback={props.askForFeedback}
                 feedbackValues={props.feedbackValues}
             >
-                <AudioPlaybackProvider>
-                    <ConversationContextProvider>
-                        <I18nProvider>
-                            <Chat
-                                title={props.title || 'SDiFI'}
-                                subtitle={props.subtitle}
-                                placeholder={props.placeholder}
-                                hideSettings={props.hideSettings}
-                                hideMute={props.hideMute}
-                                info={props.info}
-                                startClosed={props.startClosed}
-                                themeOverrides={props.theme}
-                                fakeResponseDelaySecs={props.fakeResponseDelaySecs}
-                                alwaysRender={!!props.alwaysRender}
-                            />
-                        </I18nProvider>
-                    </ConversationContextProvider>
-                </AudioPlaybackProvider>
+                <MasdifStatusProvider>
+                    <AudioPlaybackProvider>
+                        <ConversationContextProvider>
+                            <I18nProvider>
+                                <Chat
+                                    title={props.title || 'SDiFI'}
+                                    subtitle={props.subtitle}
+                                    placeholder={props.placeholder}
+                                    hideSettings={props.hideSettings}
+                                    hideMute={props.hideMute}
+                                    info={props.info}
+                                    startClosed={props.startClosed}
+                                    themeOverrides={props.theme}
+                                    fakeResponseDelaySecs={props.fakeResponseDelaySecs}
+                                    alwaysRender={!!props.alwaysRender}
+                                />
+                            </I18nProvider>
+                        </ConversationContextProvider>
+                    </AudioPlaybackProvider>
+                </MasdifStatusProvider>
             </MasdifContextProvider>
         </SettingsProvider>
     );
