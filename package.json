@@ -53,7 +53,7 @@
     ],
     "devDependencies": {
         "@babel/core": "^7.21.0",
-        "@bufbuild/buf": "^1.27.1",
+        "@bufbuild/buf": "^1.28.1",
         "@rollup/plugin-image": "^3.0.2",
         "@size-limit/preset-small-lib": "^8.2.4",
         "@types/react": "^18.0.28",
