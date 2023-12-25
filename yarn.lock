@@ -8803,10 +8803,10 @@ ts-proto-descriptors@1.15.0:
     long "^5.2.3"
     protobufjs "^7.2.4"
 
-ts-proto@^1.157.1:
-  version "1.157.1"
-  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.157.1.tgz#c35c31c3fc471bd884f1690fab631bd7435d3416"
-  integrity sha512-HgBaVkfT8O7260+IA/LI31bahrIIUgEjjW9Jh69ITN0dmlYevKX5pFteUkB/tS664B/c3uLHm0AyjFOyfyjNYg==
+ts-proto@^1.165.2:
+  version "1.165.2"
+  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.165.2.tgz#5394c4416eeba5f35fbf8111039875f3e288de44"
+  integrity sha512-Jhg3ZKelxhQ3zoBlKiVDfius2H7XLmdC0B+w5iCKUSyZqMIGQXC5iervR6CUIxaoLkSl7Pcw0XwCluR5TLf5NQ==
   dependencies:
     case-anything "^2.1.13"
     protobufjs "^7.2.4"
