@@ -86,7 +86,7 @@
         "axios": "^1.6.2",
         "long": "^5.2.1",
         "nice-grpc-web": "^3.3.1",
-        "protobufjs": "^7.2.4",
+        "protobufjs": "^7.2.6",
         "react-intl-universal": "^2.7.1",
         "styled-components": "^5.0.1"
     },
